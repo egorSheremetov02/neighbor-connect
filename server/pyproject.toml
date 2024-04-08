@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "neighbour_connect"
+version = "0.1.0"
+description = "Project that is aimed to increase convinience and pace of communication in your neighbourhood."
+authors = ["Tribe 2"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+grpcio = "^1.43.0"
+fastapi = "^0.70.0"
+sqlalchemy = "^1.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
