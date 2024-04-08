@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "your_project_name"
+name = "neighbour_connect"
 version = "0.1.0"
-description = "Your project description."
-authors = ["Your Name <your.email@example.com>"]
+description = "Project that is aimed to increase convinience and pace of communication in your neighbourhood."
+authors = ["Tribe 2"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
