@@ -1,0 +1,49 @@
+proto 
+syntax = "proto3";
+
+package chat;
+
+//Service Definition
+service ChatService {
+  rpc GetChats (GetChatsRequest) returns (ChatsResponse);
+  rpc GetMessageHistory (GetMessageHistoryRequest) returns (MessageHistoryResponse);
+  rpc ChatEventsStreaming (stream ChatEventRequest) returns (stream ChatEventResponse);
+  rpc GetChatInfo (GetChatInfoRequest) returns (ChatInfoResponse);
+  rpc CreateChat (CreateChatRequest) returns (ChatResponse);
+  rpc EditChat (EditChatRequest) returns (ChatResponse);
+  rpc JoinChat (JoinChatRequest) returns (ChatResponse);
+  rpc LeaveChat (LeaveChatRequest) returns (ChatResponse);
+  rpc ReportChat (ReportChatRequest) returns (ChatResponse);
+  rpc DownloadFile (DownloadFileRequest) returns (FileResponse);
+  rpc UploadFile (UploadFileRequest) returns (FileResponse);
+  rpc VoteInPoll (VoteInPollRequest) returns (PollResponse);
+}
+
+// Various messages in the format of UserRequest-UserResponse
+
+//ChatEventsStreaming message
+message ChatEventRequest {
+  string chatId = 1; // Chat ID
+  string eventId = 2; // Event ID
+}
+
+message ChatEventResponse {
+  string status = 1; // Status of the request
+  string message = 2; // Status message
+}
+
+//More messages for other requests can be added similarly
+
+message FileResponse {
+  // file data in bytes and other metadata
+}
+
+message VoteInPollRequest {
+  string pollId = 1;
+  int32 optionId = 2; // selected option ID in the poll
+}
+
+message PollResponse {
+  string status = 1; 
+  string message = 2; 
+}
