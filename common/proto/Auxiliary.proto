@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+// Proto package
+package incident;
+
+// Auxiliary service
+service Auxiliary {
+    rpc getImage (ImageRequest) returns (stream DataChunk) {}
+    rpc getProfileInfo (ProfileInfoRequest) returns (ProfileInfoResponse) {}
+}
+
+message DataChunk {
+    bytes data = 1;
+    int32 size = 2;
+}
+
+// Message for getImage request
+message ImageRequest {
+    string fileName = 1;
+}
+
+// Message for getProfileInfo request
+message ProfileInfoRequest {
+    string userId = 1;
+}
+
+// Message for getProfileInfo response
+message ProfileInfoResponse {
+    string userName = 1;    // Unique User ID
+    string email = 3;       // Email ID
+}

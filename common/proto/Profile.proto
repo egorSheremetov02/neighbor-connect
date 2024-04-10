@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+// Proto package
+package incident;
+
+
+// Profile service
+service Profile {
+    rpc updateProfileInfo (ProfileInfoUpdateRequest) returns (ProfileInfoUpdateResponse) {}
+    rpc getCommonGroups (CommonGroupsRequest) returns (CommonGroupsResponse) {}
+}
+
+// Message for undateProfileInfo request
+message ProfileInfoUpdateRequest {
+    string userName = 1;
+    string password = 2;
+    string email = 3;
+}
+
+// Message for undateProfileInfo response
+message ProfileInfoUpdateResponse {
+    string status = 1;
+    string message = 2;
+}
+
+// Message for getCommonGroups request
+message CommonGroupsRequest {
+    string userId1 = 1;
+    string userId2 = 2;
+}
+
+// Message for getCommonGroups response
+message CommonGroupsResponse {
+    repeated string groupIds = 1;
+}

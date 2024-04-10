@@ -103,59 +103,7 @@ message IncidentReactionResponse {
     string message = 2; 
 }
 
-// Profile service
-service Profile {
-    rpc updateProfileInfo (ProfileInfoUpdateRequest) returns (ProfileInfoUpdateResponse) {}
-    rpc getCommonGroups (CommonGroupsRequest) returns (CommonGroupsResponse) {}
-}
 
-// Message for undateProfileInfo request
-message ProfileInfoUpdateRequest {
-    string userName = 1;
-    string password = 2;
-    string email = 3;   
-}
 
-// Message for undateProfileInfo response
-message ProfileInfoUpdateResponse {
-    string status = 1;
-    string message = 2; 
-}
 
-// Message for getCommonGroups request
-message CommonGroupsRequest {
-    string userId1 = 1;
-    string userId2 = 2;
-}
 
-// Message for getCommonGroups response
-message CommonGroupsResponse {
-    repeated string groupIds = 1; 
-}
-
-// Auxiliary service
-service Auxiliary {
-    rpc getImage (ImageRequest) returns (stream DataChunk) {}
-    rpc getProfileInfo (ProfileInfoRequest) returns (ProfileInfoResponse) {}
-}
-
-message DataChunk {
-    bytes data = 1;
-    int32 size = 2;
-}
-
-// Message for getImage request
-message ImageRequest {
-    string fileName = 1;
-}
-
-// Message for getProfileInfo request
-message ProfileInfoRequest {
-    string userId = 1;
-}
-
-// Message for getProfileInfo response 
-message ProfileInfoResponse {
-    string userName = 1;    // Unique User ID 
-    string email = 3;       // Email ID
-}
