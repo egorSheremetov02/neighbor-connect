@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from common.proto import Incident_pb2 as common_dot_proto_dot_Incident__pb2
+from server.incidents import incident_pb2 as common_dot_proto_dot_Incident__pb2
 
 
 class OffersStub(object):
