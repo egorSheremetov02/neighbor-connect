@@ -1,4 +1,3 @@
-proto 
 syntax = "proto3";
 
 package chat;
@@ -46,4 +45,61 @@ message VoteInPollRequest {
 message PollResponse {
   string status = 1; 
   string message = 2; 
+}
+
+message GetChatsRequest {
+  // STUB
+}
+
+message ChatsResponse {
+  // STUB
+}
+
+message GetMessageHistoryRequest {
+  // STUB
+}
+
+message MessageHistoryResponse {
+  // STUB
+}
+
+message GetChatInfoRequest {
+  // STUB
+}
+
+message ChatInfoResponse {
+  // STUB
+}
+
+message CreateChatRequest {
+  // STUB
+}
+
+message EditChatRequest {
+  // STUB
+}
+
+message JoinChatRequest {
+  // STUB
+}
+
+message LeaveChatRequest {
+  // STUB
+}
+
+message ReportChatRequest {
+  // STUB
+}
+
+message DownloadFileRequest {
+  // STUB
+}
+
+message UploadFileRequest {
+  // STUB
+}
+
+message ChatResponse {
+  string status = 1;
+  string message = 2;
 }

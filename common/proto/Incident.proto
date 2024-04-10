@@ -26,11 +26,17 @@ message ChatSearchRequest {
     string chatName = 1;
 }
 
-message IncidentRequest {}
+message IncidentRequest {
+    // STUB
+}
 
 message AddIncidentRequest {
     string userId = 1;
     Incident incident = 2;
+}
+
+message Incident {
+    // STUB
 }
 
 message AddIncidentResponse {
@@ -85,4 +91,12 @@ message CommonGroupsResponse {
 service Auxiliary {
     rpc getImage (ImageRequest) returns (ImageResponse) {}
     rpc getProfileInfo (ProfileInfoRequest) returns (ProfileInfoResponse) {}
+}
+
+message ImageRequest{
+    // STUB
+}
+
+message ImageResponse {
+    // STUB
 }
