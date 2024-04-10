@@ -1,12 +1,51 @@
 syntax = "proto3";
 
+// Proto package
+package incident;
+
+// Enum for the type of the incident
+enum IncidentType {
+    FIRE = 0;
+    CRIME = 1;
+    MEDICAL = 2;
+    TRAFFIC = 3;
+    OTHER = 99;
+}
+
+// Enum for the severity of the incident
+enum Severity {
+    LOW = 0;
+    MEDIUM = 1;
+    HIGH = 2;
+    CRITICAL = 3;
+}
+
+// Message that contains the geolocation data
+message GeoLocation {
+    double latitude = 1;
+    double longitude = 2;
+}  
+
+// Message that represents an incident
+message Incident {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    IncidentType type = 4;
+    Severity severity = 5;
+    GeoLocation location = 6;
+    int64 timestamp = 7; // unix timestamp
+}
+
 // Offers service
 service Offers {
     rpc getLocalOffers (OfferRequest) returns (OfferResponse) {}
 }
 
+// Message for getLocatOffers request
 message OfferRequest {}
 
+// Message for getLocalOffers response
 message OfferResponse {
     repeated string offerIds = 1; 
 }
@@ -20,36 +59,45 @@ service MapIncidents {
     rpc sendIncidentReaction (IncidentReactionRequest) returns (IncidentReactionResponse) {}
 }
 
+// Message for getLocalChats request
 message ChatRequest {}
 
+// Message for getLocalChats response
+message ChatResponse {
+    repeated string chatIds = 1;
+}
+
+// Message for searchChats request
 message ChatSearchRequest {
     string chatName = 1;
 }
 
+// Message for getLocalIncidents request
 message IncidentRequest {}
 
+// Message for getLocalIncidents response
+message IncidentResponse {
+    repeated string incidentIds = 1; 
+}
+
+// Message for addIncident request
 message AddIncidentRequest {
     string userId = 1;
     Incident incident = 2;
 }
 
+// Message for addIncident response
 message AddIncidentResponse {
     string incidentId = 1;
 }
 
+// Message for sendIncidentReaction request
 message IncidentReactionRequest {
     string userId = 1;
     int32 reactionId = 2;
 }
 
-message IncidentResponse {
-    repeated string incidentIds = 1; 
-}
-
-message ChatResponse {
-    repeated string chatIds = 1;
-}
-
+// Message for sendIncidentReaction response
 message IncidentReactionResponse {
     string status = 1;
     string message = 2; 
@@ -57,32 +105,57 @@ message IncidentReactionResponse {
 
 // Profile service
 service Profile {
-    rpc updateProfileInfo (ProfileInfoRequest) returns (ProfileInfoResponse) {}
+    rpc updateProfileInfo (ProfileInfoUpdateRequest) returns (ProfileInfoUpdateResponse) {}
     rpc getCommonGroups (CommonGroupsRequest) returns (CommonGroupsResponse) {}
 }
 
-message ProfileInfoRequest {
+// Message for undateProfileInfo request
+message ProfileInfoUpdateRequest {
     string userName = 1;
     string password = 2;
     string email = 3;   
 }
 
-message ProfileInfoResponse {
+// Message for undateProfileInfo response
+message ProfileInfoUpdateResponse {
     string status = 1;
     string message = 2; 
 }
 
+// Message for getCommonGroups request
 message CommonGroupsRequest {
     string userId1 = 1;
     string userId2 = 2;
 }
 
+// Message for getCommonGroups response
 message CommonGroupsResponse {
     repeated string groupIds = 1; 
 }
 
 // Auxiliary service
 service Auxiliary {
-    rpc getImage (ImageRequest) returns (ImageResponse) {}
+    rpc getImage (ImageRequest) returns (stream DataChunk) {}
     rpc getProfileInfo (ProfileInfoRequest) returns (ProfileInfoResponse) {}
+}
+
+message DataChunk {
+    bytes data = 1;
+    int32 size = 2;
+}
+
+// Message for getImage request
+message ImageRequest {
+    string fileName = 1;
+}
+
+// Message for getProfileInfo request
+message ProfileInfoRequest {
+    string userId = 1;
+}
+
+// Message for getProfileInfo response 
+message ProfileInfoResponse {
+    string userName = 1;    // Unique User ID 
+    string email = 3;       // Email ID
 }
