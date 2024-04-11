@@ -11,7 +11,7 @@ services:
         volumes:
             - ./app:/app
         ports:
-            - "8088:8088"
+            - "50051:50051"
         restart: 
             unless-stopped
     db:

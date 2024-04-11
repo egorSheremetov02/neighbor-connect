@@ -19,6 +19,11 @@ class Database:
         session.add(new_user)
         session.commit()
 
+    def get_users(self):
+        session = self.Session()
+        users = session.query(User).all()
+        return users
+
     def delete_user(self, user_id):
         session = self.Session()
         user = session.query(User).filter_by(id=user_id).first()
