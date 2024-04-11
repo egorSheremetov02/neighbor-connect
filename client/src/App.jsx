@@ -5,6 +5,8 @@ import Profile from './Pages/Profile/Profile';
 import Incidents from './Pages/Incidents';
 import Chats from './Pages/Chats/';
 import Offers from './Pages/Offers';
+import 'react-responsive-modal/styles.css';
+
 
 const App = () => {
   const [activeComponent, setActiveComponent] = useState('login');
