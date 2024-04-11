@@ -81,7 +81,7 @@ class MapIncidentsStub(object):
         """
         self.getLocalChats = channel.unary_unary(
                 '/incident.MapIncidents/getLocalChats',
-                request_serializer=common_dot_proto_dot_Incident__pb2.ChatRequest.SerializeToString,
+                request_serializer=common_dot_proto_dot_Incident__pb2.LocalChatRequest.SerializeToString,
                 response_deserializer=common_dot_proto_dot_Incident__pb2.ChatResponse.FromString,
                 )
         self.searchChats = channel.unary_unary(
@@ -91,7 +91,7 @@ class MapIncidentsStub(object):
                 )
         self.getLocalIncidents = channel.unary_unary(
                 '/incident.MapIncidents/getLocalIncidents',
-                request_serializer=common_dot_proto_dot_Incident__pb2.IncidentRequest.SerializeToString,
+                request_serializer=common_dot_proto_dot_Incident__pb2.LocalIncidentRequest.SerializeToString,
                 response_deserializer=common_dot_proto_dot_Incident__pb2.IncidentResponse.FromString,
                 )
         self.addIncident = channel.unary_unary(
@@ -145,7 +145,7 @@ def add_MapIncidentsServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'getLocalChats': grpc.unary_unary_rpc_method_handler(
                     servicer.getLocalChats,
-                    request_deserializer=common_dot_proto_dot_Incident__pb2.ChatRequest.FromString,
+                    request_deserializer=common_dot_proto_dot_Incident__pb2.LocalChatRequest.FromString,
                     response_serializer=common_dot_proto_dot_Incident__pb2.ChatResponse.SerializeToString,
             ),
             'searchChats': grpc.unary_unary_rpc_method_handler(
@@ -155,7 +155,7 @@ def add_MapIncidentsServicer_to_server(servicer, server):
             ),
             'getLocalIncidents': grpc.unary_unary_rpc_method_handler(
                     servicer.getLocalIncidents,
-                    request_deserializer=common_dot_proto_dot_Incident__pb2.IncidentRequest.FromString,
+                    request_deserializer=common_dot_proto_dot_Incident__pb2.LocalIncidentRequest.FromString,
                     response_serializer=common_dot_proto_dot_Incident__pb2.IncidentResponse.SerializeToString,
             ),
             'addIncident': grpc.unary_unary_rpc_method_handler(
@@ -191,7 +191,7 @@ class MapIncidents(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/incident.MapIncidents/getLocalChats',
-            common_dot_proto_dot_Incident__pb2.ChatRequest.SerializeToString,
+            common_dot_proto_dot_Incident__pb2.LocalChatRequest.SerializeToString,
             common_dot_proto_dot_Incident__pb2.ChatResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -225,7 +225,7 @@ class MapIncidents(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/incident.MapIncidents/getLocalIncidents',
-            common_dot_proto_dot_Incident__pb2.IncidentRequest.SerializeToString,
+            common_dot_proto_dot_Incident__pb2.LocalIncidentRequest.SerializeToString,
             common_dot_proto_dot_Incident__pb2.IncidentResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

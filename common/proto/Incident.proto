@@ -24,7 +24,7 @@ enum Severity {
 message GeoLocation {
     double latitude = 1;
     double longitude = 2;
-}  
+}
 
 // Message that represents an incident
 message Incident {
@@ -47,20 +47,22 @@ message OfferRequest {}
 
 // Message for getLocalOffers response
 message OfferResponse {
-    repeated string offerIds = 1; 
+    repeated string offerIds = 1;
 }
 
 // Map/Incidents service
 service MapIncidents {
-    rpc getLocalChats (ChatRequest) returns (ChatResponse) {}
+    rpc getLocalChats (LocalChatRequest) returns (ChatResponse) {}
     rpc searchChats (ChatSearchRequest) returns (ChatResponse) {}
-    rpc getLocalIncidents (IncidentRequest) returns (IncidentResponse) {}
+    rpc getLocalIncidents (LocalIncidentRequest) returns (IncidentResponse) {}
     rpc addIncident (AddIncidentRequest) returns (AddIncidentResponse) {}
     rpc sendIncidentReaction (IncidentReactionRequest) returns (IncidentReactionResponse) {}
 }
 
 // Message for getLocalChats request
-message ChatRequest {}
+message LocalChatRequest {
+    GeoLocation location = 1;
+}
 
 // Message for getLocalChats response
 message ChatResponse {
@@ -73,11 +75,13 @@ message ChatSearchRequest {
 }
 
 // Message for getLocalIncidents request
-message IncidentRequest {}
+message LocalIncidentRequest {
+    GeoLocation location = 1;
+}
 
 // Message for getLocalIncidents response
 message IncidentResponse {
-    repeated string incidentIds = 1; 
+    repeated string incidentIds = 1;
 }
 
 // Message for addIncident request
@@ -100,7 +104,7 @@ message IncidentReactionRequest {
 // Message for sendIncidentReaction response
 message IncidentReactionResponse {
     string status = 1;
-    string message = 2; 
+    string message = 2;
 }
 
 
