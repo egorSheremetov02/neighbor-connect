@@ -1,16 +1,28 @@
 version: '3'
 
 services:
-    web-app:
-        build: .
+    backend:
+        container_name: 
+            nc_backend
+        image: 
+            nc_backend_image
+        build:
+            context: ./server
         volumes:
             - ./app:/app
         ports:
             - "5000:5000"
+        restart: 
+            unless-stopped
     db:
-        image: postgres:12
+        container_name: 
+            nc_db
+        image: 
+            postgres:12
         volumes:
             - db-data:/var/lib/postgresql/data
+        restart: 
+            unless-stopped
 
 volumes:
     db-data:
