@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 // Proto package
-package incident;
+package auxiliary;
 
 // Auxiliary service
 service Auxiliary {
