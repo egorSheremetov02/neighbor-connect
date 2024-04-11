@@ -1,9 +1,12 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from db.tables import Base
+from db.tables import User, Incident
 
 class Database:
     def __init__(self, url):
         self.engine = create_engine(url)
+        Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
     
     def add_user(self, username, email, password, phone_number, bio=None):
@@ -19,6 +22,11 @@ class Database:
         user = session.query(User).filter_by(id=user_id).first()
         session.delete(user)
         session.commit()
+    
+    def get_users(self):
+        session = self.Session()
+        users = session.query(User).all()
+        return users
     
     def report_incident(self, user_id, title, date, location):
         session = self.Session()

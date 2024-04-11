@@ -11,7 +11,7 @@ services:
         volumes:
             - ./app:/app
         ports:
-            - "5000:5000"
+            - "8088:8088"
         restart: 
             unless-stopped
     db:
@@ -23,6 +23,11 @@ services:
             - db-data:/var/lib/postgresql/data
         restart: 
             unless-stopped
+        # Remove at production, add password and env file
+        environment: 
+            POSTGRES_USER: reddevil
+            POSTGRES_PASSWORD: 1234
+            POSTGRES_DB: neighbourhood_db
 
 volumes:
     db-data:
