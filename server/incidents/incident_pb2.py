@@ -14,45 +14,45 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x63ommon/proto/Incident.proto\x12\x08incident\"2\n\x0bGeoLocation\x12\x10\n\x08latitude\x18\x01 \x01(\x01\x12\x11\n\tlongitude\x18\x02 \x01(\x01\"\xc2\x01\n\x08Incident\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12$\n\x04type\x18\x04 \x01(\x0e\x32\x16.incident.IncidentType\x12$\n\x08severity\x18\x05 \x01(\x0e\x32\x12.incident.Severity\x12\'\n\x08location\x18\x06 \x01(\x0b\x32\x15.incident.GeoLocation\x12\x11\n\ttimestamp\x18\x07 \x01(\x03\"\x0e\n\x0cOfferRequest\"!\n\rOfferResponse\x12\x10\n\x08offerIds\x18\x01 \x03(\t\";\n\x10LocalChatRequest\x12\'\n\x08location\x18\x01 \x01(\x0b\x32\x15.incident.GeoLocation\"\x1f\n\x0c\x43hatResponse\x12\x0f\n\x07\x63hatIds\x18\x01 \x03(\t\"%\n\x11\x43hatSearchRequest\x12\x10\n\x08\x63hatName\x18\x01 \x01(\t\"?\n\x14LocalIncidentRequest\x12\'\n\x08location\x18\x01 \x01(\x0b\x32\x15.incident.GeoLocation\"\'\n\x10IncidentResponse\x12\x13\n\x0bincidentIds\x18\x01 \x03(\t\"J\n\x12\x41\x64\x64IncidentRequest\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12$\n\x08incident\x18\x02 \x01(\x0b\x32\x12.incident.Incident\")\n\x13\x41\x64\x64IncidentResponse\x12\x12\n\nincidentId\x18\x01 \x01(\t\"=\n\x17IncidentReactionRequest\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12\x12\n\nreactionId\x18\x02 \x01(\x05\";\n\x18IncidentReactionResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t*H\n\x0cIncidentType\x12\x08\n\x04\x46IRE\x10\x00\x12\t\n\x05\x43RIME\x10\x01\x12\x0b\n\x07MEDICAL\x10\x02\x12\x0b\n\x07TRAFFIC\x10\x03\x12\t\n\x05OTHER\x10\x63*7\n\x08Severity\x12\x07\n\x03LOW\x10\x00\x12\n\n\x06MEDIUM\x10\x01\x12\x08\n\x04HIGH\x10\x02\x12\x0c\n\x08\x43RITICAL\x10\x03\x32M\n\x06Offers\x12\x43\n\x0egetLocalOffers\x12\x16.incident.OfferRequest\x1a\x17.incident.OfferResponse\"\x00\x32\x9d\x03\n\x0cMapIncidents\x12\x45\n\rgetLocalChats\x12\x1a.incident.LocalChatRequest\x1a\x16.incident.ChatResponse\"\x00\x12\x44\n\x0bsearchChats\x12\x1b.incident.ChatSearchRequest\x1a\x16.incident.ChatResponse\"\x00\x12Q\n\x11getLocalIncidents\x12\x1e.incident.LocalIncidentRequest\x1a\x1a.incident.IncidentResponse\"\x00\x12L\n\x0b\x61\x64\x64Incident\x12\x1c.incident.AddIncidentRequest\x1a\x1d.incident.AddIncidentResponse\"\x00\x12_\n\x14sendIncidentReaction\x12!.incident.IncidentReactionRequest\x1a\".incident.IncidentReactionResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x63ommon/proto/Incident.proto\x12\x08incident\"2\n\x0bGeoLocation\x12\x10\n\x08latitude\x18\x01 \x01(\x01\x12\x11\n\tlongitude\x18\x02 \x01(\x01\"\xe3\x01\n\x08Incident\x12\n\n\x02id\x18\x01 \x01(\x03\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12$\n\x04type\x18\x04 \x01(\x0e\x32\x16.incident.IncidentType\x12$\n\x08severity\x18\x05 \x01(\x0e\x32\x12.incident.Severity\x12\'\n\x08location\x18\x06 \x01(\x0b\x32\x15.incident.GeoLocation\x12\x11\n\ttimestamp\x18\x07 \x01(\x03\x12\r\n\x05likes\x18\x08 \x01(\x03\x12\x10\n\x08\x64islikes\x18\t \x01(\x03\"\x0e\n\x0cOfferRequest\"!\n\rOfferResponse\x12\x10\n\x08offerIds\x18\x01 \x03(\t\";\n\x10LocalChatRequest\x12\'\n\x08location\x18\x01 \x01(\x0b\x32\x15.incident.GeoLocation\"\x1f\n\x0c\x43hatResponse\x12\x0f\n\x07\x63hatIds\x18\x01 \x03(\t\"%\n\x11\x43hatSearchRequest\x12\x10\n\x08\x63hatName\x18\x01 \x01(\t\"?\n\x14LocalIncidentRequest\x12\'\n\x08location\x18\x01 \x01(\x0b\x32\x15.incident.GeoLocation\"\'\n\x10IncidentResponse\x12\x13\n\x0bincidentIds\x18\x01 \x03(\x03\"J\n\x12\x41\x64\x64IncidentRequest\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12$\n\x08incident\x18\x02 \x01(\x0b\x32\x12.incident.Incident\")\n\x13\x41\x64\x64IncidentResponse\x12\x12\n\nincidentId\x18\x01 \x01(\x03\"Q\n\x17IncidentReactionRequest\x12\x0e\n\x06userId\x18\x01 \x01(\t\x12\x12\n\nincidentId\x18\x02 \x01(\t\x12\x12\n\nreactionId\x18\x03 \x01(\x05\";\n\x18IncidentReactionResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t*H\n\x0cIncidentType\x12\x08\n\x04\x46IRE\x10\x00\x12\t\n\x05\x43RIME\x10\x01\x12\x0b\n\x07MEDICAL\x10\x02\x12\x0b\n\x07TRAFFIC\x10\x03\x12\t\n\x05OTHER\x10\x63*7\n\x08Severity\x12\x07\n\x03LOW\x10\x00\x12\n\n\x06MEDIUM\x10\x01\x12\x08\n\x04HIGH\x10\x02\x12\x0c\n\x08\x43RITICAL\x10\x03\x32M\n\x06Offers\x12\x43\n\x0egetLocalOffers\x12\x16.incident.OfferRequest\x1a\x17.incident.OfferResponse\"\x00\x32\x9d\x03\n\x0cMapIncidents\x12\x45\n\rgetLocalChats\x12\x1a.incident.LocalChatRequest\x1a\x16.incident.ChatResponse\"\x00\x12\x44\n\x0bsearchChats\x12\x1b.incident.ChatSearchRequest\x1a\x16.incident.ChatResponse\"\x00\x12Q\n\x11getLocalIncidents\x12\x1e.incident.LocalIncidentRequest\x1a\x1a.incident.IncidentResponse\"\x00\x12L\n\x0b\x61\x64\x64Incident\x12\x1c.incident.AddIncidentRequest\x1a\x1d.incident.AddIncidentResponse\"\x00\x12_\n\x14sendIncidentReaction\x12!.incident.IncidentReactionRequest\x1a\".incident.IncidentReactionResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'common.proto.Incident_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_INCIDENTTYPE']._serialized_start=823
-  _globals['_INCIDENTTYPE']._serialized_end=895
-  _globals['_SEVERITY']._serialized_start=897
-  _globals['_SEVERITY']._serialized_end=952
+  _globals['_INCIDENTTYPE']._serialized_start=876
+  _globals['_INCIDENTTYPE']._serialized_end=948
+  _globals['_SEVERITY']._serialized_start=950
+  _globals['_SEVERITY']._serialized_end=1005
   _globals['_GEOLOCATION']._serialized_start=41
   _globals['_GEOLOCATION']._serialized_end=91
   _globals['_INCIDENT']._serialized_start=94
-  _globals['_INCIDENT']._serialized_end=288
-  _globals['_OFFERREQUEST']._serialized_start=290
-  _globals['_OFFERREQUEST']._serialized_end=304
-  _globals['_OFFERRESPONSE']._serialized_start=306
-  _globals['_OFFERRESPONSE']._serialized_end=339
-  _globals['_LOCALCHATREQUEST']._serialized_start=341
-  _globals['_LOCALCHATREQUEST']._serialized_end=400
-  _globals['_CHATRESPONSE']._serialized_start=402
-  _globals['_CHATRESPONSE']._serialized_end=433
-  _globals['_CHATSEARCHREQUEST']._serialized_start=435
-  _globals['_CHATSEARCHREQUEST']._serialized_end=472
-  _globals['_LOCALINCIDENTREQUEST']._serialized_start=474
-  _globals['_LOCALINCIDENTREQUEST']._serialized_end=537
-  _globals['_INCIDENTRESPONSE']._serialized_start=539
-  _globals['_INCIDENTRESPONSE']._serialized_end=578
-  _globals['_ADDINCIDENTREQUEST']._serialized_start=580
-  _globals['_ADDINCIDENTREQUEST']._serialized_end=654
-  _globals['_ADDINCIDENTRESPONSE']._serialized_start=656
-  _globals['_ADDINCIDENTRESPONSE']._serialized_end=697
-  _globals['_INCIDENTREACTIONREQUEST']._serialized_start=699
-  _globals['_INCIDENTREACTIONREQUEST']._serialized_end=760
-  _globals['_INCIDENTREACTIONRESPONSE']._serialized_start=762
-  _globals['_INCIDENTREACTIONRESPONSE']._serialized_end=821
-  _globals['_OFFERS']._serialized_start=954
-  _globals['_OFFERS']._serialized_end=1031
-  _globals['_MAPINCIDENTS']._serialized_start=1034
-  _globals['_MAPINCIDENTS']._serialized_end=1447
+  _globals['_INCIDENT']._serialized_end=321
+  _globals['_OFFERREQUEST']._serialized_start=323
+  _globals['_OFFERREQUEST']._serialized_end=337
+  _globals['_OFFERRESPONSE']._serialized_start=339
+  _globals['_OFFERRESPONSE']._serialized_end=372
+  _globals['_LOCALCHATREQUEST']._serialized_start=374
+  _globals['_LOCALCHATREQUEST']._serialized_end=433
+  _globals['_CHATRESPONSE']._serialized_start=435
+  _globals['_CHATRESPONSE']._serialized_end=466
+  _globals['_CHATSEARCHREQUEST']._serialized_start=468
+  _globals['_CHATSEARCHREQUEST']._serialized_end=505
+  _globals['_LOCALINCIDENTREQUEST']._serialized_start=507
+  _globals['_LOCALINCIDENTREQUEST']._serialized_end=570
+  _globals['_INCIDENTRESPONSE']._serialized_start=572
+  _globals['_INCIDENTRESPONSE']._serialized_end=611
+  _globals['_ADDINCIDENTREQUEST']._serialized_start=613
+  _globals['_ADDINCIDENTREQUEST']._serialized_end=687
+  _globals['_ADDINCIDENTRESPONSE']._serialized_start=689
+  _globals['_ADDINCIDENTRESPONSE']._serialized_end=730
+  _globals['_INCIDENTREACTIONREQUEST']._serialized_start=732
+  _globals['_INCIDENTREACTIONREQUEST']._serialized_end=813
+  _globals['_INCIDENTREACTIONRESPONSE']._serialized_start=815
+  _globals['_INCIDENTREACTIONRESPONSE']._serialized_end=874
+  _globals['_OFFERS']._serialized_start=1007
+  _globals['_OFFERS']._serialized_end=1084
+  _globals['_MAPINCIDENTS']._serialized_start=1087
+  _globals['_MAPINCIDENTS']._serialized_end=1500
 # @@protoc_insertion_point(module_scope)

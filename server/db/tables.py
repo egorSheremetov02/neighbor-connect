@@ -1,12 +1,14 @@
-from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+import server.incidents.incident_pb2_grpc as incident_pb2
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'User'
-    
+
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
@@ -16,15 +18,18 @@ class User(Base):
 
     incidents = relationship('Incident', back_populates='user')
 
+
 class Incident(Base):
     __tablename__ = 'Incident'
-    
+
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
-    title = Column(String, nullable=False)
-    date = Column(Date, nullable=False)
-    location = Column(String, nullable=False)
+    title = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
+    type = Column(Integer, nullable=True)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
     likes = Column(Integer, default=0)
     dislikes = Column(Integer, default=0)
-    
+    user_id = Column(Integer, ForeignKey('User.id'))
+
     user = relationship('User', back_populates='incidents')

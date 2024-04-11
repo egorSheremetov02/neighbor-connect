@@ -28,13 +28,15 @@ message GeoLocation {
 
 // Message that represents an incident
 message Incident {
-    string id = 1;
+    int64 id = 1;
     string title = 2;
     string description = 3;
     IncidentType type = 4;
     Severity severity = 5;
     GeoLocation location = 6;
     int64 timestamp = 7; // unix timestamp
+    int64 likes = 8;
+    int64 dislikes = 9;
 }
 
 // Offers service
@@ -81,7 +83,7 @@ message LocalIncidentRequest {
 
 // Message for getLocalIncidents response
 message IncidentResponse {
-    repeated string incidentIds = 1;
+    repeated int64 incidentIds = 1;
 }
 
 // Message for addIncident request
@@ -92,13 +94,14 @@ message AddIncidentRequest {
 
 // Message for addIncident response
 message AddIncidentResponse {
-    string incidentId = 1;
+    int64 incidentId = 1;
 }
 
 // Message for sendIncidentReaction request
 message IncidentReactionRequest {
     string userId = 1;
-    int32 reactionId = 2;
+    string incidentId = 2;
+    int32 reactionId = 3;
 }
 
 // Message for sendIncidentReaction response
