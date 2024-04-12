@@ -13,7 +13,6 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 
-
 function Copyright(props) {
   return (
     <Typography
@@ -108,14 +107,17 @@ export default function SignIn() {
                   Forgot password?
                 </Link>
               </div>
-              <div item className="flex justify-between items-center flex-col space-y-1">
+              <div
+                item
+                className="flex justify-between items-center flex-col space-y-1"
+              >
                 <Link href="#" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
 
                 <Button variant="outlined">
                   <GoogleIcon className="mr-2 text-red-500" />
-                  <p className='text-red-400'>Google</p>
+                  <p className="text-red-400">Google</p>
                 </Button>
               </div>
             </div>
