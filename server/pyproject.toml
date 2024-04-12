@@ -10,6 +10,8 @@ grpcio = "^1.43.0"
 fastapi = "^0.70.0"
 sqlalchemy = "^1.4.0"
 psycopg2-binary = "^2.9.9"
+google = "^3.0.0"
+grpcio-tools = "^1.62.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

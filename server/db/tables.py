@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-import server.incidents.incident_pb2_grpc as incident_pb2
 
 Base = declarative_base()
 

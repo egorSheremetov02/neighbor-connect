@@ -1,5 +1,5 @@
-import incident_pb2
-import incident_pb2_grpc
+from incidents import incident_pb2
+from incidents import incident_pb2_grpc
 
 
 class IncidentService(incident_pb2_grpc.MapIncidentsServicer):

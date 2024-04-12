@@ -2,8 +2,8 @@ from math import pi, cos, asin, sqrt
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from server.db.tables import User, Incident
-import server.incidents.incident_pb2 as incident_pb2
+from db.tables import User, Incident
+import incidents.incident_pb2 as incident_pb2
 
 
 class Database:
@@ -30,10 +30,10 @@ class Database:
         session.delete(user)
         session.commit()
 
-    def report_incident(self, user_id, title, date, location):
+    def report_incident(self, user_id, title, description, type, latitude, longitude):
         session = self.Session()
-        incident = Incident(user_id=user_id, title=title,
-                            date=date, location=location)
+        incident = Incident(user_id=user_id, title=title, description=description, type=type, latitude=latitude,
+                            longitude=longitude)
         session.add(incident)
         session.commit()
     #     TODO: return incident.id

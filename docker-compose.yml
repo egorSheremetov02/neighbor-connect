@@ -25,7 +25,7 @@ services:
             unless-stopped
         # Remove at production, add password and env file
         environment: 
-            POSTGRES_USER: reddevil
+            POSTGRES_USER: postgres
             POSTGRES_PASSWORD: 1234
             POSTGRES_DB: neighbourhood_db
 
