@@ -141,6 +141,58 @@ app.get("/incidents", (req, res) => {
   });
 });
 
+// -------------------- post an offer ----------------
+app.post("/post-offer", (req, res) => {
+  const { user_id, title, date, location, description } = req.body;
+
+  // Check if the user exists in the database
+  connection.query(
+    "SELECT * FROM User WHERE id = ?",
+    [user_id],
+    (err, result) => {
+      if (err) {
+        res.status(500).json({ error: "Failed to post offer" });
+        console.log(err);
+      } else if (result.length === 0) {
+        res.status(400).json({ error: "User not found" });
+      } else {
+        // Insert the new offer
+        const query = `INSERT INTO Offer (user_id, title, date, location, description) VALUES (?, ?, ?, ?, ?)`;
+        connection.query(
+          query,
+          [user_id, title, date, location, description],
+          (err, result) => {
+            if (err) {
+              res.status(500).json({ error: "Failed to post offer" });
+              console.log(err);
+            } else {
+              res.status(200).json({ message: "Offer posted successfully" });
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+// -------------------- fetch all offers ----------------
+app.get("/offers", (req, res) => {
+  const query = `
+      SELECT o.id, o.title, o.date, o.location, o.description, u.username
+      FROM Offer o
+      JOIN User u ON o.user_id = u.id
+  `;
+  connection.query(query, (err, results) => {
+      if (err) {
+          res.status(500).json({ error: "Failed to fetch offers" });
+          console.log(err);
+      } else {
+          res.status(200).json(results);
+      }
+  });
+});
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -22,3 +22,13 @@ CREATE TABLE Incident (
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
+CREATE TABLE Offer (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
