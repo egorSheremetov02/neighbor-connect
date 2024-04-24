@@ -16,6 +16,3 @@ SQLAlchemy = "^2.0.29"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-app = 'app.main:run'
