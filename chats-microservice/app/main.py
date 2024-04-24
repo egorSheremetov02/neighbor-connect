@@ -5,11 +5,26 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.post("/chats")
+def create_chat():
+    return
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.put("/chats")
+def edit_chat_data():
+    return
+
+
+@app.delete("/chats")
+def delete_chat():
+    return
+
+
+@app.post("/chats/{chat_id}")
+def send_message(chat_id: int):
+    return
+
+
+@app.get("/chats/{chat_id}")
+def list_messages(chat_id: int):
+    return
