@@ -1,35 +1,35 @@
 from typing import Union
 
 from fastapi import APIRouter, Depends, HTTPException
-from app.models.chats import (CreateChatRequest, CreateChatResponse,
-                           EditChatDataRequest, EditChatDataResponse,
-                           DeleteChatRequest, DeleteChatResponse,
-                           SendMessageRequest, SendMessageResponse,
-                           ListMessagesRequest, ListMessagesResponse)
+from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
+                                  EditChatDataRequest, EditChatDataResponse,
+                                  DeleteChatRequest, DeleteChatResponse,
+                                  SendMessageRequest, SendMessageResponse,
+                                  ListMessagesRequest, ListMessagesResponse)
 
-router = APIRouter()
+chats_router = APIRouter()
 
 
-@router.post("/chats")
+@chats_router.post("/")
 def create_chat(request: CreateChatRequest) -> CreateChatResponse:
     return
 
 
-@router.put("/chats")
+@chats_router.put("/")
 def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
     return
 
 
-@router.delete("/chats")
+@chats_router.delete("/")
 def delete_chat(request: DeleteChatRequest) -> DeleteChatResponse:
     return
 
 
-@router.post("/chats/{chat_id}")
+@chats_router.post("/{chat_id}")
 def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageResponse:
     return
 
 
-@router.get("/chats/{chat_id}")
+@chats_router.get("/{chat_id}")
 def list_messages(chat_id: int, request: ListMessagesRequest) -> ListMessagesResponse:
     return
