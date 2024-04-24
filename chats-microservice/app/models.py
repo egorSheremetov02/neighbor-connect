@@ -4,17 +4,17 @@ from datetime import datetime
 
 class Message(BaseModel):
     content: str
-    image_id: int | None
+    image_id: int | None = None
     author_id: int
     author_name: str
-    created_at: datetime | None
+    created_at: datetime | None = None
 
 
 class CreateChatRequest(BaseModel):
     name: str
     description: int
     tags: list[str]
-    image_id: int | None
+    image_id: int | None = None
     users: list[int]
 
 
@@ -28,7 +28,7 @@ class EditChatDataRequest(BaseModel):
     name: str
     description: int
     tags: list[str]
-    image_id: int | None
+    image_id: int | None = None
     users: list[int]
     admin_users: list[int]
 
@@ -46,14 +46,14 @@ class DeleteChatResponse(BaseModel):
 
 class SendMessageRequest(BaseModel):
     content: str
-    image_id: int | None
+    image_id: int | None = None
 
 class SendMessageResponse(BaseModel):
     pass
 
 class ListMessagesRequest(BaseModel):
-    page_id: int | None
+    page_id: int | None = None
 
 class ListMessagesResponse(BaseModel):
     messages: list[Message]
-    next_page_id: int | None
+    next_page_id: int | None = None
