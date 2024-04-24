@@ -3,5 +3,6 @@
 ``` 
 poetry install
 
-poetry run app
+poetry run uvicorn app.main:app
+
 ```
