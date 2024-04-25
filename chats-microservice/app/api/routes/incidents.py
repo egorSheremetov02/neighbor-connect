@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.api_models.chats import (ListIncidentsRequest, ListIncidentsResponse,
+from app.api_models.incidents import (ListIncidentsRequest, ListIncidentsResponse,
                                   CreateIncidentRequest, CreateIncidentResponse,
                                   DeleteIncidentRequest, DeleteIncidentResponse,
                                   EditIncidentDataRequest, EditIncidentDataResponse,
@@ -91,7 +91,6 @@ def delete_incident(incident_id: int, request: DeleteIncidentRequest) -> DeleteI
 @incidents_router.put("/{incident_id}")
 def edit_incident_data(incident_id: int, request: EditIncidentDataRequest) -> EditIncidentDataResponse:
     sender_id = get_current_user_id()
-
     check_user_account_status(sender_id)
 
     if len(request.title) == 0:
@@ -117,6 +116,24 @@ def edit_incident_data(incident_id: int, request: EditIncidentDataRequest) -> Ed
         return EditIncidentDataResponse()
 
 
-@incidents_router.post("/authorize")
-def authorize_incident(request: AuthorizeIncidentRequest) -> AuthorizeIncidentResponse:
-    pass
+@incidents_router.post("/{incident_id}/authorize")
+def authorize_incident(incident_id: int, request: AuthorizeIncidentRequest) -> AuthorizeIncidentResponse:
+    sender_id = get_current_user_id()
+    check_user_account_status(sender_id)
+
+    with SessionLocal() as session:
+        with session.begin():
+            incident = session.query(Incident).filter_by(id=incident_id).first()
+
+            if incident is None:
+                raise HTTPException(404, f'Incident with id {incident_id} does not exist')
+            
+            if incident.author_id != sender_id:
+                raise HTTPException(403, f'User doesn\'t have permission to delete this incident')
+
+            if request.status not in ['verified', 'rejected']:
+                raise HTTPException(400, f'Invalid status')
+
+            incident.status = request.status
+
+        return AuthorizeIncidentResponse()

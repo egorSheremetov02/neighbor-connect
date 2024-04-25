@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 from app.api_models.chats import Message as APIMessage
 from app.core.db import DBBase
 
-from chats import User
+from app.db_models.chats import User
 
 
 class Incident(DBBase):
