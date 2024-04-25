@@ -45,6 +45,11 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
 
     with SessionLocal() as session:
         with session.begin():
+            sender = session.query(User).filter_by(id=sender_id).first()
+
+            if sender is None:
+                raise HTTPException(400, f'User with id {sender_id} does not exist')
+
             tags = []
             for tag in set(request.tags):
                 tag_object = session.query(Tag).filter_by(name=tag).first()
@@ -56,7 +61,8 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
             chat = Chat(name=request.name,
                         description=request.description,
                         tags=tags,
-                        image_id=request.image_id)
+                        image_id=request.image_id,
+                        admins=[sender])
 
             users = session.query(User).filter(User.id.in_(request.users)).all()
             chat.users = [user for user in users]
