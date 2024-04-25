@@ -4,12 +4,15 @@ from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   DeleteChatRequest, DeleteChatResponse,
                                   SendMessageRequest, SendMessageResponse,
                                   ListMessagesRequest, ListMessagesResponse)
+import logging
+
 from app.db_models.chats import Chat, Tag, User
 from app.core.db import SessionLocal
 from app.api.util import get_current_user_id, validate_tags, check_user_permission, check_image_exists
 from fastapi import HTTPException
 
 chats_router = APIRouter()
+logger = logging.getLogger(__name__)
 
 MAX_CHAT_NAME_LENGTH = 64
 MAX_CHAT_DESCRIPTION_LENGTH = 258
@@ -58,13 +61,13 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
                         )
 
             users = session.query(User).filter(User.id.in_(request.users)).all()
-
-            if len(users) != request.users:
-                fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
-                print(f'Users with ids: {fake_users} do not exist')
-
             chat.users = [user for user in users]
             session.add(chat)
+
+        if len(users) != request.users:
+            fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
+            logger.warning(f'User {sender_id} tried create chat with non-existing users {fake_users}, chat_id: {chat.id}')
+
         return CreateChatResponse(chat_id=chat.id)
 
 
