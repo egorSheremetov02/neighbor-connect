@@ -22,7 +22,10 @@ def check_user_account_status(user_id: int) -> None:
     with SessionLocal() as session:
         with session.begin():
             user = session.query(User).filter_by(id=user_id).first()
-            if user is None or user_id == -1:
+            if user is None:
+                raise HTTPException(403, f'User is not logged in / does not exist')
+
+            if user_id == -1:
                 raise HTTPException(403, f'User does not have permission to create chats')
 
 

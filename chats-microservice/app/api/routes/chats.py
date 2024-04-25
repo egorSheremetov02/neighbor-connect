@@ -112,7 +112,7 @@ def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageRespon
                 raise HTTPException(400, f'User with id {sender_id} does not exist')
 
             if sender not in chat.users:
-                raise HTTPException(403, f'User {sender_id.id} is not member of chat {chat.id}')
+                raise HTTPException(403, f'User {sender_id} is not member of chat {chat.id}')
 
             message = Message(
                 content=request.content,
