@@ -6,6 +6,8 @@ import Incidents from './Pages/Incidents';
 import Chats from './Pages/Chats/';
 import Offers from './Pages/Offers';
 import { Button } from "@mui/material";
+import Admin from './Pages/admin/AdminPage';
+import RegistrationPage from './Pages/RegistrationPage/RegistrationPage';
 
 
 const App = () => {
@@ -15,6 +17,8 @@ const App = () => {
     switch (activeComponent) {
       case 'login':
         return <LoginPage />;
+      case 'register':
+        return <RegistrationPage />;
       case 'profile':
         return <Profile />;
       case 'chats':
@@ -23,6 +27,8 @@ const App = () => {
         return <Incidents />;
       case 'offers':
         return <Offers />;
+      case 'admin':
+        return <Admin />;
       default:
         return null;
     }
@@ -36,11 +42,13 @@ const App = () => {
       <div style={{ position: 'relative' }}>
         <Container>
           <div className="mb-10 mt-10 flex justify-center items-end space-x-3 sm:space-x-2 sm:flex-wrap sm:space-y-2">
+            <Button variant="outlined" style={{backgroundColor: activeComponent === 'register' ? 'blue' : 'transparent', color: activeComponent === 'register' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('register')} sx={{ width: '100px', height: '40px' }}>Register</Button>
             <Button variant="outlined" style={{backgroundColor: activeComponent === 'login' ? 'blue' : 'transparent', color: activeComponent === 'login' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('login')} sx={{ width: '100px', height: '40px' }}>Login</Button>
             <Button variant="outlined" style={{backgroundColor: activeComponent === 'profile' ? 'blue' : 'transparent', color: activeComponent === 'profile' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('profile')} sx={{ width: '100px', height: '40px' }}>Profile</Button>
             <Button variant="outlined" style={{backgroundColor: activeComponent === 'chats' ? 'blue' : 'transparent', color: activeComponent === 'chats' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('chats')} sx={{ width: '100px', height: '40px' }}>Chats</Button>
             <Button variant="outlined" style={{backgroundColor: activeComponent === 'incidents' ? 'blue' : 'transparent', color: activeComponent === 'incidents' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('incidents')} sx={{ width: '100px', height: '40px' }}>Incidents</Button>
             <Button variant="outlined" style={{backgroundColor: activeComponent === 'offers' ? 'blue' : 'transparent', color: activeComponent === 'offers' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('offers')} sx={{ width: '100px', height: '40px' }}>Offers</Button>
+            <Button variant="outlined" style={{backgroundColor: activeComponent === 'admin' ? 'blue' : 'transparent', color: activeComponent === 'admin' ? 'white' : '#1976d2' }} onClick={() => setActiveComponent('admin')} sx={{ width: '100px', height: '40px' }}>Admin</Button>
           </div>
           {renderComponent()}
         </Container>
