@@ -14,8 +14,8 @@ class CreateChatRequest(BaseModel):
     name: str
     description: str
     tags: list[str]
-    # image_id: int | None = None TODO
-    # users: list[int]
+    image_id: int | None = None
+    users: list[int]
 
 
 class CreateChatResponse(BaseModel):
