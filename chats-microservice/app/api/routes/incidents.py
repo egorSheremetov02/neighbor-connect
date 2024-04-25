@@ -44,7 +44,27 @@ def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
 
 @incidents_router.get("/")
 def list_incidents(request: ListIncidentsRequest) -> ListIncidentsResponse:
-    pass
+    sender_id = get_current_user_id()
+    check_user_account_status(sender_id)
+
+    with SessionLocal() as session:
+        with session.begin():
+            incidents = session.query(Incident).all()
+            if not incidents:
+                raise HTTPException(status_code=404, detail="No incidents found")
+            
+            def to_pydantic(incident: Incident) -> APIIncident:
+                return APIIncident(
+                    id=incident.id,
+                    title=incident.title,
+                    description=incident.description,
+                    author_id=incident.author_id,
+                    status=incident.status,
+                    created_at=incident.created_at,
+                    updated_at=incident.updated_at
+                )
+            
+            return ListIncidentsResponse(incidents=[to_pydantic(incident) for incident in incidents])        
 
 
 @incidents_router.delete("/{incident_id}")
