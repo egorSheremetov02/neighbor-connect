@@ -12,10 +12,6 @@ class Incident(BaseModel):
     updated_up: datetime
 
 
-class ListIncidentsRequest(BaseModel):
-    pass
-
-
 class ListIncidentsResponse(BaseModel):
     incidents: list[Incident]
 

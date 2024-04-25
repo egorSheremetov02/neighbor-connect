@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.api_models.incidents import (ListIncidentsRequest, ListIncidentsResponse,
+from app.api_models.incidents import (Incident as APIIncident, ListIncidentsResponse,
                                   CreateIncidentRequest, CreateIncidentResponse,
                                   DeleteIncidentRequest, DeleteIncidentResponse,
                                   EditIncidentDataRequest, EditIncidentDataResponse,
-                                  Incident as APIIncident, AuthorizeIncidentRequest, 
-                                  AuthorizeIncidentResponse)
+                                  AuthorizeIncidentRequest, AuthorizeIncidentResponse)
 import logging, sqlalchemy
 
 from app.db_models.chats import User
@@ -43,7 +42,7 @@ def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
 
 
 @incidents_router.get("/")
-def list_incidents(request: ListIncidentsRequest) -> ListIncidentsResponse:
+def list_incidents() -> ListIncidentsResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
 
