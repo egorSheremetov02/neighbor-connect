@@ -3,7 +3,13 @@ from datetime import datetime
 
 
 class Incident(BaseModel):
-    pass
+    id: int 
+    title: str 
+    description: str 
+    author_id: int 
+    status: str 
+    created_at: datetime 
+    updated_up: datetime
 
 
 class ListIncidentsRequest(BaseModel):
@@ -15,11 +21,14 @@ class ListIncidentsResponse(BaseModel):
 
 
 class CreateIncidentRequest(BaseModel):
-    pass
+    title: str
+    description: str 
+    author_id: int 
+
 
 
 class CreateIncidentResponse(BaseModel):
-    pass
+    id: int 
 
 
 class DeleteIncidentRequest(BaseModel):
@@ -31,7 +40,9 @@ class DeleteIncidentResponse(BaseModel):
 
 
 class EditIncidentDataRequest(BaseModel):
-    pass
+    title: str
+    description: str 
+    author_id: int 
 
 
 class EditIncidentDataResponse(BaseModel):
@@ -39,7 +50,7 @@ class EditIncidentDataResponse(BaseModel):
 
 
 class AuthorizeIncidentRequest(BaseModel):
-    pass
+    status: str
 
 
 class AuthorizeIncidentResponse(BaseModel):
