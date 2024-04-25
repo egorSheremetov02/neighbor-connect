@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, UniqueConstraint, asc
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-
+from app.api_models.chats import Message as APIMessage
 from app.core.db import DBBase
 
 
@@ -34,6 +34,7 @@ user_chat_administration_association = Table(
 class User(DBBase):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, default="Test user", nullable=False)
     chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
     chats_in_administration: Mapped[List["Chat"]] = relationship(secondary=user_chat_administration_association, back_populates="admins")
 
@@ -44,8 +45,10 @@ class Message(DBBase):
     content = Column(String, nullable=False)
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    author: Mapped["User"] = relationship()
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
+
 
 
 class Tag(DBBase):
@@ -63,7 +66,7 @@ class Chat(DBBase):
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
     users: Mapped[List["User"]] = relationship(secondary=user_chat_association, back_populates="chats")
     admins: Mapped[List["User"]] = relationship(secondary=user_chat_administration_association, back_populates="chats_in_administration")
-    messages: Mapped[List["Message"]] = relationship()
+    messages: Mapped[List["Message"]] = relationship(order_by="asc(Message.created_at)")
 
 
 
