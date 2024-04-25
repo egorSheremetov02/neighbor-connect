@@ -11,7 +11,7 @@ from chats import User
 
 class Incident(DBBase):
     __tablename__ = "incidents"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     author_id = Mapped[int] = mapped_column(ForeignKey("users.id"))
