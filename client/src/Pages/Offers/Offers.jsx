@@ -1,6 +1,9 @@
 import React, { useState, useRef } from "react";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { Modal } from "react-responsive-modal";
+import AddOffer from "./AddOffer";
+import { Button } from "@mui/material";
 
 export default function Offers() {
   const [likes, setLikes] = useState([13, 21, 3]); // Initial likes for each offer
@@ -9,6 +12,10 @@ export default function Offers() {
   const [newComment, setNewComment] = useState(""); // State to store the newly typed comment
   const [newOffer, setNewOffer] = useState(null); // State to store the newly created offer
   const newOfferRef = useRef(null); // Ref for the new offer section
+
+  const [open, setOpen] = useState(false);
+  const onOpenModal = () => setOpen(true);
+  const onCloseModal = () => setOpen(false);
 
   // Handle like button click
   const handleLikeClick = (index) => {
@@ -93,7 +100,26 @@ export default function Offers() {
 
   // Render existing offers
   return (
+    
     <div className="container mx-auto px-2 pt-8">
+      <Modal open={open} onClose={onCloseModal} center>
+      <AddOffer />
+
+      </Modal>
+
+      <div className="flex my-4 justify-end">
+        <Button
+          variant="outlined"
+          style={{
+            backgroundColor: "transparent",
+            color: "#1976d2",
+          }}
+          onClick={onOpenModal}
+          sx={{ width: "150px", height: "40px" }}
+        >
+          Add Offers
+        </Button>
+      </div>
       <div className="max-w-lg mx-auto">
         <h1 className="text-3xl font-bold mb-4">New Offers</h1>
 
