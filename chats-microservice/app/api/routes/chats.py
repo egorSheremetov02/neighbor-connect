@@ -3,8 +3,8 @@ from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   EditChatDataRequest, EditChatDataResponse,
                                   DeleteChatRequest, DeleteChatResponse,
                                   SendMessageRequest, SendMessageResponse,
-                                  ListMessagesRequest, ListMessagesResponse)
-import logging
+                                  Message as APIMessage, ListMessagesResponse)
+import logging, sqlalchemy
 
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
@@ -18,6 +18,7 @@ MAX_CHAT_NAME_LENGTH = 64
 MAX_CHAT_DESCRIPTION_LENGTH = 258
 MAX_TAGS_AMOUNT = 7
 MAX_INVITED_USERS = 1000
+
 
 @chats_router.post("/")
 def create_chat(request: CreateChatRequest) -> CreateChatResponse:
@@ -118,7 +119,8 @@ def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageRespon
                 content=request.content,
                 image_id=request.image_id,
                 author_id=sender_id,
-                chat_id=chat_id
+                chat_id=chat_id,
+                author=sender
             )
 
             session.add(message)
@@ -126,7 +128,49 @@ def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageRespon
     return SendMessageResponse()
 
 
+PAGE_SIZE = 5
+
 
 @chats_router.get("/{chat_id}")
-def list_messages(chat_id: int, request: ListMessagesRequest) -> ListMessagesResponse:
-    return
+def list_messages(chat_id: int, page_id: int | None = None) -> ListMessagesResponse:
+    sender_id = get_current_user_id()
+    check_user_account_status(sender_id)
+
+    with SessionLocal() as session:
+        with session.begin():
+            chat = session.query(Chat).filter_by(id=chat_id).first()
+            if chat is None:
+                raise HTTPException(404, f'Chat with id {chat_id} does not exist')
+
+            sender = session.query(User).filter_by(id=sender_id).first()
+
+            if sender is None:
+                raise HTTPException(400, f'User with id {sender_id} does not exist')
+
+            if sender not in chat.users:
+                raise HTTPException(403, f'User {sender_id} does not have access to this chat')
+
+            n = len(chat.messages)
+
+            if n <= 0:
+                return ListMessagesResponse(messages=[], next_page_id=None)
+
+            pages_amount = (n + PAGE_SIZE - 1) // PAGE_SIZE
+            if page_id is None:
+                page_id = max(pages_amount - 1, 0)
+
+            messages = session.query(Message).filter(Message.chat_id == chat.id).order_by(
+                sqlalchemy.asc(Message.created_at)).offset(page_id * PAGE_SIZE).limit(PAGE_SIZE).all()
+            next_page_id = None if page_id + 1 >= pages_amount else page_id + 1
+
+            def to_pydantic(message: Message) -> APIMessage:
+                return APIMessage(
+                    content=message.content,
+                    image_id=message.image_id,
+                    author_id=message.author_id,
+                    author_name=message.author.name,
+                    created_at=message.created_at
+                )
+
+            return ListMessagesResponse(messages=list(map(lambda m: to_pydantic(m), messages)),
+                                        next_page_id=next_page_id)
