@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from typing import Optional
 
 from app.core.db import DBBase
 
@@ -18,8 +17,9 @@ user_chat_association = Table(
 tag_chat_association = Table(
     "tag_chat_association_table",
     DBBase.metadata,
-    Column("tag_name", ForeignKey("tags.name"), primary_key=True),
-    Column("chat_id", ForeignKey("chats.id"), primary_key=True),
+    Column("tag_name", ForeignKey("tags.name")),
+    Column("chat_id", ForeignKey("chats.id")),
+    UniqueConstraint('tag_name', 'chat_id', name='unique_tag_chat')
 )
 
 class User(DBBase):

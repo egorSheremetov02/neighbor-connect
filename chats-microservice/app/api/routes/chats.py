@@ -43,11 +43,10 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
     if request.image_id is not None:
         check_image_exists(request.image_id)
 
-
     with SessionLocal() as session:
         with session.begin():
             tags = []
-            for tag in request.tags:
+            for tag in set(request.tags):
                 tag_object = session.query(Tag).filter_by(name=tag).first()
                 if not tag_object:
                     tag_object = Tag(name=tag)
@@ -57,14 +56,13 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
             chat = Chat(name=request.name,
                         description=request.description,
                         tags=tags,
-                        image_id=request.image_id
-                        )
+                        image_id=request.image_id)
 
             users = session.query(User).filter(User.id.in_(request.users)).all()
             chat.users = [user for user in users]
             session.add(chat)
 
-        if len(users) != request.users:
+        if len(users) != len(request.users):
             fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
             logger.warning(f'User {sender_id} tried create chat with non-existing users {fake_users}, chat_id: {chat.id}')
 
