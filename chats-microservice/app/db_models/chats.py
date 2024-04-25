@@ -8,9 +8,24 @@ from typing import Optional
 from app.core.db import DBBase
 
 
+user_chat_association = Table(
+    "user_chat_association_table",
+    DBBase.metadata,
+    Column("user_id", ForeignKey("users.id")),
+    Column("chat_id", ForeignKey("chats.id")),
+)
+
+tag_chat_association = Table(
+    "tag_chat_association_table",
+    DBBase.metadata,
+    Column("tag_name", ForeignKey("tags.name"), primary_key=True),
+    Column("chat_id", ForeignKey("chats.id"), primary_key=True),
+)
+
 class User(DBBase):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
 
 
 class Message(DBBase):
@@ -22,35 +37,24 @@ class Message(DBBase):
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
 
 
-tag_chat_association_table = Table(
-    "tag_chat_association_table",
-    DBBase.metadata,
-    Column("tag_name", ForeignKey("tags.name")),
-    Column("chat_id", ForeignKey("chats.id")),
-)
-
-
 class Tag(DBBase):
     __tablename__ = "tags"
-
-    name: Mapped[str] = mapped_column(primary_key=True)
-    # name = Column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(primary_key=True, index=True)
 
 
 class Chat(DBBase):
     __tablename__ = "chats"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    tags: Mapped[List[Tag]] = relationship(secondary=tag_chat_association_table)
+    tags: Mapped[List[Tag]] = relationship(secondary=tag_chat_association)
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
-
+    users: Mapped[List["User"]] = relationship(secondary=user_chat_association, back_populates="chats")
 
     # users: list[int]
 
 
 class Image(DBBase):
     __tablename__ = "images"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)

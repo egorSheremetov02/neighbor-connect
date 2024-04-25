@@ -4,7 +4,7 @@ from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   DeleteChatRequest, DeleteChatResponse,
                                   SendMessageRequest, SendMessageResponse,
                                   ListMessagesRequest, ListMessagesResponse)
-from app.db_models.chats import Chat, Tag
+from app.db_models.chats import Chat, Tag, User
 from app.core.db import SessionLocal
 from app.api.util import get_current_user_id, validate_tags, check_user_permission, check_image_exists
 from fastapi import HTTPException
@@ -56,6 +56,14 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
                         tags=tags,
                         image_id=request.image_id
                         )
+
+            users = session.query(User).filter(User.id.in_(request.users)).all()
+
+            if len(users) != request.users:
+                fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
+                print(f'Users with ids: {fake_users} do not exist')
+
+            chat.users = [user for user in users]
             session.add(chat)
         return CreateChatResponse(chat_id=chat.id)
 
