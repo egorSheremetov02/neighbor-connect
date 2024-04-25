@@ -18,7 +18,7 @@ def validate_tags(tags: list[str]) -> None:
             raise HTTPException(400, f'Tag \'{tag}\' does not match the format')
 
 
-def check_user_permission(user_id: int) -> None:
+def check_user_account_status(user_id: int) -> None:
     with SessionLocal() as session:
         with session.begin():
             user = session.query(User).filter_by(id=user_id).first()

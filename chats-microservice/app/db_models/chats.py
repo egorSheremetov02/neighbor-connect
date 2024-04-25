@@ -42,9 +42,10 @@ class Message(DBBase):
     __tablename__ = "messages"
     id = Column(Integer, primary_key=True)
     content = Column(String, nullable=False)
-    image_id: int = Column(Integer, nullable=True)
-    author_id: int = Column(Integer)
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
 
 
 class Tag(DBBase):
@@ -62,7 +63,8 @@ class Chat(DBBase):
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
     users: Mapped[List["User"]] = relationship(secondary=user_chat_association, back_populates="chats")
     admins: Mapped[List["User"]] = relationship(secondary=user_chat_administration_association, back_populates="chats_in_administration")
-    # users: list[int]
+    messages: Mapped[List["Message"]] = relationship()
+
 
 
 class Image(DBBase):
