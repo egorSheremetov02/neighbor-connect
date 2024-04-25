@@ -3,8 +3,8 @@ import { useTheme, useMediaQuery, AppBar, Toolbar, Button, Typography, Box, Icon
 import LoginPage from './Pages/LoginPage/LoginPage';
 import Profile from './Pages/Profile/Profile';
 import Incidents from './Pages/Incidents';
-import Chats from './Pages/Chats/';
-import Offers from './Pages/Offers';
+import Chats from './Pages/Chats/Chats';
+import Offers from './Pages/Offers/Offers';
 import 'react-responsive-modal/styles.css';
 
 
@@ -26,18 +26,13 @@ const App = () => {
   const renderComponent = () => {
     switch (activeComponent) {
       case "login":
-      case "login":
         return <LoginPage />;
-      case "profile":
       case "profile":
         return <Profile />;
       case "chats":
-      case "chats":
         return <Chats />;
       case "incidents":
-      case "incidents":
         return <Incidents />;
-      case "offers":
       case "offers":
         return <Offers />;
 
@@ -55,7 +50,6 @@ const App = () => {
   ];
 
   return (
-    <Router>
       <div>
         <AppBar position="static" color="default">
           <Toolbar>
@@ -125,7 +119,6 @@ const App = () => {
         </AppBar>
         <Container>{renderComponent()}</Container>
       </div>
-    </Router>
   );
 };
 

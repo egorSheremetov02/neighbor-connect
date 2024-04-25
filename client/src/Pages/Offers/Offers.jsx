@@ -1,11 +1,6 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
-import Tooltip from "@mui/material/Tooltip";
-import MakingNew from "./MakingNew";
 
 export default function Offers() {
   const [likes, setLikes] = useState([13, 21, 3]); // Initial likes for each offer
@@ -118,13 +113,10 @@ export default function Offers() {
                 alt="Profile Image"
               />
               <div>
-                <Link
-                  to={`/profile/${index % 2 === 0 ? "JohnDoe" : "JaneSmith"}`}
-                >
+                
                   <h2 className="text-lg font-semibold text-blue-600 hover:underline">
                     {index % 2 === 0 ? "John Doe" : "Jane Smith"}
                   </h2>
-                </Link>
               </div>
             </div>
             <p className="text-gray-700 mb-4 border-b-[1px] pb-4">
@@ -203,21 +195,6 @@ export default function Offers() {
         ))}
       </div>
 
-      {/* Floating plus button */}
-      <Tooltip title="New Offer" >
-        <Link to="/new-offer">
-          <Fab
-            color="primary"
-            aria-label="add"
-            style={{ position: "fixed", bottom: "30px", right: "30px" }}
-            onClick={scrollToBottom} // Call scrollToBottom function onClick
-          >
-            <AddIcon />
-          </Fab>
-        </Link>
-      </Tooltip>
-      <MakingNew/>
-      
     </div>
   );
 }
