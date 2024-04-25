@@ -4,8 +4,10 @@ from app.api.main import api_router
 # importing db_models initializes all classes, so that when we `create_all`, it creates all tables
 from app.db_models.chats import *
 from app.core.db import DBBase, engine
+from app.init_db import init_db
 
 DBBase.metadata.create_all(engine)
+init_db()
 app = FastAPI()
 app.include_router(api_router)
 
