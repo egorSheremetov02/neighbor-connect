@@ -3,6 +3,7 @@ from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from typing import Optional
 
 from app.core.db import DBBase
 
@@ -43,5 +44,13 @@ class Chat(DBBase):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     tags: Mapped[List[Tag]] = relationship(secondary=tag_chat_association_table)
-    # image_id = Column(Integer, nullable=True) TODO
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
+
+
     # users: list[int]
+
+
+class Image(DBBase):
+    __tablename__ = "images"
+
+    id: Mapped[int] = mapped_column(primary_key=True)

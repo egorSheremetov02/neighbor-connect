@@ -1,5 +1,3 @@
-from typing import Union
-
 from fastapi import APIRouter, Depends, HTTPException
 from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   EditChatDataRequest, EditChatDataResponse,
@@ -8,12 +6,41 @@ from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   ListMessagesRequest, ListMessagesResponse)
 from app.db_models.chats import Chat, Tag
 from app.core.db import SessionLocal
+from app.api.util import get_current_user_id, validate_tags, check_user_permission, check_image_exists
+from fastapi import HTTPException
 
 chats_router = APIRouter()
 
+MAX_CHAT_NAME_LENGTH = 64
+MAX_CHAT_DESCRIPTION_LENGTH = 258
+MAX_TAGS_AMOUNT = 7
+MAX_INVITED_USERS = 1000
 
 @chats_router.post("/")
 def create_chat(request: CreateChatRequest) -> CreateChatResponse:
+    sender_id = get_current_user_id()
+
+    check_user_permission(sender_id)
+
+    if len(request.name) == 0 or len(request.name) > MAX_CHAT_NAME_LENGTH:
+        raise HTTPException(400, f'Name length of chat should be in range [1 .. {MAX_CHAT_NAME_LENGTH}]')
+    if len(request.description) == 0 or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH:
+        raise HTTPException(400, f'Description length of chat should be in range [1 .. {MAX_CHAT_DESCRIPTION_LENGTH}]')
+    if len(request.tags) >= MAX_TAGS_AMOUNT:
+        raise HTTPException(400, f'Amount of tags should not exceed {MAX_TAGS_AMOUNT}')
+
+    validate_tags(request.tags)
+
+    if sender_id not in request.users:
+        raise HTTPException(400, f"List of users does not contain creator's id")
+
+    if len(request.users) > MAX_INVITED_USERS:
+        raise HTTPException(400, f"Amount of invited users should not exceed {MAX_INVITED_USERS}")
+
+    if request.image_id is not None:
+        check_image_exists(request.image_id)
+
+
     with SessionLocal() as session:
         with session.begin():
             tags = []
@@ -26,8 +53,8 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
 
             chat = Chat(name=request.name,
                         description=request.description,
-                        tags=tags
-                        # image_url=request.image_url TODO
+                        tags=tags,
+                        image_id=request.image_id
                         )
             session.add(chat)
         return CreateChatResponse(chat_id=chat.id)
