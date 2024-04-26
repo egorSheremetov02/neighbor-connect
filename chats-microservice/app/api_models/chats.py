@@ -25,7 +25,7 @@ class CreateChatResponse(BaseModel):
 class EditChatDataRequest(BaseModel):
     chat_id: int
     name: str
-    description: int
+    description: str
     tags: list[str]
     image_id: int | None = None
     users: list[int]
@@ -33,7 +33,7 @@ class EditChatDataRequest(BaseModel):
 
 
 class EditChatDataResponse(BaseModel):
-    pass
+    chat_id: int
 
 
 class DeleteChatRequest(BaseModel):
@@ -41,7 +41,7 @@ class DeleteChatRequest(BaseModel):
 
 
 class DeleteChatResponse(BaseModel):
-    pass
+    deleted_chat_id: int
 
 
 class SendMessageRequest(BaseModel):
