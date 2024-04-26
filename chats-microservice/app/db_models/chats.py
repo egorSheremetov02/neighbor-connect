@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, UniqueConstraint, asc
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy.orm import relationship, mapped_column, Mapped, backref
 from app.api_models.chats import Message as APIMessage
 from app.core.db import DBBase
 
@@ -47,8 +47,7 @@ class Message(DBBase):
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     author: Mapped["User"] = relationship()
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
-    chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
-
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"))
 
 
 class Tag(DBBase):

@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.api.constants import MAX_INVITED_USERS
 from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   EditChatDataRequest, EditChatDataResponse,
                                   DeleteChatRequest, DeleteChatResponse,
@@ -8,16 +10,12 @@ import logging, sqlalchemy
 
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
-from app.api.util import get_current_user_id, validate_tags, check_user_account_status, check_image_exists
+from app.api.util import get_current_user_id, validate_tags, check_user_account_status, check_image_exists, \
+    validate_chat_request
 from fastapi import HTTPException
 
 chats_router = APIRouter()
 logger = logging.getLogger(__name__)
-
-MAX_CHAT_NAME_LENGTH = 64
-MAX_CHAT_DESCRIPTION_LENGTH = 258
-MAX_TAGS_AMOUNT = 7
-MAX_INVITED_USERS = 1000
 
 
 @chats_router.post("/")
@@ -25,14 +23,7 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
     sender_id = get_current_user_id()
 
     check_user_account_status(sender_id)
-
-    if len(request.name) == 0 or len(request.name) > MAX_CHAT_NAME_LENGTH:
-        raise HTTPException(400, f'Name length of chat should be in range [1 .. {MAX_CHAT_NAME_LENGTH}]')
-    if len(request.description) == 0 or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH:
-        raise HTTPException(400, f'Description length of chat should be in range [1 .. {MAX_CHAT_DESCRIPTION_LENGTH}]')
-    if len(request.tags) >= MAX_TAGS_AMOUNT:
-        raise HTTPException(400, f'Amount of tags should not exceed {MAX_TAGS_AMOUNT}')
-
+    validate_chat_request(request)
     validate_tags(request.tags)
 
     if sender_id not in request.users:
@@ -79,12 +70,72 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
 
 @chats_router.put("/")
 def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
-    return
+    sender_id = get_current_user_id()
+
+    check_user_account_status(sender_id)
+    validate_chat_request(request)
+    validate_tags(request.tags)
+
+    if request.image_id is not None:
+        check_image_exists(request.image_id)
+
+    with SessionLocal() as session:
+        with session.begin():
+            chat = session.query(Chat).filter_by(id=request.chat_id).first()
+
+            if not chat:
+                raise HTTPException(400, f'Chat with id {request.chat_id} does not exist')
+
+            if sender_id not in [admin.id for admin in chat.admins]:
+                raise HTTPException(403, f'User {sender_id} does not have permission to edit this chat')
+
+            tags = []
+            for tag in set(request.tags):
+                tag_object = session.query(Tag).filter_by(name=tag).first()
+                if not tag_object:
+                    tag_object = Tag(name=tag)
+                    session.add(tag_object)
+                tags.append(tag_object)
+
+            chat.name = request.name
+            chat.description = request.description
+            chat.tags = tags
+            chat.image_id = request.image_id
+
+            users = session.query(User).filter(User.id.in_(request.users)).all()
+            chat.users = [user for user in users]
+
+            admins = session.query(User).filter(User.id.in_(request.admin_users)).all()
+            chat.admins = [user for user in admins]
+
+        if len(users) != len(request.users):
+            fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
+            logger.warning(
+                f'User {sender_id} tried edit chat with non-existing users {fake_users}, chat_id: {chat.id}'
+            )
+
+        return EditChatDataResponse(chat_id=chat.id)
 
 
 @chats_router.delete("/")
 def delete_chat(request: DeleteChatRequest) -> DeleteChatResponse:
-    return
+    sender_id = get_current_user_id()
+
+    check_user_account_status(sender_id)
+
+    with SessionLocal() as session:
+        with session.begin():
+            chat = session.query(Chat).filter_by(id=request.chat_id).first()
+
+            if not chat:
+                raise HTTPException(400, f'Chat with id {request.chat_id} does not exist')
+
+            if sender_id not in [admin.id for admin in chat.admins]:
+                raise HTTPException(403, f'User {sender_id} does not have permission to delete this chat')
+
+            session.delete(chat)
+
+        return DeleteChatResponse(deleted_chat_id=request.chat_id)
 
 
 MAX_MESSAGE_CONTENT_LENGTH = 5000

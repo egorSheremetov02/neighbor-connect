@@ -1,5 +1,7 @@
 import re
 from fastapi import HTTPException
+
+from app.api.constants import MAX_CHAT_NAME_LENGTH, MAX_TAGS_AMOUNT, MAX_CHAT_DESCRIPTION_LENGTH
 from app.core.db import SessionLocal
 from app.db_models.chats import Chat, Tag, User, Image
 
@@ -8,6 +10,15 @@ def get_current_user_id() -> int:
 
 
 MAX_TAG_LENGTH = 64
+
+
+def validate_chat_request(request):
+    if len(request.name) == 0 or len(request.name) > MAX_CHAT_NAME_LENGTH:
+        raise HTTPException(400, f'Name length of chat should be in range [1 .. {MAX_CHAT_NAME_LENGTH}]')
+    if len(request.description) == 0 or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH:
+        raise HTTPException(400, f'Description length of chat should be in range [1 .. {MAX_CHAT_DESCRIPTION_LENGTH}]')
+    if len(request.tags) >= MAX_TAGS_AMOUNT:
+        raise HTTPException(400, f'Amount of tags should not exceed {MAX_TAGS_AMOUNT}')
 
 
 def validate_tags(tags: list[str]) -> None:
