@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { Grid, Button, Box } from "@mui/material";
 import IncidentCard from "./IncidentCard";
-import { Button } from "@mui/material";
 import AddIncidents from "../AddIncidents";
 import { Modal } from "react-responsive-modal";
 
@@ -9,47 +9,36 @@ const Incidents = () => {
 
   const onOpenModal = () => setOpen(true);
   const onCloseModal = () => setOpen(false);
-  // Sample data for the cards
+
+  // Extended sample data for the cards with 6 incidents
   const cardData = [
-    { id: 1, title: "Incident 1" },
-    { id: 2, title: "Incident 2" },
-    { id: 3, title: "Incident 3" },
-    { id: 4, title: "Incident 4" },
+    { id: 1, title: "Water Main Break Floods Downtown" },
+    { id: 2, title: "Power Outage in Suburban Area" },
+    { id: 3, title: "Road Closure Due to Landslide" },
+    { id: 4, title: "Public Transport Delay" },
+    { id: 5, title: "Gas Leak Near School" },
+    { id: 6, title: "Unexpected Street Festival" }
   ];
 
   return (
     <>
       <Modal open={open} onClose={onCloseModal} center>
-      <AddIncidents />
-
+        <AddIncidents />
       </Modal>
 
-      <div className="flex my-4 justify-end">
-        <Button
-          variant="outlined"
-          style={{
-            backgroundColor: "transparent",
-            color: "#1976d2",
-          }}
-          onClick={onOpenModal}
-          sx={{ width: "150px", height: "40px" }}
-        >
-          Add Incidents
+      <Box display="flex" justifyContent="center" sx={{ margin: 3 }}>
+        <Button variant="contained" color="primary" onClick={onOpenModal}>
+          Add Incident
         </Button>
-      </div>
+      </Box>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: "20px",
-        }}
-      >
+      <Grid container spacing={2} justifyContent="center">
         {cardData.map((card) => (
-          <IncidentCard key={card.id} title={card.title} />
+          <Grid item xs={12} sm={6} md={4} key={card.id}>
+            <IncidentCard title={card.title} />
+          </Grid>
         ))}
-      </div>
+      </Grid>
     </>
   );
 };
