@@ -15,16 +15,16 @@ import {
 const columns = [
   { id: "name", label: "Neighbour Name", minWidth: 170 },
   { id: "content", label: "Offer Content", minWidth: 170, align: 'left' },
-  { id: "actions", label: "Actions", maxWidth: 70, align: "right" }
+  { id: "actions", label: "Actions", maxWidth: 100, align: "center" }
 ];
 
 const createData = (name, content) => ({
   name,
   content,
   actions: (
-    <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-      <Button variant="contained" color="success">Approve</Button>
-      <Button variant="contained" color="error">Reject</Button>
+    <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+      <Button variant="contained" color="success" size="small">Approve</Button>
+      <Button variant="contained" color="error" size="small">Reject</Button>
     </div>
   )
 });
@@ -48,7 +48,7 @@ function OfferTable() {
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "auto", boxShadow: "none", border: "1px solid #A7A7A7" }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none", border: "1px solid #A7A7A7" }}>
       <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -59,7 +59,7 @@ function OfferTable() {
                   align={column.align}
                   style={{
                     minWidth: isMobile ? 100 : column.minWidth,
-                    maxWidth: column.maxWidth
+                    maxWidth: isMobile ? (column.maxWidth ? 100 : 'auto') : column.maxWidth
                   }}
                 >
                   {column.label}
