@@ -1,3 +1,105 @@
+# NeighborConnect API documentation
+
+## General info
+
+### Tokens
+
+All authentication is done via [JWT tokens](https://jwt.io/). **Every single** request (except authentication endpoints) should **always** use the Authorization HTTP header with Bearer schema to supply the requester's token. **Every single** endpoint should **always** check the supplied token for validity and return 403 in case the token does not pass the checks.
+
+All tokens used by this system should have the same structure:
+
+```json
+{ 
+  "sub": string, // subject: user id
+  "exp": timestamp, // expiry date
+}
+```
+
+All tokens are signed by the authentication service. Its public key is privately stored in all other services, so that any service can verify the token on its own. These keys should periodically be manually updated for security.
+
+## Authentication endpoints
+
+### Register
+
+Create a new account in the system.
+
+* Endpoint: `POST /register`
+* Request body:
+
+```json
+{
+    "fullName": string,
+    "login": string,
+    "email": string,
+    "password": string,
+    "address": string,
+    "birthday": timestamp (optional),
+    "additionalInfo": string (optional)
+}
+```
+
+* Response: empty (only status code)
+
+* Notes:
+  * take the necessary security precautions when storing the password (hashing, salting, etc.)
+  * return 400 if:
+    * `fullName` is longer than 255 symbols
+    * `password` is shorter than 8 symbols
+  * return 409 if user with same `email` or `login` already exists
+  * in case there is an error, make sure to add a meaningful plaintext error description in response body
+  * return 200 if and only if you have successfully created a new user entry in the database
+  * the client is supposed to proceed to `/login` after creating the account
+
+### Log in
+
+Log into an account in the system. A successful login returns a JWT token.
+
+* Endpoint: `POST /login`
+* Request body:
+
+```json
+{
+    "login": string,
+    "password": string,
+}
+```
+
+* Response body:
+
+```json
+{
+    "token": string,
+}
+```
+
+* Notes:
+  * return 404 if `login` does not belong to a registered user
+  * return 403 if `password` does not match
+  * the token validity is TBD, let it be ~1 week
+
+### Get user data
+
+This endpoint is for internal use between services, for example, for getting a user's email or name.
+
+In order to not disclose user data publicly, this endpoint should only allow requests from whitelisted IP addresses of other app services.
+
+* Endpoint: `GET /users/{user_id}`
+* Request params: empty
+* Response body:
+
+```json
+{
+  "user_id": string,
+  "fullName": string,
+  "email": string,
+  "address": string
+}
+```
+
+* Notes:
+  * return 404 if no user with `user_id` exists
+  * return 403 if requester's IP is not whitelisted
+
 ## Chat endpoints
 
 ### Important notes
@@ -200,3 +302,119 @@ List previous messages from a chat. Use pagination with ~100 messages per page.
 
 * *Implementation notes:*
   * use the user token to get the sender's data
+
+## Incident Endpoints
+
+### List all Incident Posts
+
+Retrieve a list of all incidents in the system.
+
+- Endpoint: `GET /incidents`
+- Request body: empty
+- Response body:
+
+```json
+{
+  "incidents": [
+    {
+      "id": int,
+      "title": string,
+      "description": string,
+      "author_id": int,
+      "status": string,
+      "created_at": timestamp,
+      "updated_at": timestamp
+    }
+    // Other incidents...
+  ]
+}
+```
+
+- Notes:
+  - Possible values for `status`: "pending", "verified", "rejected".
+  - Return 200 with an empty array if there are no incidents.
+
+### Create an Incident
+
+Create a new incident in the system.
+
+- Endpoint: `POST /incidents`
+- Request body:
+
+```json
+{
+  "title": string,
+  "description": string,
+  "author_id": int
+}
+```
+
+- Response body (upon successful creation):
+
+```json
+{
+  "id": int
+}
+```
+
+- Notes:
+  - `author_id` - the identifier of the incident's author.
+  - Return 400 if any of the mandatory fields are missing.
+  - Return 500 in case of an internal server error.
+
+### Edit an Incident
+
+Edit an existing incident.
+
+- Endpoint: `PUT /incidents/{incident_id}`
+- Request body:
+
+```json
+{
+  "title": string,
+  "description": string,
+  "author_id": int
+}
+```
+
+- Response body: empty (only status code)
+
+- Notes:
+  - Return 404 if the incident with the given `incident_id` does not exist.
+  - Return 403 if the user does not have permissions to edit the incident.
+  - Return 400 if any of the mandatory fields are missing.
+  - Return 500 in case of an internal server error.
+
+### Delete an Incident
+
+Delete an incident from the system.
+
+- Endpoint: `DELETE /incidents/{incident_id}`
+- Request body: empty
+- Response body: empty (only status code)
+
+- Notes:
+  - Return 404 if the incident with the given `incident_id` does not exist.
+  - Return 403 if the user does not have permissions to delete the incident.
+  - Return 500 in case of an internal server error.
+
+### Authorize Incidents
+
+Authorize the validity of an incident on behalf of an admin.
+
+- Endpoint: `PUT /incidents/{incident_id}/authorize`
+- Request body:
+
+```json
+{
+  "status": "verified" // or "rejected"
+}
+```
+
+- Response body: empty (only status code)
+
+- Notes:
+  - Return 404 if the incident with the given `incident_id` does not exist.
+  - Return 403 if the user does not have permissions to authorize the incident.
+  - Return 400 if the status is not "verified" or "rejected".
+  - Return 500 in case of an internal server error.
