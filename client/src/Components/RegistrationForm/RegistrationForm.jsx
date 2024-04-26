@@ -1,28 +1,26 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import React from 'react';
+import {
+  Avatar,
+  Button,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Container,
+  CssBaseline,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme();
 
 function Copyright(props) {
   return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {"Copyright © "}
       <Link color="inherit" href="#">
-        NeighborConnect
+      NeighborConnect
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -30,70 +28,56 @@ function Copyright(props) {
   );
 }
 
-const defaultTheme = createTheme();
-
 export default function RegistrationForm() {
-
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    var formData = {
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-      address: data.get("address"),
-      dateOfBirth: data.get("dateOfBirth"),
-      aboutYourself: data.get("aboutYourself"),
-    }
-
-    console.log(formData);
+    const formData = {
+      firstName: data.get('firstName'),
+      lastName: data.get('lastName'),
+      email: data.get('email'),
+      password: data.get('password'),
+      address: data.get('address'),
+      dateOfBirth: data.get('dateOfBirth'),
+      aboutYourself: data.get('aboutYourself'),
+    };
 
     try {
-      let baseUrl = 'http://localhost:3000'; // Please replace with server URL
-      const response = await fetch(`${baseUrl}/register`, {
+      const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log(data);
+        console.log('Registration successful');
         window.location.href = '/login';
       } else {
-        console.error(data.error);
+        console.error('Registration failed');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Network error', error);
     }
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs" className="mt-0">
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Create New Account
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -101,7 +85,6 @@ export default function RegistrationForm() {
               id="firstName"
               label="First Name"
               name="firstName"
-              autoComplete=""
               autoFocus
             />
             <TextField
@@ -111,8 +94,6 @@ export default function RegistrationForm() {
               id="lastName"
               label="Last Name"
               name="lastName"
-              autoComplete=""
-              autoFocus
             />
             <TextField
               margin="normal"
@@ -121,8 +102,7 @@ export default function RegistrationForm() {
               id="email"
               label="Email Address"
               name="email"
-              autoComplete="email"
-              autoFocus
+              type="email"
             />
             <TextField
               margin="normal"
@@ -132,7 +112,6 @@ export default function RegistrationForm() {
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
             />
             <TextField
               margin="normal"
@@ -140,19 +119,16 @@ export default function RegistrationForm() {
               fullWidth
               name="address"
               label="Address"
-              type="text"
               id="address"
-              autoComplete=""
             />
             <TextField
               margin="normal"
               fullWidth
-              defaultValue={""}
               name="dateOfBirth"
               label="Date of Birth"
               type="date"
               id="dateOfBirth"
-              autoComplete="off"
+              InputLabelProps={{ shrink: true }}
             />
             <TextField
               margin="normal"
@@ -161,7 +137,8 @@ export default function RegistrationForm() {
               label="About Yourself"
               type="text"
               id="aboutYourself"
-              autoComplete=""
+              multiline
+              rows={4}
             />
             <Button
               type="submit"
@@ -171,17 +148,19 @@ export default function RegistrationForm() {
             >
               Create Account
             </Button>
-            <div container className="flex space-y-2 flex-col items-center">
-              <div item className="flex justify-between items-center flex-col space-y-1">
-                <Link href="#" variant="body2">
-                  {"Already have an account? Login"}
+            <Grid container justifyContent="center">
+              <Grid item>
+                <Link href="/login" variant="body2">
+                  Already have an account? Sign in
                 </Link>
-              </div>
-            </div>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 6, mb: 4 }} />
+        <Box mt={5}>
+          <Copyright />
+        </Box>
       </Container>
     </ThemeProvider>
-  )
+  );
 }
