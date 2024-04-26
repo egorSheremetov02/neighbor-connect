@@ -1,4 +1,4 @@
-## Chats Microservice
+## Running app
 
 Running application:
 ``` shell
