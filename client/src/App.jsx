@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme, useMediaQuery, AppBar, Toolbar, Button, Typography, Box, IconButton, Menu, MenuItem, Container } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import LoginPage from './Pages/LoginPage/LoginPage';
 import Profile from './Pages/Profile/Profile';
 import Incidents from './Pages/Incidents';
