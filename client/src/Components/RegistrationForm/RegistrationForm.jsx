@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Button,
@@ -15,47 +15,48 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {"Copyright © "}
-      <Link color="inherit" href="#">
-      NeighborConnect
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+function RegistrationForm() {
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-export default function RegistrationForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     const formData = {
-      firstName: data.get('firstName'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-      address: data.get('address'),
-      dateOfBirth: data.get('dateOfBirth'),
-      aboutYourself: data.get('aboutYourself'),
+      fullName: event.target.elements.fullName.value,
+      email: event.target.elements.email.value,
+      login: event.target.elements.login.value,
+      password: event.target.elements.password.value,
+      address: event.target.elements.address.value,
+      birthday: event.target.elements.birthday.value,
+      additionalInfo: event.target.elements.additionalInfo.value,
     };
 
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+      const responseData = await response.json();
+
       if (response.ok) {
-        console.log('Registration successful');
-        window.location.href = '/login';
+        setSuccess(true);
+        setError('');
+        // Redirect to login page after successful registration
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 3000);
       } else {
-        console.error('Registration failed');
+        setSuccess(false);
+        // Handle validation errors
+        if (responseData.detail) {
+          setError(responseData.detail);
+        } else {
+          setError('Registration failed');
+        }
       }
     } catch (error) {
-      console.error('Network error', error);
+      setError('Network error');
     }
   };
 
@@ -82,18 +83,10 @@ export default function RegistrationForm() {
               margin="normal"
               required
               fullWidth
-              id="firstName"
-              label="First Name"
-              name="firstName"
+              id="fullName"
+              label="Full Name"
+              name="fullName"
               autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
             />
             <TextField
               margin="normal"
@@ -103,6 +96,14 @@ export default function RegistrationForm() {
               label="Email Address"
               name="email"
               type="email"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="login"
+              label="Login"
+              name="login"
             />
             <TextField
               margin="normal"
@@ -123,20 +124,21 @@ export default function RegistrationForm() {
             />
             <TextField
               margin="normal"
+              required
               fullWidth
-              name="dateOfBirth"
+              name="birthday"
               label="Date of Birth"
               type="date"
-              id="dateOfBirth"
+              id="birthday"
               InputLabelProps={{ shrink: true }}
             />
             <TextField
               margin="normal"
               fullWidth
-              name="aboutYourself"
-              label="About Yourself"
+              name="additionalInfo"
+              label="Additional Info"
               type="text"
-              id="aboutYourself"
+              id="additionalInfo"
               multiline
               rows={4}
             />
@@ -156,11 +158,20 @@ export default function RegistrationForm() {
               </Grid>
             </Grid>
           </Box>
-        </Box>
-        <Box mt={5}>
-          <Copyright />
+          {error && (
+            <Typography variant="body2" color="error" align="center" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+          {success && (
+            <Typography variant="body2" color="success" align="center" sx={{ mt: 1 }}>
+              Registration successful. Redirecting to login page...
+            </Typography>
+          )}
         </Box>
       </Container>
     </ThemeProvider>
   );
 }
+
+export default RegistrationForm;
