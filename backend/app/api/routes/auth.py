@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
 from app.api_models.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserResponse
 
@@ -8,7 +8,7 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 
-from app.api.util import get_password_hash, verify_password, create_jwt
+from app.api.util import get_password_hash, verify_password, create_jwt, jwt_token_required
 
 auth_router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-def login(request: LoginRequest) -> LoginResponse:
+def login(request: LoginRequest, response: Response):
     with SessionLocal() as session:
         with session.begin():
             user = session.query(User).filter_by(login=request.login).first()
@@ -52,11 +52,13 @@ def login(request: LoginRequest) -> LoginResponse:
                 raise HTTPException(400, f'Incorrect password')
 
             token = create_jwt(user.id)
+            response.set_cookie(key="access_token", value=jwt_token)
 
-            return LoginResponse(token=token)
+            return {"detail": "Successfully logged in"}
 
 
 @auth_router.get("/users/{user_id}")
+@jwt_token_required
 def get_user(user_id: int) -> UserResponse:
     with SessionLocal() as session:
         with session.begin():

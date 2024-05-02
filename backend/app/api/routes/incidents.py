@@ -9,13 +9,14 @@ import logging, sqlalchemy
 from app.db_models.chats import User
 from app.db_models.incidents import Incident
 from app.core.db import SessionLocal
-from app.api.util import get_current_user_id, validate_tags, check_user_account_status
+from app.api.util import get_current_user_id, validate_tags, check_user_account_status, jwt_token_required
 from fastapi import HTTPException
 
 incidents_router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @incidents_router.post("/")
+@jwt_token_required
 def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
     sender_id = get_current_user_id()
 
@@ -42,6 +43,7 @@ def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
 
 
 @incidents_router.get("/")
+@jwt_token_required
 def list_incidents() -> ListIncidentsResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
@@ -65,6 +67,7 @@ def list_incidents() -> ListIncidentsResponse:
 
 
 @incidents_router.delete("/{incident_id}")
+@jwt_token_required
 def delete_incident(incident_id: int, request: DeleteIncidentRequest) -> DeleteIncidentResponse:
     sender_id = get_current_user_id()
 
@@ -86,6 +89,7 @@ def delete_incident(incident_id: int, request: DeleteIncidentRequest) -> DeleteI
 
 
 @incidents_router.put("/{incident_id}")
+@jwt_token_required
 def edit_incident_data(incident_id: int, request: EditIncidentDataRequest) -> EditIncidentDataResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
@@ -114,6 +118,7 @@ def edit_incident_data(incident_id: int, request: EditIncidentDataRequest) -> Ed
 
 
 @incidents_router.post("/{incident_id}/authorize")
+@jwt_token_required
 def authorize_incident(incident_id: int, request: AuthorizeIncidentRequest) -> AuthorizeIncidentResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
