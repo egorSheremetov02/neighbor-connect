@@ -26,7 +26,7 @@ def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
     if len(request.description) == 0:
         raise HTTPException(400, f'Incident description is missing')
     if sender_id != request.author_id:
-        raise HTTPException(400, f'Incident creator {sender_id} should be the same as the author{request.author_id}')
+        raise HTTPException(400, f'Incident creator should be the same as the author')
 
     with SessionLocal() as session:
         with session.begin():
