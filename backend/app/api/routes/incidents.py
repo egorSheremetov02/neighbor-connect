@@ -31,12 +31,12 @@ def create_incident(request: CreateIncidentRequest) -> CreateIncidentResponse:
     with SessionLocal() as session:
         with session.begin():
             author = session.query(User).filter_by(id=request.author_id).first()
-
+            
             if author is None:
                 raise HTTPException(400, f'User with id {author} does not exist')
 
             incident = Incident(title=request.title, description=request.description, author_id=request.author_id, author=author)
-            session.add(author)
+            session.add(incident)
 
         return CreateIncidentResponse(id=incident.id)
 
@@ -49,8 +49,6 @@ def list_incidents() -> ListIncidentsResponse:
     with SessionLocal() as session:
         with session.begin():
             incidents = session.query(Incident).all()
-            if not incidents:
-                raise HTTPException(status_code=404, detail="No incidents found")
             
             def to_pydantic(incident: Incident) -> APIIncident:
                 return APIIncident(
@@ -128,7 +126,7 @@ def authorize_incident(incident_id: int, request: AuthorizeIncidentRequest) -> A
                 raise HTTPException(404, f'Incident with id {incident_id} does not exist')
             
             if incident.author_id != sender_id:
-                raise HTTPException(403, f'User doesn\'t have permission to delete this incident')
+                raise HTTPException(403, f'User doesn\'t have permission to authorize this incident')
 
             if request.status not in ['verified', 'rejected']:
                 raise HTTPException(400, f'Invalid status')
