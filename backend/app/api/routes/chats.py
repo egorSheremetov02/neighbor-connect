@@ -11,7 +11,7 @@ import logging, sqlalchemy
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
 from app.api.util import get_current_user_id, validate_tags, check_user_account_status, check_image_exists, \
-    validate_chat_request
+    validate_chat_request, jwt_token_required
 from fastapi import HTTPException
 
 chats_router = APIRouter()
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @chats_router.post("/")
+@jwt_token_required
 def create_chat(request: CreateChatRequest) -> CreateChatResponse:
     sender_id = get_current_user_id()
 
@@ -69,6 +70,7 @@ def create_chat(request: CreateChatRequest) -> CreateChatResponse:
 
 
 @chats_router.put("/")
+@jwt_token_required
 def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
     sender_id = get_current_user_id()
 
@@ -118,6 +120,7 @@ def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
 
 
 @chats_router.delete("/")
+@jwt_token_required
 def delete_chat(request: DeleteChatRequest) -> DeleteChatResponse:
     sender_id = get_current_user_id()
 
@@ -142,6 +145,7 @@ MAX_MESSAGE_CONTENT_LENGTH = 5000
 
 
 @chats_router.post("/{chat_id}")
+@jwt_token_required
 def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
@@ -183,6 +187,7 @@ PAGE_SIZE = 5
 
 
 @chats_router.get("/{chat_id}")
+@jwt_token_required
 def list_messages(chat_id: int, page_id: int | None = None) -> ListMessagesResponse:
     sender_id = get_current_user_id()
     check_user_account_status(sender_id)
