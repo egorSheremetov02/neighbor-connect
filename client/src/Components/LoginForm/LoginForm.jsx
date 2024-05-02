@@ -1,48 +1,62 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import GoogleIcon from "@mui/icons-material/Google";
+import React, { useState } from 'react';
+import {
+  Avatar,
+  Button,
+  TextField,
+  Link,
+  Box,
+  Typography,
+  Container,
+  CssBaseline,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Navigate } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useAuth } from '../../auth/index'; // Import useAuth hook
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="#">
-        NeighborConnect
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const [error, setError] = useState('');
+  const { setToken, getToken } = useAuth(); // Access setAuthToken function from useAuth
+
+  console.log(sessionStorage.getItem('token'))
+
+  if(sessionStorage.getItem('token')) {
+    return <Navigate to="/" />;
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const formData = {
+      login: event.target.elements.email.value,
+      password: event.target.elements.password.value,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData)
+        setToken(responseData.token); // Set the authentication token
+        setError('');
+        // Redirect to home page after successful login
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
+      } else {
+        const responseData = await response.json();
+        setError(responseData.detail || 'Login failed');
+      }
+    } catch (error) {
+      setError('Network error');
+    }
   };
 
   return (
@@ -52,12 +66,12 @@ export default function SignIn() {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -89,10 +103,6 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -101,29 +111,21 @@ export default function SignIn() {
             >
               Sign In
             </Button>
-            <div container className="flex space-y-2 flex-col items-center">
-              <div item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </div>
-              <div
-                item
-                className="flex justify-between items-center flex-col space-y-1"
-              >
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-
-                <Button variant="outlined">
-                  <GoogleIcon className="mr-2 text-red-500" />
-                  <p className="text-red-400">Google</p>
-                </Button>
-              </div>
-            </div>
+            {error && (
+              <Typography variant="body2" color="error" align="center" sx={{ mt: 1 }}>
+                {error}
+              </Typography>
+            )}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+              <Link href="#" variant="body2" sx={{ ml: 2 }}>
+                Don't have an account? Sign Up
+              </Link>
+            </Box>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 6, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );
