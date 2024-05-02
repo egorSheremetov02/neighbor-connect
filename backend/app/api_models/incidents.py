@@ -9,7 +9,7 @@ class Incident(BaseModel):
     author_id: int 
     status: str 
     created_at: datetime 
-    updated_up: datetime
+    updated_at: datetime
 
 
 class ListIncidentsResponse(BaseModel):
