@@ -35,6 +35,12 @@ class User(DBBase):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, default="Test user", nullable=False)
+    email = Column(String, nullable=False)
+    login = Column(String, nullable=False)
+    password_hashed = Column(String, nullable=False)
+    birthday = Column(String, nullable=False)
+    additional_info = Column(String, nullable=True)
+    address = Column(String, nullable=False)
     chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
     chats_in_administration: Mapped[List["Chat"]] = relationship(secondary=user_chat_administration_association, back_populates="admins")
 

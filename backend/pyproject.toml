@@ -13,6 +13,8 @@ pydantic = "^2.7.1"
 SQLAlchemy = "^2.0.29"
 pydantic-settings = "^2.2.1"
 psycopg2-binary = "^2.9.9"
+pyjwt = "^2.8.0"
+bcrypt = "^4.1.2"
 
 [build-system]
 requires = ["poetry-core"]
