@@ -1,102 +1,97 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
+import { Alert } from "@mui/material";
 
 const AddIncidents = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Reset previous messages
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    // Construct incident data object
+    const incidentData = {
+      title: title,
+      description: description,
+      author_id: 0, // Assuming author ID is fixed for now
+    };
+
+    // Perform API POST request
+    fetch("http://localhost:8080/incidents/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(incidentData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to add incident");
+        }
+      })
+      .then((data) => {
+        // Display success message
+        setSuccessMessage("Incident added successfully. Incident ID: " + data.id);
+        // Clear input fields
+        setTitle("");
+        setDescription("");
+      })
+      .catch((error) => {
+        // Display error message
+        setErrorMessage("Error: " + error.message);
+      });
+  };
+
   return (
-    <form class="w-full max-w-lg">
-      <div class="flex flex-wrap -mx-3 mb-6">
-        <div class="w-full px-3 mb-6 md:mb-0">
+    <form className="w-full max-w-lg" onSubmit={handleSubmit}>
+      {successMessage && <Alert severity="success">{successMessage}</Alert>}
+      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+      <div className="flex flex-wrap -mx-3 mb-6">
+        <div className="w-full px-3 mb-6 md:mb-0">
           <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="grid-first-name"
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="title"
           >
             Title
           </label>
           <input
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            id="Title"
+            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            id="title"
             type="text"
             placeholder="Incident Title "
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
-          <p class="text-red-500 text-xs italic">Please fill out this field.</p>
+          <p className="text-red-500 text-xs italic">Please fill out this field.</p>
         </div>
       </div>
-      <div class="flex flex-wrap -mx-3 mb-6">
-        <div class="w-full px-3">
+      <div className="flex flex-wrap -mx-3 mb-6">
+        <div className="w-full px-3">
           <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="grid-password"
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="description"
           >
             Description
           </label>
           <textarea
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             id="description"
             placeholder="Incident description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
           />
         </div>
       </div>
-      <div class="flex flex-wrap -mx-3 mb-2">
-        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="grid-city"
-          >
-            Date
-          </label>
-          <input
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            id="grid-city"
-            type="date"
-            placeholder="Albuquerque"
-          />
-        </div>
-        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="grid-state"
-          >
-            Location
-          </label>
-          <div class="relative">
-            <select
-              class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="grid-state"
-            >
-              <option>New Mexico</option>
-              <option>Missouri</option>
-              <option>Texas</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <svg
-                class="fill-current h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="grid-zip"
-          >
-            Time
-          </label>
-          <input
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            id="grid-zip"
-            type="time"
-            placeholder="Time"
-          />
-        </div>
-     
-        <div class="w-full mt-4 px-3 mb-6 md:mb-0">
-          <input type="file" placeholder="upload image" />
-        </div>
-        <br></br>
+      <div className="flex flex-wrap -mx-3 mb-2">
         <Button
           type="submit"
           fullWidth

@@ -36,8 +36,8 @@ const Home = () => {
         return <Incidents />;
       case "offers":
         return <Offers />;
-      case 'admin':
-        return <Admin />;
+    //   case 'admin':
+    //     return <Admin />;
       default:
         return null;
     }
@@ -54,7 +54,7 @@ const Home = () => {
     { name: "Chats", action: () => setActiveComponent("chats") },
     { name: "Incidents", action: () => setActiveComponent("incidents") },
     { name: "Offers", action: () => setActiveComponent("offers") },
-    { name: "Admin", action: () => setActiveComponent("admin") },
+    // { name: "Admin", action: () => setActiveComponent("admin") },
     { name: "Logout", action: handleLogout },
   ];
 

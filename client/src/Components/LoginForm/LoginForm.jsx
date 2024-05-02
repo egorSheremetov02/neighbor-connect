@@ -120,7 +120,7 @@ export default function SignIn() {
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
-              <Link href="#" variant="body2" sx={{ ml: 2 }}>
+              <Link href="/register" variant="body2" sx={{ ml: 2 }}>
                 Don't have an account? Sign Up
               </Link>
             </Box>

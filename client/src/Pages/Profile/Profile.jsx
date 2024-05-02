@@ -82,7 +82,7 @@ export default function Profile() {
               </div>
               {/* End of profile card */}
               <div className="my-4"></div>
-              {/* Friends card */}
+              {/* Friends card
               <div className="bg-white p-3 hover:shadow">
                 <div className="flex items-center space-x-3 font-semibold text-gray-900 text-xl leading-8">
                   <span className="text-blue-500">
@@ -145,7 +145,7 @@ export default function Profile() {
                     </a>
                   </div>
                 </div>
-              </div>
+              </div> */}
               {/* End of friends card */}
             </div>
             {/* Right Side */}
