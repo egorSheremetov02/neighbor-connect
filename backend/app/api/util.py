@@ -1,5 +1,5 @@
 import re
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 
 from app.api.constants import MAX_CHAT_NAME_LENGTH, MAX_TAGS_AMOUNT, MAX_CHAT_DESCRIPTION_LENGTH
 from app.core.db import SessionLocal
@@ -7,6 +7,9 @@ from app.db_models.chats import User, Image
 import bcrypt
 import jwt
 import datetime
+from functools import wraps
+from typing import Callable
+from starlette.types import ASGIApp
 
 
 def get_current_user_id() -> int:
@@ -76,3 +79,23 @@ def get_password_hash(password: str) -> str:
 
 def verify_password(stored_hash: str, provided_password: str) -> bool:
     return bcrypt.checkpw(provided_password.encode(), stored_hash.encode())
+
+
+def jwt_token_required(f):
+    @wraps(f)
+    async def wrap(*args, **kwargs):
+        request_scope = kwargs.get('request') or {} 
+        cookies = request_scope.cookies if isinstance(request_scope, Request) else {}
+        jwt_token = cookies.get('access_token')
+
+        if not jwt_token:
+            raise HTTPException(status_code=401, detail="HTTPException: Unauthorized")
+
+        try:
+            payload = jwt.decode(jwt_token, SECRET, algorithms='HS256')
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
+            raise HTTPException(status_code=403, detail="HTTPException: Forbidden")
+
+        return await decorated_function(*args, **kwargs)
+
+    return wrap
