@@ -53,4 +53,4 @@ const IncidentCard = ({ title }) => (
   </Card>
 );
 
-export default IncidentCard
+export default IncidentCard;
