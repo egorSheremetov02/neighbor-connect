@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function Profile() {
+  const [showFullInfo, setShowFullInfo] = useState(false);
+
+  const toggleFullInfo = () => {
+    setShowFullInfo(!showFullInfo);
+  };
+
   return (
     <div>
       <style>
@@ -219,126 +225,112 @@ export default function Profile() {
                     </div>
                   </div>
                 </div>
-                <button className="block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4">
-                  Show Full Information
+                <button
+                  className="block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
+                  onClick={toggleFullInfo}
+                >
+                  {showFullInfo ? "Hide Full Information" : "Show Full Information"}
                 </button>
+                {showFullInfo && (
+                  <>
+                    <div className="grid grid-cols-2">
+                      <div>
+                        <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
+                          <span className="text-blue-500">
+                            <svg
+                              className="h-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </span>
+                          <span className="tracking-wide">Interests</span>
+                        </div>
+                        <div className="space-x-5 space-y-3 flex flex-wrap">
+                          <div className="mt-3 ml-5">
+                            <span className="bg-blue-500 px-4 rounded-md text-white py-[2px]">
+                              Football
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-yellow-500 px-4 rounded-md text-white py-[2px]">
+                              Guitar
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-gray-700 px-4 rounded-md text-white py-[2px]">
+                              Swimming
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-blue-500 px-4 rounded-md text-white py-[2px]">
+                              Reading Book
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-teal-500 px-4 rounded-md text-white py-[2px]">
+                              Travelling
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-gray-500 px-4 rounded-md text-white py-[2px]">
+                              Movies
+                            </span>
+                          </div>
+                          <div>
+                            <span className="bg-yellow-500 px-4 rounded-md text-white py-[2px]">
+                              Hiking
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
+                          <span className="text-blue-500">
+                            <svg
+                              className="h-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path fill="#fff" d="M12 14l9-5-9-5-9 5 9 5z" />
+                              <path
+                                fill="#fff"
+                                d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                              />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                            </svg>
+                          </span>
+                          <span className="tracking-wide">Education</span>
+                        </div>
+                        <ul className="list-inside space-y-2">
+                          <li>
+                            <div className="text-blue-400">
+                              Masters Degree in Oxford
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              March 2020 - Now
+                            </div>
+                          </li>
+                          <li>
+                            <div className="text-blue-400">
+                              Bachelors Degree in LPU
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              March 2016 - April 2020
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
               {/* End of about section */}
-              <div className="my-4"></div>
-              {/* Experience and education */}
-              <div className="bg-white p-3 shadow-sm rounded-sm">
-                <div className="grid grid-cols-2">
-                  <div>
-                    <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
-                      <span className="text-blue-500">
-                        <svg
-                          className="h-5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="tracking-wide">Interests</span>
-                    </div>
-                    <div className="space-x-5 space-y-3 flex flex-wrap">
-                      <div className="mt-3 ml-5">
-                        <span className="bg-blue-500 px-4 rounded-md text-white py-[2px]">
-                          sport
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="bg-yellow-500 px-4 rounded-md text-white py-[2px]">
-                          Guitar palying
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="bg-gray-700 px-4 rounded-md text-white py-[2px]">
-                          Swimming
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="bg-blue-500 px-4 rounded-md text-white py-[2px]">
-                          Reading Book
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="bg-teal-500 px-4 rounded-md text-white py-[2px]">
-                          Travelling
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="bg-gray-500 px-4 rounded-md text-white py-[2px]">
-                          Movie Watching
-                        </span>
-                      </div>
-                      <div>
-                        <span className=" sm:bg-yellow-500 px-4 rounded-md text-white py-[2px]">
-                          Hiking
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
-                      <span className="text-blue-500">
-                        <svg
-                          className="h-5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path fill="#fff" d="M12 14l9-5-9-5-9 5 9 5z" />
-                          <path
-                            fill="#fff"
-                            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-                          />
-                        </svg>
-                      </span>
-                      <span className="tracking-wide">Education</span>
-                    </div>
-                    <ul className="list-inside space-y-2">
-                      <li>
-                        <div className="text-blue-400">
-                          Masters Degree in Oxford
-                        </div>
-                        <div className="text-gray-500 text-xs">
-                          March 2020 - Now
-                        </div>
-                      </li>
-                      <li>
-                        <div className="text-blue-400">
-                          Bachelors Degreen in LPU
-                        </div>
-                        <div className="text-gray-500 text-xs">
-                          March 2020 - Now
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                {/* End of Experience and education grid */}
-              </div>
-              {/* End of profile tab */}
             </div>
           </div>
         </div>
