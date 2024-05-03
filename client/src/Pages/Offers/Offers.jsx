@@ -79,7 +79,7 @@ export default function Offers() {
             <h2 className="text-lg font-semibold text-blue-600 hover:underline">
               {title}
             </h2>
-            <p className="text-gray-700 mb-4 border-b-[1px] pb-4">
+            <div className="text-gray-700 mb-4 border-b-[1px] pb-4">
               {text}
               <div className="flex space-x-4 pt-4">
                 {photos.map((photo, index) => (
@@ -91,7 +91,7 @@ export default function Offers() {
                   />
                 ))}
               </div>
-            </p>
+            </div>
           </div>
         </div>
       </div>
@@ -149,19 +149,19 @@ export default function Offers() {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac
               orci fermentum, viverra erat at, accumsan elit. Proin ultrices
               auctor nisl, eu facilisis lectus condimentum eu.
-              <div className="flex space-x-4 pt-4">
-                <img
-                  src={`./public/images/image-1.jpg`}
-                  alt=""
-                  className="w-28 h-28 rounded-md"
-                />
-                <img
-                  src={`./public/images/image-2.jpg`}
-                  alt=""
-                  className="w-28 h-28 rounded-md"
-                />
-              </div>
             </p>
+            <div className="flex space-x-4 pt-4">
+              <img
+                src={`./public/images/image-1.jpg`}
+                alt=""
+                className="w-28 h-28 rounded-md"
+              />
+              <img
+                src={`./public/images/image-2.jpg`}
+                alt=""
+                className="w-28 h-28 rounded-md"
+              />
+            </div>
             <div className="border-b-[1px] pb-4 flex space-x-4">
               <div>
                 <InsertCommentIcon style={{ fontSize: 16, color: "gray" }} />{" "}
