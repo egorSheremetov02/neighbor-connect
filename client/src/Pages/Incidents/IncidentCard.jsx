@@ -1,109 +1,56 @@
 import React from 'react';
+import { Card, CardContent, CardMedia, Typography, IconButton, Avatar, Grid } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import NearMeIcon from '@mui/icons-material/NearMe';
 import MapIcon from '@mui/icons-material/Map';
 
-const CustomCard = () => {
-  const cardStyle = {
-    display: 'flex',
-    width: '45%',
-    backgroundColor: '#1967D221',
-    padding: '12px',
-    borderRadius: '4px',
-    justifyContent: 'space-between'
-  };
-  const leftSection = {
-    // width: 'fit-content',
-  }
-  const likes = {
-    display: 'flex',
-    backgroundColor: '#1967D2',
-    borderRadius: '4px',
-    padding: '4px 8px',
-    alignItems: 'center',
-    gap: '5px'
-  }
-  const paragraphStyle = {
-    fontFamily: 'Poppins',
-    fontWeight: 600,
-    fontSize: '10px',
-    lineHeight: '15px',
-    color: '#ffffff',
-  };
-  const postContent = {
-    display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-  }
-  const imagePost = {
-    width: "200px"
-  }
-  const contentText = {
-    textAlign: 'right',
-    fontFamily: 'Poppins',
-    fontWeight: 400,
-    fontSize: '14px',
-    lineHeight: '21px',
-    color: '#3E3E3E',
-    display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-  justifyContent: 'space-between',
-  };
-  const neighbourName = {
-    fontFamily: 'Poppins',
-    fontWeight: 400,
-    fontSize: '20px',
-    lineHeight: '30px',
-  }
-  const titleStyle = {
-    fontFamily: 'Poppins',
-    fontWeight: 600,
-    fontSize: '20px',
-    lineHeight: '30px',
-    marginBottom: '20px'
-  }
-
-  return (
-    <div style={cardStyle}>
-      <div style={leftSection}>
-        <div className="flex justify-center items-center">
-          <img
-            src="public/images/profile.jfif"
-            alt="profile"
-            className="sm:w-12 sm:h-12 w-10 h-10 rounded-full mb-4 mt-3"
-          />
-        </div>
-        <div style={likes}>
-          <ThumbUpIcon fontSize='10px' style={{ color: '#ffffff' }} />
-          <p style={paragraphStyle}>10</p>
-          <ThumbDownIcon fontSize='10px' style={{ color: '#ffffff' }} />
-          <p style={paragraphStyle}>5</p>
-        </div>
+const IncidentCard = ({ title }) => (
+  <Card sx={{ width: '100%', maxWidth: 345, m: 2, backgroundColor: '#f5f5f5', overflow: 'visible' }}>
+    <Grid container spacing={2} alignItems="center" sx={{ ml: 2, mr: 2, mt: 1 }}>
+      <Grid item>
+        <Avatar src="/public/images/profile.jfif" alt="Reporter" sx={{ width: 56, height: 56 }} />
+      </Grid>
+      <Grid item xs>
+        <Typography gutterBottom variant="subtitle1" component="div">
+          Alexandr T.
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Reported on 20.04.2024 at 16:30
+        </Typography>
+      </Grid>
+    </Grid>
+    <CardMedia
+      component="img"
+      height="140"
+      image="/public/images/incidentimage1.png"
+      alt="Incident Scene"
+      sx={{ mt: 1, mb: 1 }}
+    />
+    <CardContent>
+      <Typography gutterBottom variant="h5" component="div">
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Friedrichstraße 55, Hamburg
+      </Typography>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+        <IconButton aria-label="like" color="primary">
+          <ThumbUpIcon />
+          <span>10</span>
+        </IconButton>
+        <IconButton aria-label="dislike" color="error">
+          <ThumbDownIcon />
+          <span>5</span>
+        </IconButton>
+        <IconButton color="default">
+          <MapIcon />
+          <Typography variant="caption" display="block">
+            Go to map
+          </Typography>
+        </IconButton>
       </div>
-      <div>
-        <h1 style={neighbourName}>Alexandr  T.</h1>
-        <h2 style={titleStyle}>Water Main Break Floods Downtown</h2>
-        <div style={postContent}>
-            <img src="public/images/incidentimage1.png" style={imagePost}/>
-            <div style={contentText}>
-                <p>16:30</p>
-                <p>20.04.2024</p>
-                <div style={{display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'flex-end'}}>
-                    <NearMeIcon fontSize='10px' style={{ color: '#3E3E3E' }} />
-                    <p>3 km</p>
-                </div>
-                <p>Friedrichstraße 55, Hamburg</p>
-                <button style={{border: '1px solid #3E3E3E', borderRadius: '4px', padding: '4px', display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'flex-end'}}> 
-                <MapIcon fontSize='10px' style={{ color: '#3E3E3E' }} />
-                <p>Go to map</p> </button>
-            </div>
-            
-        </div>
-      </div>
-    </div>
-  );
-};
+    </CardContent>
+  </Card>
+);
 
-export default CustomCard;
+export default IncidentCard;
