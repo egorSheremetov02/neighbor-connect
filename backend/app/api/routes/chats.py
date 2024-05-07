@@ -230,3 +230,16 @@ def list_messages(chat_id: int, page_id: int | None = None) -> ListMessagesRespo
 
             return ListMessagesResponse(messages=list(map(lambda m: to_pydantic(m), messages)),
                                         next_page_id=next_page_id)
+
+
+@chats_router.get("/{chat_id}")
+@jwt_token_required
+def list_users(chat_id: int) -> ListChatUsersResponse:
+    with SessionLocal() as session:
+        with session.begin():
+            chat = session.query(Chat).filter_by(id=chat_id).first()
+            if chat is None:
+                raise HTTPException(404, f'Chat with id {chat_id} does not exist')
+
+            users = [UserInfo(id=user.id, fullname=user.name) for user in chat.users]
+            return ListChatUsersResponse(users=users)
