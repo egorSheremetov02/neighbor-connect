@@ -60,3 +60,14 @@ class ListMessagesRequest(BaseModel):
 class ListMessagesResponse(BaseModel):
     messages: list[Message]
     next_page_id: int | None = None
+
+
+class UserInfo(BaseModel):
+    id: int
+    fullname: str
+
+
+class ListChatUsersResponse(BaseModel):
+    users: list[UserInfo]
+
+
