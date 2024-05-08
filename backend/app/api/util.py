@@ -12,10 +12,6 @@ from typing import Callable
 from starlette.types import ASGIApp
 
 
-def get_current_user_id() -> int:
-    return 0
-
-
 MAX_TAG_LENGTH = 64
 SECRET = 'e8b7e8b7e8b7e8b7e8b7e8b7e8b7e8b7'
 
@@ -37,17 +33,6 @@ def validate_tags(tags: list[str]) -> None:
             raise HTTPException(400, f'Length of tag \'{tag}\' should be in range [1 .. {MAX_TAG_LENGTH}]')
         if re.fullmatch('[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9]', tag) is None:
             raise HTTPException(400, f'Tag \'{tag}\' does not match the format')
-
-
-def check_user_account_status(user_id: int) -> None:
-    with SessionLocal() as session:
-        with session.begin():
-            user = session.query(User).filter_by(id=user_id).first()
-            if user is None:
-                raise HTTPException(403, f'User is not logged in / does not exist')
-
-            if user_id == -1:
-                raise HTTPException(403, f'User does not have permission to create chats')
 
 
 def check_image_exists(image_id: int) -> None:
@@ -92,18 +77,23 @@ def jwt_token_required(f):
         if not token:
             try:
                 authorization = request.headers['Authorization']
+                token = authorization.split()[0]
             except KeyError:
                 raise HTTPException(status_code=401, detail="Authorization header not found")
-
-            token = authorization.split()[0]
-
-        print(token)
 
         try:
             payload = jwt.decode(token, SECRET, algorithms=["HS256"])
             kwargs['user_payload'] = payload
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as _:
             raise HTTPException(status_code=403, detail="Invalid token")
+
+        # Check that user with such id exists
+        user_id = payload['user_id']
+        with SessionLocal() as session:
+            with session.begin():
+                user = session.query(User).filter_by(id=user_id).first()
+                if user is None:
+                    raise HTTPException(403, f'User is not logged in / does not exist')
 
         return f(*args, **kwargs)
 

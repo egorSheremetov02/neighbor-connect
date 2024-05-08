@@ -9,11 +9,10 @@ import logging, sqlalchemy
 from app.db_models.chats import User
 from app.db_models.offer import Offer
 from app.core.db import SessionLocal
-from app.api.util import get_current_user_id, validate_tags, check_user_account_status, jwt_token_required
+from app.api.util import validate_tags, jwt_token_required
 from fastapi import HTTPException
-from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
+from fastapi.security import APIKeyHeader
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 offers_router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -23,7 +22,6 @@ logger = logging.getLogger(__name__)
 @jwt_token_required
 def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
     sender_id = user_payload['user_id']
-    check_user_account_status(sender_id)
 
     if len(create_offer_request.title) == 0:
         raise HTTPException(400, f'Offer title is missing')
@@ -46,7 +44,6 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
 @jwt_token_required
 def list_offers(request: Request, user_payload=None) -> ListOffersResponse:
     sender_id = user_payload['user_id']
-    # check_user_account_status(sender_id)
     print("SENDER ID: ", sender_id)
     with SessionLocal() as session:
         with session.begin():
@@ -72,7 +69,6 @@ def list_offers(request: Request, user_payload=None) -> ListOffersResponse:
 def edit_offer_data(request: Request, edit_offer_data_request: EditOfferDataRequest,
                     user_payload=None) -> EditOfferDataResponse:
     sender_id = user_payload['user_id']
-    check_user_account_status(sender_id)
 
     if len(edit_offer_data_request.title) == 0:
         raise HTTPException(400, f'Offer title is missing')
@@ -103,7 +99,6 @@ def edit_offer_data(request: Request, edit_offer_data_request: EditOfferDataRequ
 @jwt_token_required
 def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
     sender_id = user_payload['user_id']
-    check_user_account_status(sender_id)
 
     with SessionLocal() as session:
         with session.begin():
