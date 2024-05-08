@@ -83,19 +83,28 @@ def verify_password(stored_hash: str, provided_password: str) -> bool:
 
 def jwt_token_required(f):
     @wraps(f)
-    async def wrap(*args, **kwargs):
-        request_scope = kwargs.get('request') or {} 
-        cookies = request_scope.cookies if isinstance(request_scope, Request) else {}
-        jwt_token = cookies.get('access_token')
+    def decorated_function(*args, **kwargs):
+        request: Request = kwargs.get('request')
+        if not request:
+            raise HTTPException(status_code=401, detail="Request object not found.")
 
-        if not jwt_token:
-            raise HTTPException(status_code=401, detail="HTTPException: Unauthorized")
+        token = request.cookies.get("access_token")
+        if not token:
+            try:
+                authorization = request.headers['Authorization']
+            except KeyError:
+                raise HTTPException(status_code=401, detail="Authorization header not found")
+
+            token = authorization.split()[0]
+
+        print(token)
 
         try:
-            payload = jwt.decode(jwt_token, SECRET, algorithms='HS256')
-        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
-            raise HTTPException(status_code=403, detail="HTTPException: Forbidden")
+            payload = jwt.decode(token, SECRET, algorithms=["HS256"])
+            kwargs['user_payload'] = payload
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as _:
+            raise HTTPException(status_code=403, detail="Invalid token")
 
-        return await decorated_function(*args, **kwargs)
+        return f(*args, **kwargs)
 
-    return wrap
+    return decorated_function
