@@ -4,44 +4,40 @@ from app.api_models.incidents import (Incident as APIIncident, ListIncidentsResp
                                       DeleteIncidentRequest, DeleteIncidentResponse,
                                       EditIncidentDataRequest, EditIncidentDataResponse,
                                       AuthorizeIncidentRequest, AuthorizeIncidentResponse)
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
+from fastapi.security import APIKeyHeader
 import logging, sqlalchemy
 
 from app.db_models.chats import User
 from app.db_models.incidents import Incident
 from app.core.db import SessionLocal
-from app.api.util import get_current_user_id, check_user_account_status, jwt_token_required
+from app.api.util import jwt_token_required
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 incidents_router = APIRouter()
 
 
-@incidents_router.post("/")
+@incidents_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_incident(request: CreateIncidentRequest, user_payload=None) -> CreateIncidentResponse:
-    sender_id = get_current_user_id()
+def create_incident(request: Request, create_request: CreateIncidentRequest, user_payload=None) -> CreateIncidentResponse:
+    sender_id = user_payload['user_id']
 
-    check_user_account_status(sender_id)
-
-    if len(request.title) == 0:
+    if len(create_request.title) == 0:
         raise HTTPException(400, f'Incident title is missing')
-    if len(request.description) == 0:
+    if len(create_request.description) == 0:
         raise HTTPException(400, f'Incident description is missing')
-    if sender_id != request.author_id:
-        raise HTTPException(400, f'Incident creator should be the same as the author')
 
     with SessionLocal() as session:
         with session.begin():
-            author = session.query(User).filter_by(id=request.author_id).first()
+            author = session.query(User).filter_by(id=sender_id).first()
 
-            if author is None:
-                raise HTTPException(400, f'User with id {author} does not exist')
-
-            incident = Incident(title=request.title, description=request.description, author_id=request.author_id,
-                                author=author)
+            incident = Incident(
+                title=create_request.title, 
+                description=create_request.description, 
+                author_id=sender_id,
+                author=author
+            )
             session.add(incident)
 
         return CreateIncidentResponse(id=incident.id)
@@ -50,9 +46,6 @@ def create_incident(request: CreateIncidentRequest, user_payload=None) -> Create
 @incidents_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
-    sender_id = user_payload['user_id']
-    # check_user_account_status(sender_id)
-    print("SENDER ID: ", sender_id)
     with SessionLocal() as session:
         with session.begin():
             incidents = session.query(Incident).all()
@@ -71,12 +64,10 @@ def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse
             return ListIncidentsResponse(incidents=[to_pydantic(incident) for incident in incidents])
 
 
-@incidents_router.delete("/{incident_id}")
+@incidents_router.delete("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_incident(incident_id: int, request: DeleteIncidentRequest, user_payload=None) -> DeleteIncidentResponse:
-    sender_id = get_current_user_id()
-
-    check_user_account_status(sender_id)
+def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
+    sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
         with session.begin():
@@ -93,18 +84,15 @@ def delete_incident(incident_id: int, request: DeleteIncidentRequest, user_paylo
         return DeleteIncidentResponse()
 
 
-@incidents_router.put("/{incident_id}")
+@incidents_router.put("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_incident_data(incident_id: int, request: EditIncidentDataRequest, user_payload=None) -> EditIncidentDataResponse:
-    sender_id = get_current_user_id()
-    check_user_account_status(sender_id)
+def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest, user_payload=None) -> EditIncidentDataResponse:
+    sender_id = user_payload['user_id']
 
-    if len(request.title) == 0:
+    if len(edit_request.title) == 0:
         raise HTTPException(400, f'Incident title is missing')
-    if len(request.description) == 0:
+    if len(edit_request.description) == 0:
         raise HTTPException(400, f'Incident description is missing')
-    if sender_id != request.author_id:
-        raise HTTPException(400, f'Incident creator should be the same as the author')
 
     with SessionLocal() as session:
         with session.begin():
@@ -116,17 +104,16 @@ def edit_incident_data(incident_id: int, request: EditIncidentDataRequest, user_
             if incident.author_id != sender_id:
                 raise HTTPException(403, f'User doesn\'t have permission to delete this incident')
 
-            incident.title = request.title
-            incident.description = request.description
+            incident.title = edit_request.title
+            incident.description = edit_request.description
 
         return EditIncidentDataResponse()
 
 
-@incidents_router.post("/{incident_id}/authorize")
+@incidents_router.post("/{incident_id}/authorize", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def authorize_incident(incident_id: int, request: AuthorizeIncidentRequest, user_payload=None) -> AuthorizeIncidentResponse:
-    sender_id = get_current_user_id()
-    check_user_account_status(sender_id)
+def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest, user_payload=None) -> AuthorizeIncidentResponse:
+    sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
         with session.begin():
@@ -138,9 +125,9 @@ def authorize_incident(incident_id: int, request: AuthorizeIncidentRequest, user
             if incident.author_id != sender_id:
                 raise HTTPException(403, f'User doesn\'t have permission to authorize this incident')
 
-            if request.status not in ['verified', 'rejected']:
+            if auth_request.status not in ['verified', 'rejected']:
                 raise HTTPException(400, f'Invalid status')
 
-            incident.status = request.status
+            incident.status = auth_request.status
 
         return AuthorizeIncidentResponse()

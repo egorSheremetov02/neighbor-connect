@@ -19,8 +19,6 @@ class ListIncidentsResponse(BaseModel):
 class CreateIncidentRequest(BaseModel):
     title: str
     description: str 
-    author_id: int 
-
 
 
 class CreateIncidentResponse(BaseModel):
@@ -38,8 +36,6 @@ class DeleteIncidentResponse(BaseModel):
 class EditIncidentDataRequest(BaseModel):
     title: str
     description: str 
-    author_id: int 
-
 
 class EditIncidentDataResponse(BaseModel):
     pass
