@@ -19,3 +19,5 @@ class Incident(DBBase):
     status = Column(String, default="pending")
     created_at: datetime = Column(DateTime, default=datetime.utcnow)
     updated_at: datetime = Column(DateTime, default=datetime.utcnow)
+    location = Column(String, nullable=True)
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
