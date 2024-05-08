@@ -418,3 +418,24 @@ Authorize the validity of an incident on behalf of an admin.
   - Return 403 if the user does not have permissions to authorize the incident.
   - Return 400 if the status is not "verified" or "rejected".
   - Return 500 in case of an internal server error.
+
+## Offer Endpoints
+
+### Create an Offer
+
+Create a new offer.
+
+- Endpoint: `POST /offers`
+- Request body:
+
+```json
+{
+  "title": string,
+  "description": string,
+  "author_id": int,
+  "price": float,
+  "tags": [string],
+  "date": timestamp,
+  "image_id": int
+}
+```
