@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.constants import MAX_INVITED_USERS
 from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
@@ -10,108 +10,105 @@ import logging, sqlalchemy
 
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
-from app.api.util import get_current_user_id, validate_tags, check_user_account_status, check_image_exists, \
+from app.api.util import validate_tags, check_image_exists, \
     validate_chat_request, jwt_token_required
 from fastapi import HTTPException
+from fastapi.security import APIKeyHeader
 
 chats_router = APIRouter()
 logger = logging.getLogger(__name__)
+security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 
 
-@chats_router.post("/")
+@chats_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_chat(request: CreateChatRequest) -> CreateChatResponse:
-    sender_id = get_current_user_id()
+def create_chat(request: Request, create_chat_request: CreateChatRequest, user_payload=None) -> CreateChatResponse:
+    sender_id = user_payload['user_id']
 
-    check_user_account_status(sender_id)
-    validate_chat_request(request)
-    validate_tags(request.tags)
+    validate_chat_request(create_chat_request)
+    validate_tags(create_chat_request.tags)
 
-    if sender_id not in request.users:
+    if sender_id not in create_chat_request.users:
         raise HTTPException(400, f"List of users does not contain creator's id")
 
-    if len(request.users) > MAX_INVITED_USERS:
+    if len(create_chat_request.users) > MAX_INVITED_USERS:
         raise HTTPException(400, f"Amount of invited users should not exceed {MAX_INVITED_USERS}")
 
-    if request.image_id is not None:
-        check_image_exists(request.image_id)
+    if create_chat_request.image_id is not None:
+        check_image_exists(create_chat_request.image_id)
 
     with SessionLocal() as session:
         with session.begin():
             sender = session.query(User).filter_by(id=sender_id).first()
 
-            if sender is None:
-                raise HTTPException(400, f'User with id {sender_id} does not exist')
-
             tags = []
-            for tag in set(request.tags):
+            for tag in set(create_chat_request.tags):
                 tag_object = session.query(Tag).filter_by(name=tag).first()
                 if not tag_object:
                     tag_object = Tag(name=tag)
                     session.add(tag_object)
                 tags.append(tag_object)
 
-            chat = Chat(name=request.name,
-                        description=request.description,
+            chat = Chat(name=create_chat_request.name,
+                        description=create_chat_request.description,
                         tags=tags,
-                        image_id=request.image_id,
+                        image_id=create_chat_request.image_id,
                         admins=[sender])
 
-            users = session.query(User).filter(User.id.in_(request.users)).all()
+            users = session.query(User).filter(User.id.in_(create_chat_request.users)).all()
             chat.users = [user for user in users]
             session.add(chat)
 
-        if len(users) != len(request.users):
-            fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
+        if len(users) != len(create_chat_request.users):
+            fake_users = list(set(create_chat_request.users) - set(map(lambda u: u.id, users)))
             logger.warning(
                 f'User {sender_id} tried create chat with non-existing users {fake_users}, chat_id: {chat.id}')
 
         return CreateChatResponse(chat_id=chat.id)
 
 
-@chats_router.put("/")
+@chats_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
-    sender_id = get_current_user_id()
+def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, user_payload=None) -> EditChatDataResponse:
+    sender_id = user_payload['user_id']
 
-    check_user_account_status(sender_id)
-    validate_chat_request(request)
-    validate_tags(request.tags)
+    validate_chat_request(edit_chat_request)
+    validate_tags(edit_chat_request.tags)
 
-    if request.image_id is not None:
-        check_image_exists(request.image_id)
+    if edit_chat_request.image_id is not None:
+        check_image_exists(edit_chat_request.image_id)
 
     with SessionLocal() as session:
         with session.begin():
-            chat = session.query(Chat).filter_by(id=request.chat_id).first()
+            chat = session.query(Chat).filter_by(id=edit_chat_request.chat_id).first()
 
             if not chat:
-                raise HTTPException(400, f'Chat with id {request.chat_id} does not exist')
+                raise HTTPException(400, f'Chat with id {edit_chat_request.chat_id} does not exist')
 
             if sender_id not in [admin.id for admin in chat.admins]:
                 raise HTTPException(403, f'User {sender_id} does not have permission to edit this chat')
 
             tags = []
-            for tag in set(request.tags):
+            for tag in set(edit_chat_request.tags):
                 tag_object = session.query(Tag).filter_by(name=tag).first()
                 if not tag_object:
                     tag_object = Tag(name=tag)
                     session.add(tag_object)
                 tags.append(tag_object)
 
-            chat.name = request.name
-            chat.description = request.description
+            chat.name = edit_chat_request.name
+            chat.description = edit_chat_request.description
             chat.tags = tags
-            chat.image_id = request.image_id
+            chat.image_id = edit_chat_request.image_id
 
-            users = session.query(User).filter(User.id.in_(request.users)).all()
+            users = session.query(User).filter(User.id.in_(edit_chat_request.users)).all()
             chat.users = [user for user in users]
 
-            admins = session.query(User).filter(User.id.in_(request.admin_users)).all()
+            admins = session.query(User).filter(User.id.in_(edit_chat_request.admin_users)).all()
             chat.admins = [user for user in admins]
 
-        if len(users) != len(request.users):
-            fake_users = list(set(request.users) - set(map(lambda u: u.id, users)))
+        if len(users) != len(edit_chat_request.users):
+            fake_users = list(set(edit_chat_request.users) - set(map(lambda u: u.id, users)))
             logger.warning(
                 f'User {sender_id} tried edit chat with non-existing users {fake_users}, chat_id: {chat.id}'
             )
@@ -119,42 +116,39 @@ def edit_chat_data(request: EditChatDataRequest) -> EditChatDataResponse:
         return EditChatDataResponse(chat_id=chat.id)
 
 
-@chats_router.delete("/")
+@chats_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_chat(request: DeleteChatRequest) -> DeleteChatResponse:
-    sender_id = get_current_user_id()
-
-    check_user_account_status(sender_id)
+def delete_chat(request: Request, delet_chat_request: DeleteChatRequest, user_payload=None) -> DeleteChatResponse:
+    sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
         with session.begin():
-            chat = session.query(Chat).filter_by(id=request.chat_id).first()
+            chat = session.query(Chat).filter_by(id=delet_chat_request.chat_id).first()
 
             if not chat:
-                raise HTTPException(400, f'Chat with id {request.chat_id} does not exist')
+                raise HTTPException(400, f'Chat with id {delet_chat_request.chat_id} does not exist')
 
             if sender_id not in [admin.id for admin in chat.admins]:
                 raise HTTPException(403, f'User {sender_id} does not have permission to delete this chat')
 
             session.delete(chat)
 
-        return DeleteChatResponse(deleted_chat_id=request.chat_id)
+        return DeleteChatResponse(deleted_chat_id=delet_chat_request.chat_id)
 
 
 MAX_MESSAGE_CONTENT_LENGTH = 5000
 
 
-@chats_router.post("/{chat_id}")
+@chats_router.post("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageResponse:
-    sender_id = get_current_user_id()
-    check_user_account_status(sender_id)
+def send_message(request: Request, chat_id: int, send_msg_request: SendMessageRequest, user_payload=None) -> SendMessageResponse:
+    sender_id = user_payload['user_id']
 
-    if len(request.content) == 0 or len(request.content) > MAX_MESSAGE_CONTENT_LENGTH:
+    if len(send_msg_request.content) == 0 or len(send_msg_request.content) > MAX_MESSAGE_CONTENT_LENGTH:
         raise HTTPException(400, f'Length of message content should be in range [1 .. {MAX_MESSAGE_CONTENT_LENGTH}]')
 
-    if request.image_id is not None:
-        check_image_exists(request.image_id)
+    if send_msg_request.image_id is not None:
+        check_image_exists(send_msg_request.image_id)
 
     with SessionLocal() as session:
         with session.begin():
@@ -164,15 +158,12 @@ def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageRespon
 
             sender = session.query(User).filter_by(id=sender_id).first()
 
-            if sender is None:
-                raise HTTPException(400, f'User with id {sender_id} does not exist')
-
             if sender not in chat.users:
                 raise HTTPException(403, f'User {sender_id} is not member of chat {chat.id}')
 
             message = Message(
-                content=request.content,
-                image_id=request.image_id,
+                content=send_msg_request.content,
+                image_id=send_msg_request.image_id,
                 author_id=sender_id,
                 chat_id=chat_id,
                 author=sender
@@ -186,11 +177,10 @@ def send_message(chat_id: int, request: SendMessageRequest) -> SendMessageRespon
 PAGE_SIZE = 5
 
 
-@chats_router.get("/{chat_id}")
+@chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_messages(chat_id: int, page_id: int | None = None) -> ListMessagesResponse:
-    sender_id = get_current_user_id()
-    check_user_account_status(sender_id)
+def list_messages(request: Request, chat_id: int, page_id: int | None = None, user_payload=None) -> ListMessagesResponse:
+    sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
         with session.begin():
@@ -199,9 +189,6 @@ def list_messages(chat_id: int, page_id: int | None = None) -> ListMessagesRespo
                 raise HTTPException(404, f'Chat with id {chat_id} does not exist')
 
             sender = session.query(User).filter_by(id=sender_id).first()
-
-            if sender is None:
-                raise HTTPException(400, f'User with id {sender_id} does not exist')
 
             if sender not in chat.users:
                 raise HTTPException(403, f'User {sender_id} does not have access to this chat')
