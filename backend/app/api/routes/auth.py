@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Response
+from fastapi import Request
 
-from app.api_models.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserResponse
+from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse
+from fastapi import APIRouter, Response, Depends
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
+
 
 import logging
 
@@ -10,8 +13,11 @@ from fastapi import HTTPException
 
 from app.api.util import get_password_hash, verify_password, create_jwt, jwt_token_required
 
-auth_router = APIRouter()
 logger = logging.getLogger(__name__)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
+auth_router = APIRouter()
+
 
 
 @auth_router.post("/register")
@@ -41,29 +47,28 @@ def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-def login(request: LoginRequest, response: Response):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=request.login).first()
+            user = session.query(User).filter_by(login=form_data.username).first()
             if not user:
-                raise HTTPException(404, f'User with credentials does not exist')
+                raise HTTPException(404, "User with credentials does not exist")
 
-            if not verify_password(user.password_hashed, request.password):
-                raise HTTPException(400, f'Incorrect password')
+            if not verify_password(user.password_hashed, form_data.password):
+                raise HTTPException(400, "Incorrect password")
 
-            token = create_jwt(user.id)
-            response.set_cookie(key="access_token", value=jwt_token)
+            jwt_token = create_jwt(user.id)
+            response.set_cookie(key="access_token", value=jwt_token, httponly=True)
+            return {"access_token": jwt_token, "token_type": "bearer"}
 
-            return {"detail": "Successfully logged in"}
 
-
-@auth_router.get("/users/{user_id}")
+@auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_user(user_id: int) -> UserResponse:
+def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+    print(user_payload)
     with SessionLocal() as session:
         with session.begin():
             user = session.query(User).filter_by(id=user_id).first()
             if not user:
                 raise HTTPException(404, f'User with id {user_id} does not exist')
-
             return UserResponse(id=user.id, fullName=user.name, email=user.email, address=user.address)
