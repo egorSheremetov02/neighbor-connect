@@ -20,7 +20,8 @@ incidents_router = APIRouter()
 
 @incidents_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_incident(request: Request, create_request: CreateIncidentRequest, user_payload=None) -> CreateIncidentResponse:
+def create_incident(request: Request, create_request: CreateIncidentRequest,
+                    user_payload=None) -> CreateIncidentResponse:
     sender_id = user_payload['user_id']
 
     if len(create_request.title) == 0:
@@ -33,10 +34,14 @@ def create_incident(request: Request, create_request: CreateIncidentRequest, use
             author = session.query(User).filter_by(id=sender_id).first()
 
             incident = Incident(
-                title=create_request.title, 
-                description=create_request.description, 
+                title=create_request.title,
+                description=create_request.description,
                 author_id=sender_id,
-                author=author
+                author=author,
+                status='pending',
+                created_at=create_request.created_at,
+                updated_at=create_request.created_at,
+                location=create_request.location
             )
             session.add(incident)
 
@@ -58,7 +63,8 @@ def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse
                     author_id=incident.author_id,
                     status=incident.status,
                     created_at=incident.created_at,
-                    updated_at=incident.updated_at
+                    updated_at=incident.updated_at,
+                    location=incident.location
                 )
 
             return ListIncidentsResponse(incidents=[to_pydantic(incident) for incident in incidents])
@@ -86,7 +92,8 @@ def delete_incident(request: Request, incident_id: int, user_payload=None) -> De
 
 @incidents_router.put("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest, user_payload=None) -> EditIncidentDataResponse:
+def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
+                       user_payload=None) -> EditIncidentDataResponse:
     sender_id = user_payload['user_id']
 
     if len(edit_request.title) == 0:
@@ -106,13 +113,16 @@ def edit_incident_data(request: Request, incident_id: int, edit_request: EditInc
 
             incident.title = edit_request.title
             incident.description = edit_request.description
+            incident.location = edit_request.location
+            incident.updated_at = edit_request.updated_at
 
         return EditIncidentDataResponse()
 
 
 @incidents_router.post("/{incident_id}/authorize", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest, user_payload=None) -> AuthorizeIncidentResponse:
+def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
+                       user_payload=None) -> AuthorizeIncidentResponse:
     sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
