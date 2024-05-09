@@ -14,37 +14,38 @@ import { Navigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../../auth/index'; // Import useAuth hook
 
-
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const [error, setError] = useState('');
-  const { setToken, getToken } = useAuth(); // Access setAuthToken function from useAuth
+  const { setToken } = useAuth(); // Access setToken function from useAuth
 
-  console.log(sessionStorage.getItem('token'))
-
-  if(sessionStorage.getItem('token')) {
+  if (sessionStorage.getItem('token')) {
     return <Navigate to="/" />;
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = {
-      login: event.target.elements.email.value,
-      password: event.target.elements.password.value,
-    };
+    const formData = new URLSearchParams();
+    formData.append('username', event.target.elements.email.value);
+    formData.append('password', event.target.elements.password.value);
+    formData.append('grant_type', ''); // Required field, can be empty
+    formData.append('client_id', ''); // Required field, can be empty
+    formData.append('client_secret', ''); // Required field, can be empty
 
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString(),
       });
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData)
-        setToken(responseData.token); // Set the authentication token
+        console.log(responseData.access_token)
+        setToken(responseData.access_token); // Set the authentication token
         setError('');
         // Redirect to home page after successful login
         setTimeout(() => {
