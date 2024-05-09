@@ -61,7 +61,7 @@ export default function Profile() {
                 />
 
                 <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
-                  Jane Doe
+                  Ahmed
                 </h1>
                 <h3 className="text-gray-600 font-lg text-semibold leading-6">
                   Owner at Her Company Inc.
@@ -182,19 +182,19 @@ export default function Profile() {
                   <div className="grid md:grid-cols-2 text-sm">
                     <div className="grid grid-cols-2">
                       <div className="px-4 py-2 font-semibold">First Name</div>
-                      <div className="px-4 py-2">Jane</div>
+                      <div className="px-4 py-2">Ahmed</div>
                     </div>
                     <div className="grid grid-cols-2">
                       <div className="px-4 py-2 font-semibold">Last Name</div>
-                      <div className="px-4 py-2">Doe</div>
+                      <div className="px-4 py-2">Elsayed</div>
                     </div>
                     <div className="grid grid-cols-2">
                       <div className="px-4 py-2 font-semibold">Gender</div>
-                      <div className="px-4 py-2">Female</div>
+                      <div className="px-4 py-2">Male</div>
                     </div>
                     <div className="grid grid-cols-2">
                       <div className="px-4 py-2 font-semibold">Contact No.</div>
-                      <div className="px-4 py-2">+11 998001001</div>
+                      <div className="px-4 py-2">+41 998001001</div>
                     </div>
                     <div className="grid grid-cols-2">
                       <div className="px-4 py-2 font-semibold">
@@ -213,9 +213,9 @@ export default function Profile() {
                       <div className="px-4 py-2">
                         <a
                           className="text-blue-800"
-                          href="mailto:jane@example.com"
+                          href="mailto:a@g.com"
                         >
-                          jane@example.com
+                          a@g.com
                         </a>
                       </div>
                     </div>
