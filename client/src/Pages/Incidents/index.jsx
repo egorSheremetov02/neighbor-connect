@@ -12,8 +12,24 @@ const Incidents = () => {
   const onCloseModal = () => setOpen(false);
 
   useEffect(() => {
-    fetch("http://localhost:8080/incidents/")
-      .then((response) => response.json())
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      console.error('Token not found.');
+      return;
+    }
+
+    fetch("http://localhost:8080/incidents/", {
+      headers: {
+        Authorization: token.substring(1, token.length-1),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => setIncidents(data.incidents))
       .catch((error) => console.error("Error fetching incidents:", error));
   }, []);
@@ -33,7 +49,7 @@ const Incidents = () => {
       <Grid container spacing={2} justifyContent="center">
         {incidents.map((incident) => (
           <Grid item xs={12} sm={6} md={4} key={incident.id}>
-            <IncidentCard title={incident.title} />
+            <IncidentCard incident={incident} />
           </Grid>
         ))}
       </Grid>
