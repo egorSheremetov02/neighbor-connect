@@ -6,6 +6,7 @@ import RegistrationForm from './Components/RegistrationForm/RegistrationForm';
 import { AuthProvider } from "./auth/index"; 
 
 const App = () => {
+  console.log(sessionStorage.getItem('token'))
   return (
     <AuthProvider>
       <Router basename="/">
