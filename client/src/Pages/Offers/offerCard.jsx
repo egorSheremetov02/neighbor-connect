@@ -4,7 +4,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import MapIcon from '@mui/icons-material/Map';
 
-const IncidentCard = ({ incident }) => {
+const OfferCard = ({ offer }) => {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +18,7 @@ const IncidentCard = ({ incident }) => {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/auth/users/${incident.author_id}`, {
+        const response = await fetch(`http://localhost:8080/auth/users/${offer.author_id}`, {
           headers: {
             Authorization: token.substring(1, token.length-1),
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -39,7 +39,7 @@ const IncidentCard = ({ incident }) => {
     fetchUserFullName();
   }, []);
 
-  const dateTime = new Date(incident?.created_at);
+  const dateTime = new Date(offer?.date);
   const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
   const formattedDateTime = dateTime.toLocaleDateString('en-US', options);
 
@@ -48,7 +48,7 @@ const IncidentCard = ({ incident }) => {
   }
 
   return (
-    <Card sx={{ width: '100%', maxWidth: 345, m: 2, backgroundColor: '#f5f5f5', overflow: 'visible' }}>
+    <Card sx={{ width: '300px', m: 2, backgroundColor: '#f5f5f5', overflow: 'visible' }}>
       <Grid container spacing={2} alignItems="center" sx={{ ml: 2, mr: 2, mt: 1 }}>
         <Grid item>
           <Avatar src="/public/images/profile.jfif" alt="Reporter" sx={{ width: 56, height: 56 }} />
@@ -65,16 +65,25 @@ const IncidentCard = ({ incident }) => {
       <CardMedia
         component="img"
         height="140"
-        image="/public/images/incidentimage1.png"
-        alt="Incident Scene"
+        image="/public/images/fast_food.png"
+        alt="Offer Image"
         sx={{ mt: 1, mb: 1 }}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {incident?.title}
+          {offer?.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {incident?.location}
+          {offer?.description}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Price: {offer?.price}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Product: {offer?.product}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Date: {formattedDateTime}
         </Typography>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
           <IconButton aria-label="like" color="primary">
@@ -88,7 +97,7 @@ const IncidentCard = ({ incident }) => {
           <IconButton color="default">
             <MapIcon />
             <Typography variant="caption" display="block">
-              Go to map
+              Go to seller page
             </Typography>
           </IconButton>
         </div>
@@ -97,4 +106,4 @@ const IncidentCard = ({ incident }) => {
   );
 };
 
-export default IncidentCard;
+export default OfferCard;
