@@ -13,12 +13,18 @@ poetry run uvicorn app.main:app --port 8080
 
 ```
 
-Testing (swagger):
+# Testing (swagger):
 ``` shell
 http://localhost:8080/docs
 ```
 
-Project structure:
+Endpoints:
+![Endpoints](images/endpoints.png)
+Schema:
+![Schema](images/schema.png)
+
+
+# Project structure:
 
 ```
 .
