@@ -26,15 +26,14 @@ const AddOffer = () => {
       product: product,
       date: date,
     };
-    const token = sessionStorage.getItem('token');
-
+    const token = sessionStorage.getItem("token");
 
     // Perform API POST request
     fetch("http://localhost:8080/offers/", {
       method: "POST",
       headers: {
-        Authorization: token.substring(1, token.length-1),
-        "Content-Type": "application/json"
+        Authorization: token.substring(1, token.length - 1),
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(offerData),
     })
@@ -47,7 +46,9 @@ const AddOffer = () => {
       })
       .then((data) => {
         // Display success message
-        setSuccessMessage("Offer added successfully. Offer ID: " + data.offer_id);
+        setSuccessMessage(
+          "Offer added successfully. Offer ID: " + data.offer_id
+        );
         // Clear input fields
         setTitle("");
         setDescription("");
@@ -64,10 +65,13 @@ const AddOffer = () => {
   return (
     <form className="w-full max-w-lg" onSubmit={handleSubmit}>
       {successMessage && <Alert severity="success">{successMessage}</Alert>}
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+      {errorMessage && <p>{errorMessage}</p>}
       <div className="flex flex-wrap -mx-3 mb-6">
         <div className="w-full px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="title">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="title"
+          >
             Offer Title
           </label>
           <input
@@ -79,12 +83,17 @@ const AddOffer = () => {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
-          <p className="text-red-500 text-xs italic">Please fill out this field.</p>
+          <p className="text-red-500 text-xs italic">
+            Please fill out this field.
+          </p>
         </div>
       </div>
       <div className="flex flex-wrap -mx-3 mb-6">
         <div className="w-full px-3">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="description">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="description"
+          >
             Description
           </label>
           <textarea
@@ -99,7 +108,10 @@ const AddOffer = () => {
       </div>
       <div className="flex flex-wrap -mx-3 mb-6">
         <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="date">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="date"
+          >
             Date
           </label>
           <input
@@ -112,7 +124,10 @@ const AddOffer = () => {
           />
         </div>
         <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="product">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="product"
+          >
             Product
           </label>
           <select
@@ -129,7 +144,10 @@ const AddOffer = () => {
           </select>
         </div>
         <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="price">
+          <label
+            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="price"
+          >
             Price
           </label>
           <input
@@ -144,8 +162,13 @@ const AddOffer = () => {
         </div>
       </div>
       <div className="flex flex-wrap -mx-3 mb-2">
-        
-        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          data-testid="submit-button"
+          sx={{ mt: 3, mb: 2 }}
+        >
           Submit
         </Button>
       </div>
