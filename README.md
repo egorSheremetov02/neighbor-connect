@@ -54,7 +54,7 @@ Neighbor Connect is a web application designed to facilitate communication and i
 
 4. Test the backend server at: [http://localhost:8080/docs](http://localhost:8080/docs)
 
-## Running the Frontend Server [client folder]
+## Running the Frontend Server [frontend folder]
 
 1. Install frontend dependencies:
    ```bash
