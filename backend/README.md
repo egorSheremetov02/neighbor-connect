@@ -25,7 +25,7 @@ Project structure:
 ├── API.md
 ├── API_Chats.md
 ├── README.md
-├── app
+├── app                         # application root
 │   ├── __init__.py
 │   ├── api
 │   │   ├── __init__.py
@@ -56,5 +56,5 @@ Project structure:
 │   ├── init_db.py
 │   └── main.py                # database initialization 
 ├── poetry.lock
-└── pyproject.toml
+└── pyproject.toml             # a file listing python dependencies 
 ```
