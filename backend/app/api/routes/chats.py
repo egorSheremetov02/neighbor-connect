@@ -5,7 +5,10 @@ from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
                                   EditChatDataRequest, EditChatDataResponse,
                                   DeleteChatRequest, DeleteChatResponse,
                                   SendMessageRequest, SendMessageResponse,
-                                  Message as APIMessage, ListMessagesResponse)
+                                  Message as APIMessage,
+                                  ListMessagesResponse,
+                                  ListChatUsersResponse,
+                                  UserInfo)
 import logging, sqlalchemy
 
 from app.db_models.chats import Chat, Tag, User, Message
