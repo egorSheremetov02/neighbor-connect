@@ -3,6 +3,16 @@ import logging
 
 
 class Settings(BaseSettings):
+    """
+    This class defines the settings configuration for database connection.
+
+    Attributes:
+        DB_PASSWORD (str): The password for the database connection. Default is an empty string.
+        DB_USER (str): The username for the database connection. Default is 'postgres'.
+        DB_HOSTNAME (str): The hostname for the database connection. Default is 'localhost'.
+        DB_PORT (int): The port number for the database connection. Default is 5432.
+        DB_NAME (str): The name of the database. Default is 'postgres'.
+    """
     DB_PASSWORD: str = ''
     DB_USER: str = 'postgres'
     DB_HOSTNAME: str = 'localhost'
