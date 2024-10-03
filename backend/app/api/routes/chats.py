@@ -23,6 +23,12 @@ security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 @chats_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def create_chat(request: Request, create_chat_request: CreateChatRequest, user_payload=None) -> CreateChatResponse:
+    """
+    :param request: Current HTTP request context.
+    :param create_chat_request: Object containing the chat creation details.
+    :param user_payload: Decoded JWT token payload containing user information.
+    :return: Response object containing the created chat's ID.
+    """
     sender_id = user_payload['user_id']
 
     validate_chat_request(create_chat_request)
@@ -70,6 +76,12 @@ def create_chat(request: Request, create_chat_request: CreateChatRequest, user_p
 @chats_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, user_payload=None) -> EditChatDataResponse:
+    """
+    :param request: The HTTP request object containing metadata about the request.
+    :param edit_chat_request: The edit chat data request object containing the details to update the chat.
+    :param user_payload: Optional; The user information payload generally extracted from the authorization token.
+    :return: Returns an EditChatDataResponse object that contains the updated chat data.
+    """
     sender_id = user_payload['user_id']
 
     validate_chat_request(edit_chat_request)
@@ -119,6 +131,15 @@ def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, use
 @chats_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def delete_chat(request: Request, delet_chat_request: DeleteChatRequest, user_payload=None) -> DeleteChatResponse:
+    """
+    :param request: The request object that contains metadata about the request
+    :param delet_chat_request: The request payload containing the chat ID to be deleted
+    :type delet_chat_request: DeleteChatRequest
+    :param user_payload: The payload containing user information extracted from the JWT token, defaults to None
+    :type user_payload: dict, optional
+    :return: Response indicating the result of the delete chat operation
+    :rtype: DeleteChatResponse
+    """
     sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
@@ -142,6 +163,13 @@ MAX_MESSAGE_CONTENT_LENGTH = 5000
 @chats_router.post("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def send_message(request: Request, chat_id: int, send_msg_request: SendMessageRequest, user_payload=None) -> SendMessageResponse:
+    """
+    :param request: The HTTP request object.
+    :param chat_id: The ID of the chat to which the message is being sent.
+    :param send_msg_request: The request body containing the message content and optional image ID.
+    :param user_payload: The payload of the authenticated user, containing user details.
+    :return: An instance of SendMessageResponse indicating the outcome of the message sending operation.
+    """
     sender_id = user_payload['user_id']
 
     if len(send_msg_request.content) == 0 or len(send_msg_request.content) > MAX_MESSAGE_CONTENT_LENGTH:
@@ -180,6 +208,13 @@ PAGE_SIZE = 5
 @chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def list_messages(request: Request, chat_id: int, page_id: int | None = None, user_payload=None) -> ListMessagesResponse:
+    """
+    :param request: The HTTP request object
+    :param chat_id: The ID of the chat to retrieve messages from
+    :param page_id: The page number for paginated messages, optional, defaults to the latest page
+    :param user_payload: User authentication payload containing user details
+    :return: ListMessagesResponse object containing the list of messages and the next page ID, if available
+    """
     sender_id = user_payload['user_id']
 
     with SessionLocal() as session:
@@ -222,6 +257,10 @@ def list_messages(request: Request, chat_id: int, page_id: int | None = None, us
 @chats_router.get("/{chat_id}")
 @jwt_token_required
 def list_users(chat_id: int) -> ListChatUsersResponse:
+    """
+    :param chat_id: Unique identifier of the chat.
+    :return: A response object containing a list of users in the specified chat.
+    """
     with SessionLocal() as session:
         with session.begin():
             chat = session.query(Chat).filter_by(id=chat_id).first()

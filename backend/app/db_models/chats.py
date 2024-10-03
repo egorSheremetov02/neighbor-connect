@@ -32,6 +32,36 @@ user_chat_administration_association = Table(
 
 
 class User(DBBase):
+    """
+        User
+        ----
+        Represents a user entity in the database.
+
+        Attributes
+        ----------
+        __tablename__ : str
+            Name of the database table.
+        id : Integer
+            Primary key for the user table.
+        name : String
+            Name of the user. Default is "Test user".
+        email : String
+            Email of the user. Cannot be null.
+        login : String
+            Login identifier for the user. Cannot be null.
+        password_hashed : String
+            Hashed password for the user. Cannot be null.
+        birthday : String
+            Birthday of the user. Cannot be null.
+        additional_info : String
+            Any additional information about the user. Can be null.
+        address : String
+            Address of the user. Cannot be null.
+        chats : Mapped[List["Chat"]]
+            List of chats the user is part of. Many-to-many relationship.
+        chats_in_administration : Mapped[List["Chat"]]
+            List of chats the user administrates. Many-to-many relationship.
+    """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, default="Test user", nullable=False)
@@ -46,6 +76,19 @@ class User(DBBase):
 
 
 class Message(DBBase):
+    """
+        Message database model representing a message in a chat application.
+
+        Attributes:
+            __tablename__ (str): Name of the database table.
+            id (int): Primary key for the message record.
+            content (str): Content of the message.
+            image_id (int | None): Foreign key referencing the image associated with the message.
+            author_id (int): Foreign key referencing the author of the message.
+            author (User): Relationship to the User model.
+            created_at (datetime): Timestamp when the message was created.
+            chat_id (int): Foreign key referencing the chat to which the message belongs.
+    """
     __tablename__ = "messages"
     id = Column(Integer, primary_key=True)
     content = Column(String, nullable=False)
@@ -62,6 +105,30 @@ class Tag(DBBase):
 
 
 class Chat(DBBase):
+    """
+        Class representing a Chat entity in the database.
+
+        Attributes
+        ----------
+        __tablename__ : str
+            Name of the table in the database.
+        id : Mapped[int]
+            Unique identifier for each chat, primary key.
+        name : sqlalchemy.Column
+            Name of the chat, not nullable.
+        description : sqlalchemy.Column
+            Optional description of the chat.
+        tags : Mapped[List[Tag]]
+            List of tags associated with the chat, many-to-many relationship.
+        image_id : Mapped[int | None]
+            Foreign key referring to an image associated with the chat, can be null.
+        users : Mapped[List["User"]]
+            List of users participating in the chat, many-to-many relationship.
+        admins : Mapped[List["User"]]
+            List of users who are administrators of the chat, many-to-many relationship.
+        messages : Mapped[List["Message"]]
+            List of messages in the chat, ordered by creation time in ascending order.
+    """
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)

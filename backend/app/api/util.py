@@ -19,6 +19,11 @@ SECRET = 'e8b7e8b7e8b7e8b7e8b7e8b7e8b7e8b7'
 # TODO: move to .env
 
 def validate_chat_request(request):
+    """
+    :param request: The chat creation request object containing name, description, and tags of the chat.
+    :return: None
+    :raises HTTPException: If the name length exceeds the allowed range, the description length exceeds the allowed range, or the amount of tags exceeds the maximum limit.
+    """
     if len(request.name) == 0 or len(request.name) > MAX_CHAT_NAME_LENGTH:
         raise HTTPException(400, f'Name length of chat should be in range [1 .. {MAX_CHAT_NAME_LENGTH}]')
     if len(request.description) == 0 or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH:
@@ -28,6 +33,10 @@ def validate_chat_request(request):
 
 
 def validate_tags(tags: list[str]) -> None:
+    """
+    :param tags: List of tags to be validated. Each tag should be a non-empty string with a length not exceeding MAX_TAG_LENGTH. Tags must follow the format specified by the regular expression '[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9]'.
+    :return: None. Raises HTTPException if any tag is invalid.
+    """
     for tag in tags:
         if len(tag) == 0 or len(tag) > MAX_TAG_LENGTH:
             raise HTTPException(400, f'Length of tag \'{tag}\' should be in range [1 .. {MAX_TAG_LENGTH}]')
@@ -36,6 +45,10 @@ def validate_tags(tags: list[str]) -> None:
 
 
 def check_image_exists(image_id: int) -> None:
+    """
+    :param image_id: The unique identifier of the image to check in the database.
+    :return: Raises an HTTPException if the image does not exist in the database.
+    """
     with SessionLocal() as session:
         with session.begin():
             image = session.query(Image).filter_by(id=image_id).first()
@@ -44,6 +57,10 @@ def check_image_exists(image_id: int) -> None:
 
 
 def create_jwt(user_id):
+    """
+    :param user_id: Unique identifier of the user for whom the JWT is being created
+    :return: A JWT token encoded with the user's information, time of issuance, and expiration date set to 7 days from issuance.
+    """
     current_time = datetime.datetime.now(datetime.timezone.utc)
 
     payload = {
@@ -57,16 +74,31 @@ def create_jwt(user_id):
 
 
 def get_password_hash(password: str) -> str:
+    """
+    :param password: The plain text password that needs to be hashed.
+    :return: A hashed version of the provided password encoded in utf-8.
+    """
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     return hashed_password.decode('utf-8')
 
 
 def verify_password(stored_hash: str, provided_password: str) -> bool:
+    """
+    :param stored_hash: The hashed password stored in the database.
+    :param provided_password: The plaintext password provided by the user.
+    :return: True if the provided password matches the stored hash, False otherwise.
+    """
     return bcrypt.checkpw(provided_password.encode(), stored_hash.encode())
 
 
 def jwt_token_required(f):
+    """
+    :param f: Function to be decorated.
+    :return: Decorated function which checks for a valid JWT token in cookies or headers, decodes it,
+             reads user information and appends it to keyword arguments. If the token is invalid
+             or the user does not exist, raises an HTTPException.
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         request: Request = kwargs.get('request')

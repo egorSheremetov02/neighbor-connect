@@ -21,6 +21,16 @@ logger = logging.getLogger(__name__)
 @offers_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
+    """
+    :param request: The request object representing the current API request.
+    :type request: Request
+    :param create_offer_request: The request body containing offer creation details such as title, description, price, product, and date.
+    :type create_offer_request: CreateOfferRequest
+    :param user_payload: User payload containing user-specific information extracted from the JWT. Defaults to None.
+    :type user_payload: dict, optional
+    :return: The response containing the ID of the newly created offer.
+    :rtype: CreateOfferResponse
+    """
     sender_id = user_payload['user_id']
 
     if len(create_offer_request.title) == 0:
@@ -43,6 +53,11 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
 @offers_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def list_offers(request: Request, user_payload=None) -> ListOffersResponse:
+    """
+    :param request: The request object.
+    :param user_payload: The payload containing user-specific data, typically decoded from a JWT token.
+    :return: A ListOffersResponse object containing a list of offers.
+    """
     sender_id = user_payload['user_id']
     print("SENDER ID: ", sender_id)
     with SessionLocal() as session:
@@ -68,6 +83,12 @@ def list_offers(request: Request, user_payload=None) -> ListOffersResponse:
 @jwt_token_required
 def edit_offer_data(request: Request, edit_offer_data_request: EditOfferDataRequest,
                     user_payload=None) -> EditOfferDataResponse:
+    """
+    :param request: The current request instance containing request data.
+    :param edit_offer_data_request: An instance of EditOfferDataRequest containing the offer details to be edited.
+    :param user_payload: The payload extracted from the user's JWT token, containing user-specific information.
+    :return: An instance of EditOfferDataResponse indicating the result of the offer edit operation.
+    """
     sender_id = user_payload['user_id']
 
     if len(edit_offer_data_request.title) == 0:
@@ -98,6 +119,12 @@ def edit_offer_data(request: Request, edit_offer_data_request: EditOfferDataRequ
 @offers_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
+    """
+    :param request: The incoming HTTP request.
+    :param delete_offer_request: The request object containing information necessary to delete an offer, such as offer_id.
+    :param user_payload: The payload object from the JWT token containing user-specific information, such as user_id.
+    :return: A response object indicating the successful deletion of the offer.
+    """
     sender_id = user_payload['user_id']
 
     with SessionLocal() as session:

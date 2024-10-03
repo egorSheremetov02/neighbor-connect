@@ -3,6 +3,11 @@ from app.core.db import SessionLocal
 
 
 def init_db():
+    """
+    Initializes the database with a test user.
+
+    :return: None
+    """
     with SessionLocal() as session:
         with session.begin():
             # This user is just for health check purposes
