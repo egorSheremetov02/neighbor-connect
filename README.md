@@ -21,7 +21,7 @@ Neighbor Connect is a web application designed to facilitate communication and i
 
 - **Backend**:
   - Python
-  - Django
+  - Fastapi
 
   ### Backend Dependencies:
 
