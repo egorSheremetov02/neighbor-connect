@@ -19,18 +19,23 @@ Neighbors join the platform by creating a profile and connecting with others in 
 The Neighborhood Connect app strengthens community bonds by making it easy to share resources, get help, and stay informed. It promotes safety, collaboration, and local engagement, creating a more supportive and connected environment. Whether it’s organizing events or helping a neighbor in need, the app fosters a sense of belonging and cooperation, enhancing everyday neighborhood life.
 
 ## Features
-- Login and Registration:
-    ![Login and Registration](./assets/intro-images/Login%20and%20Registration.png)
-    [Login Page](https://google.com/)
-- Chat Functionality
-    ![Chat Functionality](./assets/intro-images/Chats%20Functionality.png)
-    [Chat Page](https://google.com/)
-- Incident Reporting
-    ![Incident Reporting](./assets/intro-images/Incident%20Reporting.png)
-    [Incident Page](https://google.com/)
-- Sales Offer
-    ![Sales Offer](./assets/intro-images/Sales%20Offer.png)
-    [Offer Page](https://google.com/)
+
+### 1. Login and Registration
+![Login and Registration](./assets/intro-images/Login%20and%20Registration.png)
+- Provides secure login and registration functionality to manage user access.
+
+### 2. Chat Functionality
+![Chat Functionality](./assets/intro-images/Chats%20Functionality.png)
+- Real-time messaging system to facilitate communication between neighbors.
+
+### 3. Incident Reporting
+![Incident Reporting](./assets/intro-images/Incident%20Reporting.png)
+- Easy-to-use form for reporting incidents within the community.
+
+### 4. Sales Offer
+![Sales Offer](./assets/intro-images/Sales%20Offer.png)
+- Platform for neighbors to list and browse items for sale or trade.
+
 
 ## Conclusion
 In conclusion, the Neighborhood Connect app fosters stronger, safer, and more engaged communities through its suite of practical features. By simplifying login and registration, neighbors can easily connect with verified local residents. The chat functionality promotes communication and collaboration, while incident reporting enhances neighborhood safety by keeping everyone informed of potential threats. Additionally, the sales offer feature supports local commerce, enabling users to buy, sell, and trade within their community. Together, these features create a more supportive, connected, and thriving neighborhood environment.
