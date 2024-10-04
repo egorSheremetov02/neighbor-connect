@@ -102,3 +102,63 @@ Neighbor Connect is a web application designed to facilitate communication and i
    ```
 
 3. Test the frontend server at: [http://localhost:5173/](http://localhost:5173/)
+
+## Tools for the Project with their official websites
+Here’s a list of the tools and technologies used to develop Neighbor Connect, including links to their official websites and useful tutorials.
+
+### Frontend
+1. **React** - A JavaScript library for building user interfaces.
+   - Official site: [React](https://reactjs.org/)
+   - Tutorial: [React Official Tutorial](https://reactjs.org/tutorial/tutorial.html)
+
+2. **Vite** - A build tool for faster development.
+   - Official site: [Vite](https://vitejs.dev/)
+   - Guide: [Getting Started with Vite](https://vitejs.dev/guide/)
+
+### Frontend Dependencies
+- **@emotion/react** - A library for writing CSS styles with JavaScript.
+   - Official site: [Emotion](https://emotion.sh/docs/introduction)
+
+- **@mui/icons-material** - Material UI icons for React.
+   - Official site: [MUI Icons](https://mui.com/components/icons/)
+
+- **react-responsive-modal** - A simple, responsive modal library for React.
+   - Official site: [react-responsive-modal](https://react-responsive-modal.leopradel.com/)
+
+- **react-router-dom** - A routing library for React applications.
+   - Official site: [React Router](https://reactrouter.com/en/main)
+
+### Backend
+1. **Python** - A powerful, versatile programming language.
+   - Official site: [Python](https://www.python.org/)
+   - Tutorial: [Python Official Tutorial](https://docs.python.org/3/tutorial/index.html)
+
+2. **FastAPI** - A high-performance Python web framework for building APIs.
+   - Official site: [FastAPI](https://fastapi.tiangolo.com/)
+   - Tutorial: [FastAPI Full Tutorial](https://fastapi.tiangolo.com/tutorial/)
+
+### Backend Dependencies
+- **Uvicorn** - An ASGI web server for Python.
+   - Official site: [Uvicorn](https://www.uvicorn.org/)
+   - Guide: [Uvicorn Introduction](https://www.uvicorn.org/#quickstart)
+
+- **SQLAlchemy** - A SQL toolkit and ORM for Python.
+   - Official site: [SQLAlchemy](https://www.sqlalchemy.org/)
+   - Tutorial: [SQLAlchemy Tutorial](https://docs.sqlalchemy.org/en/14/tutorial/)
+
+- **Pydantic** - Data validation and settings management using Python type annotations.
+   - Official site: [Pydantic](https://pydantic-docs.helpmanual.io/)
+   - Guide: [Pydantic User Guide](https://pydantic-docs.helpmanual.io/usage/)
+
+- **Poetry** - A dependency management tool for Python.
+   - Official site: [Poetry](https://python-poetry.org/)
+   - Tutorial: [Getting Started with Poetry](https://python-poetry.org/docs/)
+
+- **PostgreSQL** - A powerful, open-source relational database system.
+   - Official site: [PostgreSQL](https://www.postgresql.org/)
+   - Tutorial: [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
+
+### Other Tools
+1. **Docker** - A platform for developing, shipping, and running applications in containers.
+   - Official site: [Docker](https://www.docker.com/)
+   - Guide: [Docker Getting Started](https://docs.docker.com/get-started/)
