@@ -54,8 +54,11 @@ jobs:
             echo "Waiting for postgres to be ready..."
             sleep 2
           done
-
+      - name: List backend directory contents
+        working-directory: ./backend
+        run: |
+          ls -R
       - name: Run tests
         working-directory: ./backend
         run: |
-          poetry run test
+          poetry run test tests
