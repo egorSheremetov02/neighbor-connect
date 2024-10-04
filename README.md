@@ -167,3 +167,7 @@ Here’s a list of the tools and technologies used to develop Neighbor Connect, 
 1. **Docker** - A platform for developing, shipping, and running applications in containers.
    - Official site: [Docker](https://www.docker.com/)
    - Guide: [Docker Getting Started](https://docs.docker.com/get-started/)
+
+### Documentations
+- Requirement Documentation: https://docs.google.com/document/d/17m9Jp-vsVd-kxuXfa2swfchQc2MezCDiDNIYg4LUKDc/edit?usp=sharing
+- Architecture Documentation: https://docs.google.com/document/d/19VOkKtT8052kxtNJWQu7MV0q74wyAkBZtGdiUQUfWQw/edit?usp=sharing
