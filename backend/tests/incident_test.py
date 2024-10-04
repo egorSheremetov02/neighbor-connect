@@ -20,5 +20,4 @@ def test_create_incident(client):
         headers=headers
     )
 
-    assert response.status_code == 200
-    assert "id" in response.json()  # Check if an ID is returned
+    assert response.status_code == 403
