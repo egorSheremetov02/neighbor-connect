@@ -84,7 +84,7 @@ Neighbor Connect is a web application designed to facilitate communication and i
 
 2. Run PostgreSQL Docker container:
    ```bash
-   docker run -d -p 5432:5432 --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres
+   docker run -d -p 5433:5432 --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres
    ```
 
 3. Run the backend server:
