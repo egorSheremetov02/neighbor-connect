@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.constants import MAX_INVITED_USERS
-from app.api_models.chats import (CreateChatRequest, CreateChatResponse,
-                                  EditChatDataRequest, EditChatDataResponse,
-                                  DeleteChatRequest, DeleteChatResponse,
-                                  SendMessageRequest, SendMessageResponse,
-                                  Message as APIMessage,
-                                  ListMessagesResponse,
-                                  ListChatUsersResponse,
-                                  UserInfo)
+from app.api_models.chats import (
+    Message as APIMessage, UserInfo as APIUserInfo,
+    GetAllUsersRequest, GetAllUsersResponse,
+    CreateChatRequest, CreateChatResponse,
+    EditChatDataRequest, EditChatDataResponse,
+    GetChatDataRequest, GetChatDataResponse,
+    DeleteChatRequest, DeleteChatResponse,
+    SendMessageRequest, SendMessageResponse,
+    ListMessagesRequest, ListMessagesResponse
+)
 import logging, sqlalchemy
 
 from app.db_models.chats import Chat, Tag, User, Message
@@ -25,9 +27,8 @@ security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 
 @chats_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_chat(request: Request, create_chat_request: CreateChatRequest, user_payload=None) -> CreateChatResponse:
+def create_chat(create_chat_request: CreateChatRequest, user_payload) -> CreateChatResponse:
     """
-    :param request: Current HTTP request context.
     :param create_chat_request: Object containing the chat creation details.
     :param user_payload: Decoded JWT token payload containing user information.
     :return: Response object containing the created chat's ID.
