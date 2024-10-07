@@ -66,7 +66,8 @@ def create_chat(request: CreateChatRequest, user_payload: JWTPayload) -> CreateC
                     tags=tags,
                     image_id=request.image_id,
                     users_ids=users,
-                    admins_ids=[sender_id])
+                    admins_ids=[sender_id],
+                    messages=[])
 
         session.add(chat)
         session.flush()  # this should execute the query and generate chat id
@@ -184,7 +185,6 @@ def send_message(chat_id: int, request: SendMessageRequest, user_payload: JWTPay
             image_id=request.image_id,
             author=sender,
             chat_id=chat_id,
-            author=sender
         )
         session.add(message)
 

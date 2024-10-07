@@ -47,7 +47,7 @@ class Chat(DBBase):
     users: Mapped[List[User]] = relationship()
     admins_ids: Mapped[List[int]] = mapped_column(ForeignKey("users.id"))
     admins: Mapped[List["User"]] = relationship()
-    messages: Mapped[List["Message"]] = relationship(order_by="desc(Message.created_at)", cascade="all, delete", default=[])
+    messages: Mapped[List["Message"]] = relationship(order_by="desc(Message.created_at)", cascade="all, delete")
 
 
 class Image(DBBase):
