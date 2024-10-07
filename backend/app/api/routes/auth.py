@@ -1,6 +1,6 @@
 from fastapi import Request
 
-from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse
+from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse, UsersDataRequest, UsersDataResponse
 from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
 
@@ -12,6 +12,7 @@ from app.core.db import SessionLocal
 from fastapi import HTTPException
 
 from app.api.util import get_password_hash, verify_password, create_jwt, jwt_token_required
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -80,17 +81,35 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
-    """
-    :param request: The current request being processed.
-    :param user_id: The unique identifier of the user to be retrieved.
-    :param user_payload: The payload containing information about the user, typically extracted from the JWT token.
-    :return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.
-    """
-    print(user_payload)
-    with SessionLocal() as session:
-        with session.begin():
-            user = session.query(User).filter_by(id=user_id).first()
-            if not user:
-                raise HTTPException(404, f'User with id {user_id} does not exist')
-            return UserResponse(id=user.id, fullName=user.name, email=user.email, address=user.address)
+def get_user(user_id: int) -> User:
+    with SessionLocal().begin() as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(404, f'User with id {user_id} does not exist')
+        return User(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            login=user.login,
+            address=user.address,
+            birthday=user.birthday,
+            additional_info=user.additional_info
+        )
+
+
+@auth_router.get("/users/}", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+def get_many_users(request: UsersDataRequest) -> UsersDataResponse:
+    with SessionLocal.begin() as session:
+        result = session.scalars(select(User).filter(User.id.in_(request.users_ids))).all()
+        users = [
+            User(id=user.id,
+                name=user.name,
+                email=user.email,
+                login=user.login,
+                address=user.address,
+                birthday=user.birthday,
+                additional_info=user.additional_info) for user in result
+        ]
+        return UsersDataResponse(users)
+

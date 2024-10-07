@@ -1,7 +1,7 @@
 import re
 from fastapi import HTTPException, Request
 
-from app.api.constants import MAX_CHAT_NAME_LENGTH, MAX_TAGS_AMOUNT, MAX_CHAT_DESCRIPTION_LENGTH
+from app.api.constants import MAX_CHAT_NAME_LENGTH, MAX_INVITED_USERS, MAX_TAGS_AMOUNT, MAX_CHAT_DESCRIPTION_LENGTH
 from app.core.db import SessionLocal
 from app.db_models.chats import User, Image
 import bcrypt
@@ -9,6 +9,7 @@ import jwt
 import datetime
 from functools import wraps
 from typing import Callable
+from pydantic import BaseModel
 from starlette.types import ASGIApp
 
 
@@ -30,6 +31,8 @@ def validate_chat_request(request):
         raise HTTPException(400, f'Description length of chat should be in range [1 .. {MAX_CHAT_DESCRIPTION_LENGTH}]')
     if len(request.tags) >= MAX_TAGS_AMOUNT:
         raise HTTPException(400, f'Amount of tags should not exceed {MAX_TAGS_AMOUNT}')
+    if len(request.users) == 0 or len(request.users) > MAX_INVITED_USERS:
+        raise HTTPException(400, f'Number of users in chat should be in range [1 .. {MAX_INVITED_USERS}]')
 
 
 def validate_tags(tags: list[str]) -> None:
@@ -92,6 +95,11 @@ def verify_password(stored_hash: str, provided_password: str) -> bool:
     return bcrypt.checkpw(provided_password.encode(), stored_hash.encode())
 
 
+# todo: use in jwt_create() too
+class JWTPayload(BaseModel):
+    user_id: int
+
+
 def jwt_token_required(f):
     """
     :param f: Function to be decorated.
@@ -116,7 +124,7 @@ def jwt_token_required(f):
 
         try:
             payload = jwt.decode(token, SECRET, algorithms=["HS256"])
-            kwargs['user_payload'] = payload
+            kwargs['user_payload'] = JWTPayload(user_id=payload["user_id"])
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as _:
             raise HTTPException(status_code=403, detail="Invalid token")
 
