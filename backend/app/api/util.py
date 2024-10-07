@@ -95,11 +95,6 @@ def verify_password(stored_hash: str, provided_password: str) -> bool:
     return bcrypt.checkpw(provided_password.encode(), stored_hash.encode())
 
 
-# todo: use in jwt_create() too
-class JWTPayload(BaseModel):
-    user_id: int
-
-
 def jwt_token_required(f):
     """
     :param f: Function to be decorated.
@@ -124,7 +119,7 @@ def jwt_token_required(f):
 
         try:
             payload = jwt.decode(token, SECRET, algorithms=["HS256"])
-            kwargs['user_payload'] = JWTPayload(user_id=payload["user_id"])
+            kwargs['user_payload'] = payload
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as _:
             raise HTTPException(status_code=403, detail="Invalid token")
 

@@ -5,12 +5,11 @@ from datetime import datetime
 # ---- data models ----
 
 
-# frontend note: 
-# to get author name, keep data about all users (use /auth/users to get it in bulk)
 class Message(BaseModel):
     content: str
     image_id: int | None
     author_id: int
+    author_name: str
     created_at: datetime
 
 
@@ -87,16 +86,16 @@ class SendMessageRequest(BaseModel):
     """Send a message to a chat. Author is implied from auth token."""
     content: str
     image_id: int | None = None
-    chat_id: int
 
 
 class SendMessageResponse(BaseModel):
     pass
 
 
+# unused: GET requests cannot have body. kept for consistency
 class ListMessagesRequest(BaseModel):
     """List all messages in a chat, sorted by creation time. Pagination is currently unused."""
-    page_id: int | None = None
+    pass
 
 
 class ListMessagesResponse(BaseModel):
