@@ -58,9 +58,9 @@ class User(BaseModel):
     name: str
     email: str
     login: str
-    birthday: datetime
-    address: str
+    birthday: datetime | None
     additional_info: str | None
+    address: str
 
 
 class UsersDataRequest(BaseModel):

@@ -81,8 +81,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_user(user_id: int) -> APIUser:
-    with SessionLocal().begin() as session:
+def get_user(request: Request, user_id: int, user_payload = None) -> APIUser:
+    with SessionLocal.begin() as session:
         user = session.get(User, user_id)
         if not user:
             raise HTTPException(404, f'User with id {user_id} does not exist')
@@ -99,9 +99,9 @@ def get_user(user_id: int) -> APIUser:
 
 @auth_router.get("/users/}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_many_users(request: UsersDataRequest) -> UsersDataResponse:
+def get_many_users(request: Request, users_data_request: UsersDataRequest, user_payload = None) -> UsersDataResponse:
     with SessionLocal.begin() as session:
-        result = session.scalars(select(User).filter(User.id.in_(request.users_ids))).all()
+        result = session.scalars(select(User).where(User.id.in_(users_data_request.users_ids))).all()
         users = [
             APIUser(id=user.id,
                 name=user.name,
@@ -111,5 +111,5 @@ def get_many_users(request: UsersDataRequest) -> UsersDataResponse:
                 birthday=user.birthday,
                 additional_info=user.additional_info) for user in result
         ]
-        return UsersDataResponse(users)
+        return UsersDataResponse(users=users)
 
