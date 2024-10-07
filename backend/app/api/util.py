@@ -109,7 +109,8 @@ def jwt_token_required(f):
         if not token:
             try:
                 authorization = request.headers['Authorization']
-                token = authorization.split()[0]
+                # expected auth header format: "Bearer [token]"
+                token = authorization.split()[1]
             except KeyError:
                 raise HTTPException(status_code=401, detail="Authorization header not found")
 
