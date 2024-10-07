@@ -1,6 +1,6 @@
 from fastapi import Request
 
-from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse, UsersDataRequest, UsersDataResponse
+from app.api_models.auth import RegisterRequest, RegisterResponse, UsersDataRequest, UsersDataResponse, User as APIUser
 from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
 
@@ -81,12 +81,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_user(user_id: int) -> User:
+def get_user(user_id: int) -> APIUser:
     with SessionLocal().begin() as session:
         user = session.get(User, user_id)
         if not user:
             raise HTTPException(404, f'User with id {user_id} does not exist')
-        return User(
+        return APIUser(
             id=user.id,
             name=user.name,
             email=user.email,
@@ -103,7 +103,7 @@ def get_many_users(request: UsersDataRequest) -> UsersDataResponse:
     with SessionLocal.begin() as session:
         result = session.scalars(select(User).filter(User.id.in_(request.users_ids))).all()
         users = [
-            User(id=user.id,
+            APIUser(id=user.id,
                 name=user.name,
                 email=user.email,
                 login=user.login,
