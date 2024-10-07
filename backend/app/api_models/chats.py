@@ -5,15 +5,16 @@ from datetime import datetime
 # ---- data models ----
 
 
+# frontend note: 
+# to get author name, keep data about all users (use /auth/users to get it in bulk)
 class Message(BaseModel):
     content: str
     image_id: int | None
     author_id: int
-    author_name: str
     created_at: datetime
 
 
-class UserInfo(BaseModel):
+class UserShortInfo(BaseModel):
     id: int
     name: str
 
@@ -69,7 +70,7 @@ class GetChatDataResponse(BaseModel):
     description: str
     tags: list[str]
     image_id: int | None = None
-    users_infos: list[UserInfo]
+    users_infos: list[UserShortInfo]
     admin_users: list[int]
 
 
@@ -94,11 +95,19 @@ class SendMessageResponse(BaseModel):
 
 
 class ListMessagesRequest(BaseModel):
-    """List all messages in a chat. Pagination is currently unused."""
-    chat_id: int
+    """List all messages in a chat, sorted by creation time. Pagination is currently unused."""
     page_id: int | None = None
 
 
 class ListMessagesResponse(BaseModel):
     messages: list[Message]
     next_page_id: int | None = None
+
+
+class GetOwnChatsRequest(BaseModel):
+    """Get the chats the token bearer is a member of."""
+    pass
+
+
+class GetOwnChatsResponse(BaseModel):
+    chats_ids: list[int]

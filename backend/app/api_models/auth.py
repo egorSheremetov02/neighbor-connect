@@ -53,22 +53,20 @@ class LoginResponse(BaseModel):
     token: str
 
 
-class UserResponse(BaseModel):
-    """
-        Class representing a user response object.
-
-        Attributes
-        ----------
-        id : int
-            Unique identifier for the user.
-        fullName : str
-            Full name of the user.
-        email : str
-            Email address of the user.
-        address : str
-            Home address of the user.
-    """
+class User(BaseModel):
     id: int
-    fullName: str
+    name: str
     email: str
+    login: str
+    birthday: datetime
     address: str
+    additional_info: str | None
+
+
+class UsersDataRequest(BaseModel):
+    """Request data of many users at once."""
+    users_ids: list[int]
+
+
+class UsersDataResponse(BaseModel):
+    users: list[User]
