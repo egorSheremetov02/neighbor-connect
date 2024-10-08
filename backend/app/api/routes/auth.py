@@ -1,4 +1,4 @@
-from fastapi import Request
+from fastapi import Query, Request
 
 from app.api_models.auth import (
     RegisterRequest,
@@ -106,10 +106,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def get_user(request: Request, user_id: int, user_payload=None) -> APIUser:
-    sender_id = user_payload["user_id"]
-    if sender_id != user_id:
-        raise HTTPException(403, f"Sender does not have permission")
-
     with SessionLocal.begin() as session:
         user = session.get(User, user_id)
         if not user:
@@ -125,15 +121,13 @@ def get_user(request: Request, user_id: int, user_payload=None) -> APIUser:
         )
 
 
-@auth_router.get("/users/}", dependencies=[Depends(security_scheme)])
+@auth_router.get("/users", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def get_many_users(
-    request: Request, users_data_request: UsersDataRequest, user_payload=None
+    request: Request, ids: list[int] = Query(...), user_payload=None
 ) -> UsersDataResponse:
     with SessionLocal.begin() as session:
-        result = session.scalars(
-            select(User).where(User.id.in_(users_data_request.users_ids))
-        ).all()
+        result = session.scalars(select(User).where(User.id.in_(ids))).all()
         users = [
             APIUser(
                 id=user.id,
