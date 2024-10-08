@@ -1,31 +1,50 @@
 from pydantic import BaseModel
 from datetime import datetime
-
+from enum import Enum
+from typing import Union
 
 class Incident(BaseModel):
     """
-    Incident class representing an incident report in the system.
+    Incident(id: int, title: str, description: str, author_id: int, status: str, created_at: datetime,
+             updated_at: datetime, location: str | None = None, image_id: int | None = None,
+             votes: 'IncidentVotesData', user_vote: Union['IncidentVote', None] = None)
+
+    A model representing an incident report in the system.
 
     Attributes
     ----------
     id : int
-        Unique identifier for the incident.
+        The unique identifier of the incident.
+
     title : str
-        Title of the incident.
+        The title of the incident.
+
     description : str
-        Detailed description of the incident.
+        A detailed description of the incident.
+
     author_id : int
-        Identifier for the author who reported the incident.
+        The ID of the user who reported the incident.
+
     status : str
-        Current status of the incident (e.g., 'open', 'closed').
+        The current status of the incident.
+
     created_at : datetime
-        Timestamp when the incident was created.
+        The timestamp when the incident was created.
+
     updated_at : datetime
-        Timestamp when the incident was last updated.
-    location : str | None, optional
-        Location where the incident occurred.
-    image_id : int | None, optional
-        Identifier for the image associated with the incident.
+        The timestamp when the incident was last updated.
+
+    location : str, optional
+        The location where the incident occurred (default is None).
+
+    image_id : int, optional
+        The ID of the image associated with the incident (default is None).
+
+    votes : IncidentVotesData
+        The voting data related to the incident.
+
+    user_vote : IncidentVote, optional
+        The vote data of the current user for the incident (default is None).
     """
     id: int
     title: str
@@ -36,10 +55,53 @@ class Incident(BaseModel):
     updated_at: datetime
     location: str | None = None
     image_id: int | None = None
+    votes: 'IncidentVotesData'
+    user_vote: Union['IncidentVote', None] = None
 
+
+class IncidentVote(str, Enum):
+    """
+        IncidentVote(str, Enum)
+
+        An enumeration representing the possible voting options for an incident.
+
+        Attributes
+        ----------
+        LIKE : str
+            Indicates a 'like' vote for the incident.
+        DISLIKE : str
+            Indicates a 'dislike' vote for the incident.
+    """
+    LIKE = 'like'
+    DISLIKE = 'dislike'
+
+class IncidentStatus(str, Enum):
+    """
+    IncidentStatus defines the various statuses that an incident can have.
+
+    Attributes
+    ----------
+    PENDING : str
+        Indicates that the incident is pending and has not been addressed yet.
+    CONFIRMED : str
+        Indicates that the incident has been confirmed and verified.
+    HIDDEN : str
+        Indicates that the incident is hidden and not visible in the normal listings.
+    """
+    PENDING = 'pending'
+    CONFIRMED = 'confirmed'
+    HIDDEN = 'hidden'
+
+
+class IncidentVotesData(BaseModel):
+    likes: int
+    dislikes: int
 
 class ListIncidentsResponse(BaseModel):
     incidents: list[Incident]
+
+class IncidentVoteRequest(BaseModel):
+    vote: Union['IncidentVote', None] = None
 
 
 class CreateIncidentRequest(BaseModel):
