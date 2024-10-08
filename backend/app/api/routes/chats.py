@@ -159,21 +159,19 @@ async def edit_chat_data(
         return EditChatDataResponse()
 
 
-@chats_router.get("/", dependencies=[Depends(security_scheme)])
+@chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def get_chat_data(
-    request: Request, get_chat_data_request: GetChatDataRequest, user_payload=None
+    request: Request, chat_id: int, user_payload=None
 ) -> GetChatDataResponse:
     """Get the data of the chat, including member users and admins. Access: chat members."""
 
     sender_id = user_payload["user_id"]
 
     with SessionLocal.begin() as session:
-        chat = session.get(Chat, get_chat_data_request.chat_id)
+        chat = session.get(Chat, chat_id)
         if not chat:
-            raise HTTPException(
-                404, f"Chat with id={get_chat_data_request.chat_id} does not exist"
-            )
+            raise HTTPException(404, f"Chat with id={chat_id} does not exist")
         sender = session.get(User, sender_id)
         if sender not in chat.users:
             raise HTTPException(403, f"Sender is not a member of this chat")
