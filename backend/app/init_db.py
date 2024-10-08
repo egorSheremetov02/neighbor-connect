@@ -19,6 +19,7 @@ def init_db():
                     login="aaaaa", 
                     password_hashed="111111", 
                     birthday="2021-01-01",
-                    permanent_address="aaaa"
+                    permanent_address="aaaa",
+                    image_id=None
                 )
             )

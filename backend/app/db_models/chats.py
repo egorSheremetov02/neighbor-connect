@@ -54,6 +54,7 @@ class User(DBBase):
 
     chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
     chats_in_administration: Mapped[List["Chat"]] = relationship(secondary=user_chat_administration_association, back_populates="admins")
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 
 class Message(DBBase):
@@ -120,9 +121,3 @@ class Chat(DBBase):
     users: Mapped[List["User"]] = relationship(secondary=user_chat_association, back_populates="chats")
     admins: Mapped[List["User"]] = relationship(secondary=user_chat_administration_association, back_populates="chats_in_administration")
     messages: Mapped[List["Message"]] = relationship(order_by="asc(Message.created_at)")
-
-
-
-class Image(DBBase):
-    __tablename__ = "images"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
