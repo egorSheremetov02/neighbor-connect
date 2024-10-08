@@ -210,7 +210,7 @@ def delete_chat(
                 404, f"Chat with id {delete_chat_request.chat_id} does not exist"
             )
         sender = session.get(User, sender_id)
-        if sender_id not in chat.admins:
+        if sender not in chat.admins:
             raise HTTPException(
                 403, f"Sender does not have permission to delete this chat"
             )
