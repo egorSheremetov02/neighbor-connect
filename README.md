@@ -77,9 +77,9 @@ Neighbor Connect is a web application designed to facilitate communication and i
 
 ## Running the Backend Server [backend folder]
 0. Dive into backend folder
-```
-cd backend
-```
+    ```
+    cd backend
+    ```
 
 1. Install dependencies:
    ```bash
