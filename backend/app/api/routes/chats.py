@@ -159,7 +159,6 @@ def edit_chat_data(
         return EditChatDataResponse()
 
 
-# todo: GET requests cannot have body???
 @chats_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def get_chat_data(
@@ -219,7 +218,7 @@ def delete_chat(
         return DeleteChatResponse()
 
 
-@chats_router.post("/{chat_id}", dependencies=[Depends(security_scheme)])
+@chats_router.post("/{chat_id}/messages", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def send_message(
     request: Request,
@@ -262,7 +261,7 @@ def send_message(
         return SendMessageResponse()
 
 
-@chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
+@chats_router.get("/{chat_id}/messages", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def list_messages(
     request: Request, chat_id: int, page_id: int | None = None, user_payload=None
@@ -302,7 +301,7 @@ def list_messages(
             max_page_id = total_pages - 1
 
             if total_pages == 0 and page_id == 0:
-                return  ListMessagesResponse(messages=[], next_page_id=None)
+                return ListMessagesResponse(messages=[], next_page_id=None)
 
             if page_id < 0 or page_id > max_page_id:
                 raise HTTPException(
