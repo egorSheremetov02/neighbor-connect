@@ -21,7 +21,7 @@ auth_router = APIRouter()
 
 
 @auth_router.post("/register")
-def register(request: RegisterRequest) -> RegisterResponse:
+async def register(request: RegisterRequest) -> RegisterResponse:
     """
     :param request: The registration request object containing user details such as email, login, full name, password, address, birthday, and additional information.
     :return: The response object indicating successful registration or raises an HTTPException with appropriate error messages if registration fails.
@@ -51,7 +51,7 @@ def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
     :type form_data: OAuth2PasswordRequestForm
@@ -80,7 +80,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+async def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
     """
     :param request: The current request being processed.
     :param user_id: The unique identifier of the user to be retrieved.

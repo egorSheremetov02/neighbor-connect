@@ -101,15 +101,18 @@ def jwt_token_required(f):
              or the user does not exist, raises an HTTPException.
     """
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
+        print('sosi')
         request: Request = kwargs.get('request')
         if not request:
             raise HTTPException(status_code=401, detail="Request object not found.")
 
         token = request.cookies.get("access_token")
+        print("Token: ", token)
         if not token:
             try:
                 authorization = request.headers['Authorization']
+                print(authorization)
                 token = authorization.split()[0]
             except KeyError:
                 raise HTTPException(status_code=401, detail="Authorization header not found")
@@ -128,6 +131,6 @@ def jwt_token_required(f):
                 if user is None:
                     raise HTTPException(403, f'User is not logged in / does not exist')
 
-        return f(*args, **kwargs)
+        return await f(*args, **kwargs)
 
     return decorated_function

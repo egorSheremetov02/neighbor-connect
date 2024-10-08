@@ -13,16 +13,17 @@ app = FastAPI()
 
 # Configure CORS settings
 origins = [
-    "http://localhost:5173",  # Add your frontend origin here
-    # Add more origins as needed
+    "http://localhost:8000",  # Add your frontend domain or localhost port
+    "http://localhost:8080",  # If running on 8080 or any other relevant port
+    "null",  # For local file requests with no origin
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include your router

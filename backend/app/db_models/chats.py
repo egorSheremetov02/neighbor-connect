@@ -73,6 +73,7 @@ class User(DBBase):
     address = Column(String, nullable=False)
     chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
     chats_in_administration: Mapped[List["Chat"]] = relationship(secondary=user_chat_administration_association, back_populates="admins")
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 
 class Message(DBBase):
