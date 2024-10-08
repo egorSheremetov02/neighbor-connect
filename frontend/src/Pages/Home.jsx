@@ -1,130 +1,175 @@
-import React, { useState } from 'react';
-import { useTheme, useMediaQuery, AppBar, Toolbar, Button, Typography, Box, IconButton, Menu, MenuItem, Container } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import Profile from './Profile/Profile';
-import Incidents from './Incidents';
-import Chats from './Chats/Chats';
-import Offers from './Offers/Offers';
-import 'react-responsive-modal/styles.css';
-import Admin from './admin/AdminPage';
+import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from '../auth/index'; // Import useAuth hook
+import { Stack, Typography, Button, Grid } from "@mui/material";
+import AddIncidentModal from "../Components/AddIncidentModal";
+import AddOfferModal from "../Components/AddOfferModal";
+import PostCard from "../Components/PostCard";
 
 const Home = () => {
-  const [activeComponent, setActiveComponent] = useState("profile");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { setToken, logout, token } = useAuth(); // Access setAuthToken function from useAuth
+  const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState("");
+  const [openIncidentModal, setOpenIncidentModal] = useState(false);
+  const [openOfferModal, setOpenOfferModal] = useState(false);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const token = sessionStorage.getItem("TOKEN");
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
 
-  const renderComponent = () => {
-    switch (activeComponent) {
-      case 'profile':
-        return <Profile />;
-      case "chats":
-        return <Chats />;
-      case "incidents":
-        return <Incidents />;
-      case "offers":
-        return <Offers />;
-    //   case 'admin':
-    //     return <Admin />;
-      default:
-        return null;
-    }
-  };
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/offers/", {
+          headers: {
+            Authorization: token.substring(1, token.length - 1),
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        });
+        if (!response.ok) {
+          setError(`HTTP error! Status: ${response.status}`);
+          return [];
+        }
+        const data = await response.json();
+        return data.offers || [];
+      } catch (error) {
+        setError("Error fetching offers.");
+        console.error(error);
+        return [];
+      }
+    };
 
-  const handleLogout = () => {
-    console.log("hiii")
-    sessionStorage.removeItem('token'); 
-    window.location.href = "http://localhost:5173/login";
-  };
+    const fetchIncidents = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/incidents/", {
+          headers: {
+            Authorization: token.substring(1, token.length - 1),
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        });
+        if (!response.ok) {
+          setError(`HTTP error! Status: ${response.status}`);
+          return [];
+        }
+        const data = await response.json();
+        return data.incidents || [];
+      } catch (error) {
+        setError("Error fetching incidents.");
+        console.error(error);
+        return [];
+      }
+    };
 
-  const menuItems = [
-    { name: "Profile", action: () => setActiveComponent("profile") },
-    { name: "Chats", action: () => setActiveComponent("chats") },
-    { name: "Incidents", action: () => setActiveComponent("incidents") },
-    { name: "Offers", action: () => setActiveComponent("offers") },
-    // { name: "Admin", action: () => setActiveComponent("admin") },
-    { name: "Logout", action: handleLogout },
-  ];
+    const loadData = async () => {
+      const offers = await fetchOffers();
+      const incidents = await fetchIncidents();
+      setPosts([...offers, ...incidents]);
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, [token]);
+
+  if (isLoading)
+    return <Typography sx={{ color: "#fff" }}>Loading...</Typography>;
+  if (error)
+    return (
+      <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+        {error}
+      </Typography>
+    );
 
   return (
     <div>
-        <AppBar position="static" color="default">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Neighbor Connect
-            </Typography>
-            {isMobile ? (
-              <>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  color="inherit"
-                  aria-label="menu"
-                  onClick={handleMenu}
+      <Stack
+        direction={"row"}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "30px",
+        }}
+      >
+        <Typography variant="h4" sx={{ color: "#000" }}>
+          Posts
+        </Typography>
+        <Stack
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+          sx={{ mt: 2 }}
+        >
+          <Button
+            variant="contained"
+            onClick={() => setOpenIncidentModal(true)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "10px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Add Incident
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setOpenOfferModal(true)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "10px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Add Offer
+          </Button>
+        </Stack>
+      </Stack>
+
+      {isLoading ? (
+        <Typography>Loading...</Typography>
+      ) : (
+        <div>
+          {posts.length > 0 ? (
+            <Grid container spacing={2}>
+              {posts.map((post, i) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={post.title + post.date + i}
                 >
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
-                  {menuItems.map((item) => (
-                    <MenuItem
-                      key={item.name}
-                      onClick={() => {
-                        item.action(); // Call action function associated with the menu item
-                        handleClose();
-                      }}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </>
-            ) : (
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-                {menuItems.map((item) => (
-                  <Button
-                    key={item.name}
-                    color="inherit"
-                    onClick={item.action} // Just pass the function reference
-                    sx={{
-                      width: "100px",
-                      height: "40px",
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-              </Box>
-            )}
-          </Toolbar>
-        </AppBar>
-        <Container>{renderComponent()}</Container>
-      </div>
+                  <PostCard props={post} />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography className="text-white">No posts available.</Typography>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+
+      <AddIncidentModal
+        open={openIncidentModal}
+        onClose={() => setOpenIncidentModal(false)}
+      />
+      <AddOfferModal
+        open={openOfferModal}
+        onClose={() => setOpenOfferModal(false)}
+      />
+    </div>
   );
 };
 
