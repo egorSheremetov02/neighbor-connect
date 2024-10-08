@@ -3,16 +3,17 @@ from fastapi import Query, Request
 from app.api_models.auth import (
     RegisterRequest,
     RegisterResponse,
-    UsersDataRequest,
-    UsersDataResponse,
-    User as APIUser,
+    UserResponse,
+    UsersResponse,
 )
 from fastapi import APIRouter, Response, Depends
+
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm,
     APIKeyHeader,
 )
+from datetime import datetime
 
 
 import logging
@@ -36,7 +37,7 @@ auth_router = APIRouter()
 
 
 @auth_router.post("/register")
-def register(request: RegisterRequest) -> RegisterResponse:
+async def register(request: RegisterRequest) -> RegisterResponse:
     """
     :param request: The registration request object containing user details such as email, login, full name, password, address, birthday, and additional information.
     :return: The response object indicating successful registration or raises an HTTPException with appropriate error messages if registration fails.
@@ -63,11 +64,15 @@ def register(request: RegisterRequest) -> RegisterResponse:
             user = User(
                 name=request.fullName,
                 email=request.email,
-                password_hashed=get_password_hash(request.password),
                 login=request.login,
-                address=request.address,
-                birthday=request.birthday,
-                additional_info=request.additionalInfo,
+                permanent_address=request.permanent_address,
+                password_hashed=get_password_hash(request.password),
+                birthday=None,
+                bio_header=None,
+                bio_description=None,
+                interests=[],
+                is_active=True,
+                member_since=datetime.now(),
             )
             session.add(user)
             session.commit()
@@ -76,7 +81,9 @@ def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
+):
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
     :type form_data: OAuth2PasswordRequestForm
@@ -103,41 +110,62 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
             return {"access_token": jwt_token, "token_type": "bearer"}
 
 
-@auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
+@auth_router.get("/users/{user_id}")
 @jwt_token_required
-def get_user(request: Request, user_id: int, user_payload=None) -> APIUser:
-    with SessionLocal.begin() as session:
-        user = session.get(User, user_id)
-        if not user:
-            raise HTTPException(404, f"User with id {user_id} does not exist")
-        return APIUser(
-            id=user.id,
-            name=user.name,
-            email=user.email,
-            login=user.login,
-            address=user.address,
-            birthday=user.birthday,
-            additional_info=user.additional_info,
-        )
+async def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+    """
+    :param request: The current request being processed.
+    :param user_id: The unique identifier of the user to be retrieved.
+    :param user_payload: The payload containing information about the user, typically extracted from the JWT token.
+    :return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.
+    """
+    with SessionLocal() as session:
+        with session.begin():
+            user = session.get(User, user_id)
+            if not user:
+                raise HTTPException(404, f"User with id {user_id} does not exist")
+            return UserResponse(
+                id=user.id,
+                fullName=user.name,
+                gender=user.gender,
+                phone_number=user.phone_number,
+                current_address=user.current_address,
+                permanent_address=user.permanent_address,
+                email=user.email,
+                login=user.login,
+                member_since=user.member_since,
+                is_active=user.is_active,
+                bio_header=user.bio_header,
+                bio_description=user.bio_description,
+                interests=user.interests,
+                birthday=user.birthday,
+            )
 
 
 @auth_router.get("/users", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_many_users(
+async def get_many_users(
     request: Request, ids: list[int] = Query(...), user_payload=None
-) -> UsersDataResponse:
+) -> UsersResponse:
     with SessionLocal.begin() as session:
         result = session.scalars(select(User).where(User.id.in_(ids))).all()
         users = [
-            APIUser(
+            UserResponse(
                 id=user.id,
-                name=user.name,
+                fullName=user.name,
+                gender=user.gender,
+                phone_number=user.phone_number,
+                current_address=user.current_address,
+                permanent_address=user.permanent_address,
                 email=user.email,
                 login=user.login,
-                address=user.address,
+                member_since=user.member_since,
+                is_active=user.is_active,
+                bio_header=user.bio_header,
+                bio_description=user.bio_description,
+                interests=user.interests,
                 birthday=user.birthday,
-                additional_info=user.additional_info,
             )
             for user in result
         ]
-        return UsersDataResponse(users=users)
+        return UsersResponse(users=users)

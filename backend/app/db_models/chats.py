@@ -1,22 +1,43 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Table,
+    JSON,
+)
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from sqlalchemy.sql import functions as func
+
 from app.core.db import DBBase
 
 
 class User(DBBase):
     __tablename__ = "users"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column()
-    email: Mapped[str] = mapped_column()
-    login: Mapped[str] = mapped_column()
-    password_hashed: Mapped[str] = mapped_column()
-    birthday: Mapped[datetime | None] = mapped_column()
-    additional_info: Mapped[str | None] = mapped_column()
-    address: Mapped[str] = mapped_column()
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, default="Test user", nullable=False)
+    gender = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
+    current_address = Column(String, nullable=True)
+    permanent_address = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    birthday = Column(DateTime, nullable=True)
+
+    bio_header = Column(String, nullable=True)
+    bio_description = Column(String, nullable=True)
+    interests = Column(JSON, default=list)
+
+    is_active = Column(Boolean, default=True)
+    member_since = Column(DateTime, default=datetime.now())
+
+    login = Column(String, nullable=False)
+    password_hashed = Column(String, nullable=False)
+
+    image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 
 class Message(DBBase):
@@ -60,6 +81,7 @@ _chats_to_admins_assoc_table = Table(
 class Chat(DBBase):
     __tablename__ = "chats"
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
+
     name: Mapped[str] = mapped_column()
     description: Mapped[str | None] = mapped_column()
     tags: Mapped[List[Tag]] = relationship(
@@ -75,8 +97,3 @@ class Chat(DBBase):
     messages: Mapped[List[Message]] = relationship(
         order_by="desc(Message.created_at)", cascade="all, delete"
     )
-
-
-class Image(DBBase):
-    __tablename__ = "images"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)

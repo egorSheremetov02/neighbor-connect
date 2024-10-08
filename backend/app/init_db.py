@@ -1,4 +1,3 @@
-from datetime import datetime
 from app.db_models.chats import Chat, User
 from app.core.db import SessionLocal
 
@@ -17,9 +16,9 @@ def init_db():
             email="aaaa@aaa.com",
             login="aaaaa",
             password_hashed="111111",
-            birthday=datetime.now(),
-            additional_info="aaaa",
-            address="aaaa",
+            birthday="2021-01-01",
+            permanent_address="aaaa",
+            image_id=None,
         )
         session.merge(test_user)
         session.flush()

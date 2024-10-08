@@ -46,7 +46,7 @@ security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 
 @chats_router.get("/allusers", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_all_users(request: Request, user_payload=None) -> GetAllUsersResponse:
+async def get_all_users(request: Request, user_payload=None) -> GetAllUsersResponse:
     """Get all users that can be added to a new chat."""
 
     with SessionLocal.begin() as session:
@@ -59,7 +59,7 @@ def get_all_users(request: Request, user_payload=None) -> GetAllUsersResponse:
 
 @chats_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_chat(
+async def create_chat(
     request: Request, create_chat_request: CreateChatRequest, user_payload=None
 ) -> CreateChatResponse:
     """Create a new chat and add some users to it. The sender must be one of the invited users.
@@ -103,7 +103,7 @@ def create_chat(
 
 @chats_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_chat_data(
+async def edit_chat_data(
     request: Request, edit_chat_data_request: EditChatDataRequest, user_payload=None
 ) -> EditChatDataResponse:
     """Edit the info of the chat, add/remove users, change admins. Access: chat admins."""
@@ -161,7 +161,7 @@ def edit_chat_data(
 
 @chats_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_chat_data(
+async def get_chat_data(
     request: Request, get_chat_data_request: GetChatDataRequest, user_payload=None
 ) -> GetChatDataResponse:
     """Get the data of the chat, including member users and admins. Access: chat members."""
@@ -195,7 +195,7 @@ def get_chat_data(
 
 @chats_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_chat(
+async def delete_chat(
     request: Request, delete_chat_request: DeleteChatRequest, user_payload=None
 ) -> DeleteChatResponse:
     """Delete the chat, including all its messages. Access: chat admins."""
@@ -220,7 +220,7 @@ def delete_chat(
 
 @chats_router.post("/{chat_id}/messages", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def send_message(
+async def send_message(
     request: Request,
     chat_id: int,
     send_message_request: SendMessageRequest,
@@ -263,7 +263,7 @@ def send_message(
 
 @chats_router.get("/{chat_id}/messages", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_messages(
+async def list_messages(
     request: Request, chat_id: int, page_id: int | None = None, user_payload=None
 ) -> ListMessagesResponse:
     """List all messages in the chat, or its portion if pagination is used. Access: chat member."""
@@ -336,7 +336,7 @@ def list_messages(
 
 @chats_router.get("/own", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_own_chats(request: Request, user_payload=None) -> GetOwnChatsResponse:
+async def get_own_chats(request: Request, user_payload=None) -> GetOwnChatsResponse:
     """Get all chats the sender is a member of."""
 
     sender_id = user_payload["user_id"]
