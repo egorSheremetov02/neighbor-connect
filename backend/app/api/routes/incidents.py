@@ -23,7 +23,7 @@ incidents_router = APIRouter()
 
 @incidents_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_incident(request: Request, create_request: CreateIncidentRequest,
+async def create_incident(request: Request, create_request: CreateIncidentRequest,
                     user_payload=None) -> CreateIncidentResponse:
     """
     :param request: Incoming HTTP request object
@@ -101,7 +101,7 @@ def get_votes_for_user_incidents(session: Session, user_id: int, incident_ids: l
 
 @incidents_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
+async def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
 
     sender_id = user_payload['user_id']
 
@@ -135,7 +135,7 @@ def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse
 
 @incidents_router.delete("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
+async def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
     """
     :param request: The HTTP request object.
     :param incident_id: The ID of the incident to be deleted.
@@ -161,7 +161,7 @@ def delete_incident(request: Request, incident_id: int, user_payload=None) -> De
 
 @incidents_router.put("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
+async def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
                        user_payload=None) -> EditIncidentDataResponse:
     """
     :param request: The request object containing metadata about the request.
@@ -199,7 +199,7 @@ def is_admin(user_id: int) -> bool:
 
 @incidents_router.post("/{incident_id}/authorize", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
+async def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
                        user_payload=None) -> AuthorizeIncidentResponse:
     """
     :param request: The request object containing the HTTP request details.
@@ -227,7 +227,7 @@ def authorize_incident(request: Request, incident_id: int, auth_request: Authori
 
 @incidents_router.put("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def incident_vote(request: Request, incident_id: int, vote_request: IncidentVoteRequest,
+async def incident_vote(request: Request, incident_id: int, vote_request: IncidentVoteRequest,
                        user_payload=None) -> AuthorizeIncidentResponse:
     """
     Parameters
