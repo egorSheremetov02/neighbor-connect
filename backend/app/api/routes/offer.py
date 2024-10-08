@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import asc, and_
+from sqlalchemy import asc, and_, or_
 from typing import List, Optional
 
 from app.api_models.offer import (Offer as API_Offer, ListOffersResponse,
@@ -65,7 +65,7 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
 
 @offers_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_offers(request: Request, tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
+def list_offers(request: Request, query_text: Optional[str] = Query(None), tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
     """
     Parameters
     ----------
@@ -76,7 +76,7 @@ def list_offers(request: Request, tags: Optional[List[str]] = Query(None, alias=
     user_payload : dict, optional
         Payload information obtained from the JWT token.
     """
-    # sender_id = 0
+    # sender_id = user_payload['user_id']
     with SessionLocal() as session:
         with session.begin():
             def to_pydantic(offer: Offer) -> API_Offer:
@@ -96,6 +96,15 @@ def list_offers(request: Request, tags: Optional[List[str]] = Query(None, alias=
                 for tag in tags:
                     command = command.filter(Offer.tags.any(OfferTag.name == tag))
 
+            if query_text:
+                query_text = query_text.strip()
+                if query_text:
+                    command = command.filter(
+                        or_(
+                            Offer.title.ilike(f'%{query_text}%'),
+                            Offer.description.ilike(f'%{query_text}%')
+                        )
+                    )
             offers_with_tags = command.all()
             return ListOffersResponse(offers=[to_pydantic(offer) for offer in offers_with_tags])
 
