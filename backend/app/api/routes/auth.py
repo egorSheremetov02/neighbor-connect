@@ -3,6 +3,7 @@ from fastapi import Request
 from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse
 from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
+from datetime import datetime
 
 
 import logging
@@ -41,9 +42,19 @@ async def register(request: RegisterRequest) -> RegisterResponse:
             if len(request.password) < 8:
                 raise HTTPException(400, f'Password is too short')
 
-            user = User(name=request.fullName, email=request.email, password_hashed=get_password_hash(request.password),
-                        login=request.login, address=request.address, birthday=request.birthday,
-                        additional_info=request.additionalInfo)
+            user = User(
+                name=request.fullName,
+                email=request.email,
+                login=request.login,
+                permanent_address=request.permanent_address,
+                password_hashed=get_password_hash(request.password),
+                birthday=None,
+                bio_header=None,
+                bio_description=None,
+                interests=[],
+                is_active=True,
+                member_since=datetime.now(),
+            )
             session.add(user)
             session.commit()
 
@@ -76,7 +87,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Resp
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
             return {"access_token": jwt_token, "token_type": "bearer"}
-
 
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
