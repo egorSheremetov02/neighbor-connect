@@ -15,6 +15,7 @@ class RegisterRequest(BaseModel):
         birthday (datetime | None, optional): The birthday of the user. Defaults to None.
         additionalInfo (str | None, optional): Any additional information provided by the user. Defaults to None.
     """
+
     fullName: str
     email: str
     login: str
@@ -39,6 +40,7 @@ class LoginRequest(BaseModel):
     password : str
         The password associated with the login.
     """
+
     login: str
     password: str
 
@@ -50,6 +52,7 @@ class LoginResponse(BaseModel):
     Attributes:
         token (str): A string containing the authentication token.
     """
+
     token: str
 
 
@@ -65,6 +68,7 @@ class User(BaseModel):
 
 class UsersDataRequest(BaseModel):
     """Request data of many users at once."""
+
     users_ids: list[int]
 
 
