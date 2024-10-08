@@ -13,6 +13,7 @@ class RegisterRequest(BaseModel):
         password (str): The login password of the user.
         permanent_address (str): The physical address of the user.
     """
+
     fullName: str
     email: str
     login: str
@@ -35,6 +36,7 @@ class LoginRequest(BaseModel):
     password : str
         The password associated with the login.
     """
+
     login: str
     password: str
 
@@ -46,10 +48,13 @@ class LoginResponse(BaseModel):
     Attributes:
         token (str): A string containing the authentication token.
     """
+
     token: str
 
 
 class UserResponse(BaseModel):
+    id: int
+
     fullName: str
     permanent_address: str
     email: str
@@ -64,3 +69,7 @@ class UserResponse(BaseModel):
     bio_header: str | None
     bio_description: str | None
     interests: list[str]
+
+
+class UsersResponse(BaseModel):
+    users: list[UserResponse]

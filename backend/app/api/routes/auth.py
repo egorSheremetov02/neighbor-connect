@@ -1,8 +1,18 @@
-from fastapi import Request
+from fastapi import Query, Request
 
-from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse
+from app.api_models.auth import (
+    RegisterRequest,
+    RegisterResponse,
+    UserResponse,
+    UsersResponse,
+)
 from fastapi import APIRouter, Response, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
+
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    APIKeyHeader,
+)
 from datetime import datetime
 
 
@@ -12,13 +22,18 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 
-from app.api.util import get_password_hash, verify_password, create_jwt, jwt_token_required
+from app.api.util import (
+    get_password_hash,
+    verify_password,
+    create_jwt,
+    jwt_token_required,
+)
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 auth_router = APIRouter()
-
 
 
 @auth_router.post("/register")
@@ -31,16 +46,20 @@ async def register(request: RegisterRequest) -> RegisterResponse:
         with session.begin():
             user = session.query(User).filter_by(email=request.email).first()
             if user:
-                raise HTTPException(409, f'User with email {request.email} already exists')
+                raise HTTPException(
+                    409, f"User with email {request.email} already exists"
+                )
             user = session.query(User).filter_by(login=request.login).first()
             if user:
-                raise HTTPException(409, f'User with login {request.login} already exists')
+                raise HTTPException(
+                    409, f"User with login {request.login} already exists"
+                )
 
             if len(request.fullName) > 255:
-                raise HTTPException(400, f'Full name is too long')
+                raise HTTPException(400, f"Full name is too long")
 
             if len(request.password) < 8:
-                raise HTTPException(400, f'Password is too short')
+                raise HTTPException(400, f"Password is too short")
 
             user = User(
                 name=request.fullName,
@@ -62,7 +81,9 @@ async def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
+):
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
     :type form_data: OAuth2PasswordRequestForm
@@ -88,7 +109,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Resp
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
             return {"access_token": jwt_token, "token_type": "bearer"}
 
-@auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
+
+@auth_router.get("/users/{user_id}")
 @jwt_token_required
 async def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
     """
@@ -97,10 +119,53 @@ async def get_user(request: Request, user_id: int, user_payload=None) -> UserRes
     :param user_payload: The payload containing information about the user, typically extracted from the JWT token.
     :return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.
     """
-    print(user_payload)
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(id=user_id).first()
+            user = session.get(User, user_id)
             if not user:
-                raise HTTPException(404, f'User with id {user_id} does not exist')
-            return UserResponse(id=user.id, fullName=user.name, email=user.email, address=user.address)
+                raise HTTPException(404, f"User with id {user_id} does not exist")
+            return UserResponse(
+                id=user.id,
+                fullName=user.name,
+                gender=user.gender,
+                phone_number=user.phone_number,
+                current_address=user.current_address,
+                permanent_address=user.permanent_address,
+                email=user.email,
+                login=user.login,
+                member_since=user.member_since,
+                is_active=user.is_active,
+                bio_header=user.bio_header,
+                bio_description=user.bio_description,
+                interests=user.interests,
+                birthday=user.birthday,
+            )
+
+
+@auth_router.get("/users", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_many_users(
+    request: Request, ids: list[int] = Query(...), user_payload=None
+) -> UsersResponse:
+    with SessionLocal.begin() as session:
+        result = session.scalars(select(User).where(User.id.in_(ids))).all()
+        users = [
+            UserResponse(
+                id=user.id,
+                fullName=user.name,
+                gender=user.gender,
+                phone_number=user.phone_number,
+                current_address=user.current_address,
+                permanent_address=user.permanent_address,
+                email=user.email,
+                login=user.login,
+                member_since=user.member_since,
+                is_active=user.is_active,
+                bio_header=user.bio_header,
+                bio_description=user.bio_description,
+                interests=user.interests,
+                birthday=user.birthday,
+            )
+            for user in result
+        ]
+        return UsersResponse(users=users)
