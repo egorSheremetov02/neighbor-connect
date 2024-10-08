@@ -3,6 +3,7 @@ from fastapi import Request
 from app.api_models.auth import RegisterRequest, RegisterResponse, UserResponse
 from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyHeader
+from datetime import datetime
 
 
 import logging
@@ -41,9 +42,19 @@ def register(request: RegisterRequest) -> RegisterResponse:
             if len(request.password) < 8:
                 raise HTTPException(400, f'Password is too short')
 
-            user = User(name=request.fullName, email=request.email, password_hashed=get_password_hash(request.password),
-                        login=request.login, address=request.address, birthday=request.birthday,
-                        additional_info=request.additionalInfo)
+            user = User(
+                name=request.fullName,
+                email=request.email,
+                login=request.login,
+                permanent_address=request.permanent_address,
+                password_hashed=get_password_hash(request.password),
+                birthday=None,
+                bio_header=None,
+                bio_description=None,
+                interests=[],
+                is_active=True,
+                member_since=datetime.now(),
+            )
             session.add(user)
             session.commit()
 
@@ -76,21 +87,3 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
             return {"access_token": jwt_token, "token_type": "bearer"}
-
-
-@auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
-@jwt_token_required
-def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
-    """
-    :param request: The current request being processed.
-    :param user_id: The unique identifier of the user to be retrieved.
-    :param user_payload: The payload containing information about the user, typically extracted from the JWT token.
-    :return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.
-    """
-    print(user_payload)
-    with SessionLocal() as session:
-        with session.begin():
-            user = session.query(User).filter_by(id=user_id).first()
-            if not user:
-                raise HTTPException(404, f'User with id {user_id} does not exist')
-            return UserResponse(id=user.id, fullName=user.name, email=user.email, address=user.address)
