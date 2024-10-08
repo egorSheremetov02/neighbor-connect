@@ -106,6 +106,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
 @auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 def get_user(request: Request, user_id: int, user_payload=None) -> APIUser:
+    sender_id = user_payload["user_id"]
+    if sender_id != user_id:
+        raise HTTPException(403, f"Sender does not have permission")
+
     with SessionLocal.begin() as session:
         user = session.get(User, user_id)
         if not user:
