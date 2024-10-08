@@ -66,7 +66,7 @@ class GetChatDataRequest(BaseModel):
 class GetChatDataResponse(BaseModel):
     chat_id: int
     name: str
-    description: str
+    description: str | None
     tags: list[str]
     image_id: int | None = None
     users_infos: list[UserShortInfo]

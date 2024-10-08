@@ -11,18 +11,14 @@ class RegisterRequest(BaseModel):
         email (str): The email address of the user.
         login (str): The login username of the user.
         password (str): The login password of the user.
-        address (str): The physical address of the user.
-        birthday (datetime | None, optional): The birthday of the user. Defaults to None.
-        additionalInfo (str | None, optional): Any additional information provided by the user. Defaults to None.
+        permanent_address (str): The physical address of the user.
     """
 
     fullName: str
     email: str
     login: str
     password: str
-    address: str
-    birthday: datetime | None = None
-    additionalInfo: str | None = None
+    permanent_address: str
 
 
 class RegisterResponse(BaseModel):
@@ -56,21 +52,24 @@ class LoginResponse(BaseModel):
     token: str
 
 
-class User(BaseModel):
+class UserResponse(BaseModel):
     id: int
-    name: str
+
+    fullName: str
+    permanent_address: str
     email: str
     login: str
+    member_since: datetime
+    is_active: bool
+
+    gender: str | None
+    phone_number: str | None
+    current_address: str | None
     birthday: datetime | None
-    additional_info: str | None
-    address: str
+    bio_header: str | None
+    bio_description: str | None
+    interests: list[str]
 
 
-class UsersDataRequest(BaseModel):
-    """Request data of many users at once."""
-
-    users_ids: list[int]
-
-
-class UsersDataResponse(BaseModel):
-    users: list[User]
+class UsersResponse(BaseModel):
+    users: list[UserResponse]

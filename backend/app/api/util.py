@@ -8,7 +8,8 @@ from app.api.constants import (
     MAX_CHAT_DESCRIPTION_LENGTH,
 )
 from app.core.db import SessionLocal
-from app.db_models.chats import User, Image
+from app.db_models.chats import User
+from app.db_models.image_storage import Image
 import bcrypt
 import jwt
 import datetime
@@ -123,16 +124,18 @@ def jwt_token_required(f):
     """
 
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         request: Request = kwargs.get("request")
         if not request:
             raise HTTPException(status_code=401, detail="Request object not found.")
 
         token = request.cookies.get("access_token")
+        print("Token: ", token)
         if not token:
             try:
                 authorization = request.headers["Authorization"]
-                # expected auth header format: "Bearer [token]"
+                print(authorization)
+                # HERE MUST BE 1 (!!!)
                 token = authorization.split()[1]
             except KeyError:
                 raise HTTPException(
@@ -153,6 +156,6 @@ def jwt_token_required(f):
                 if user is None:
                     raise HTTPException(403, f"User is not logged in / does not exist")
 
-        return f(*args, **kwargs)
+        return await f(*args, **kwargs)
 
     return decorated_function
