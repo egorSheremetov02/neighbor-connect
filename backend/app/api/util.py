@@ -3,7 +3,8 @@ from fastapi import HTTPException, Request
 
 from app.api.constants import MAX_CHAT_NAME_LENGTH, MAX_TAGS_AMOUNT, MAX_CHAT_DESCRIPTION_LENGTH
 from app.core.db import SessionLocal
-from app.db_models.chats import User, Image
+from app.db_models.chats import User
+from app.db_models.image_storage import Image
 import bcrypt
 import jwt
 import datetime
