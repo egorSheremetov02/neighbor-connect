@@ -1,5 +1,3 @@
-
-
 from app.db_models.chats import Tag, User, Chat
 from fastapi import HTTPException
 
@@ -10,7 +8,7 @@ def get_or_create_tag(session, tag_name: str) -> Tag:
         tag_object = Tag(name=tag_name)
         session.add(tag_object)
     return tag_object
-        
+
 
 def get_user(session, user_id: int) -> User:
     user = session.get(User, user_id)
