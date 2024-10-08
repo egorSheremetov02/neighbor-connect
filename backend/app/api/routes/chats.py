@@ -78,7 +78,7 @@ def create_chat(request: Request, create_chat_request: CreateChatRequest, user_p
 
 @chats_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, user_payload=None) -> EditChatDataResponse:
+async def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, user_payload=None) -> EditChatDataResponse:
     """
     :param request: The HTTP request object containing metadata about the request.
     :param edit_chat_request: The edit chat data request object containing the details to update the chat.
@@ -133,7 +133,7 @@ def edit_chat_data(request: Request, edit_chat_request: EditChatDataRequest, use
 
 @chats_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_chat(request: Request, delet_chat_request: DeleteChatRequest, user_payload=None) -> DeleteChatResponse:
+async def delete_chat(request: Request, delet_chat_request: DeleteChatRequest, user_payload=None) -> DeleteChatResponse:
     """
     :param request: The request object that contains metadata about the request
     :param delet_chat_request: The request payload containing the chat ID to be deleted
@@ -165,7 +165,7 @@ MAX_MESSAGE_CONTENT_LENGTH = 5000
 
 @chats_router.post("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def send_message(request: Request, chat_id: int, send_msg_request: SendMessageRequest, user_payload=None) -> SendMessageResponse:
+async def send_message(request: Request, chat_id: int, send_msg_request: SendMessageRequest, user_payload=None) -> SendMessageResponse:
     """
     :param request: The HTTP request object.
     :param chat_id: The ID of the chat to which the message is being sent.
@@ -210,7 +210,7 @@ PAGE_SIZE = 5
 
 @chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_messages(request: Request, chat_id: int, page_id: int | None = None, user_payload=None) -> ListMessagesResponse:
+async def list_messages(request: Request, chat_id: int, page_id: int | None = None, user_payload=None) -> ListMessagesResponse:
     """
     :param request: The HTTP request object
     :param chat_id: The ID of the chat to retrieve messages from
@@ -259,7 +259,7 @@ def list_messages(request: Request, chat_id: int, page_id: int | None = None, us
 
 @chats_router.get("/{chat_id}")
 @jwt_token_required
-def list_users(chat_id: int) -> ListChatUsersResponse:
+async def list_users(chat_id: int) -> ListChatUsersResponse:
     """
     :param chat_id: Unique identifier of the chat.
     :return: A response object containing a list of users in the specified chat.

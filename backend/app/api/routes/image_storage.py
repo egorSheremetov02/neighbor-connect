@@ -37,7 +37,7 @@ async def store_image(request: Request, file: Annotated[UploadFile, File()], ima
 
 @image_storage_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def get_image(request: Request, image_id: Optional[str] = Query(None), user_payload=None) -> StreamingResponse:
+async def get_image(request: Request, image_id: Optional[str] = Query(None), user_payload=None) -> StreamingResponse:
     with SessionLocal() as session:
         with session.begin():
             image = session.query(Image.image).filter_by(random_id=image_id).first()

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @offers_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
+async def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
     """
     Parameters
     ----------
@@ -56,7 +56,7 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
                           description=create_offer_request.description,
                           author_id=sender_id,
                           image_id=create_offer_request.image_id,
-                          tags = all_tags,
+                          tags=all_tags,
                           date=create_offer_request.date)
             session.add(offer)
 
@@ -65,7 +65,8 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
 
 @offers_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_offers(request: Request, query_text: Optional[str] = Query(None), tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
+async def list_offers(request: Request, query_text: Optional[str] = Query(None),
+                tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
     """
     Parameters
     ----------
@@ -109,7 +110,6 @@ def list_offers(request: Request, query_text: Optional[str] = Query(None), tags:
             return ListOffersResponse(offers=[to_pydantic(offer) for offer in offers_with_tags])
 
 
-
 def validate_and_get_offers_tags(tags: list[str], session: Session) -> list[OfferTag]:
     """
     Parameters
@@ -139,9 +139,10 @@ def validate_and_get_offers_tags(tags: list[str], session: Session) -> list[Offe
     all_tags = existing_tags + new_tags
     return all_tags
 
+
 @offers_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
+async def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
                     user_payload=None) -> EditOfferDataResponse:
     """
     Parameters
@@ -202,7 +203,7 @@ def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
 
 @offers_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
+async def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
     """
     Parameters
     ----------
