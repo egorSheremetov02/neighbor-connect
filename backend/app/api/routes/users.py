@@ -57,6 +57,7 @@ async def my_profile(request: Request, user_payload=None) -> UserResponse:
             current_user_id = user_payload.get("user_id")
             user = session.query(User).filter_by(id=current_user_id).first()
             return UserResponse(
+                id=user.id,
                 fullName=user.name,
                 gender=user.gender,
                 phone_number=user.phone_number,
