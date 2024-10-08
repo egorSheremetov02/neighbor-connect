@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, UniqueConstraint, asc
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table, UniqueConstraint, asc, JSON
 from sqlalchemy.orm import relationship, mapped_column, Mapped, backref
 from app.api_models.chats import Message as APIMessage
 from app.core.db import DBBase
@@ -32,45 +32,26 @@ user_chat_administration_association = Table(
 
 
 class User(DBBase):
-    """
-        User
-        ----
-        Represents a user entity in the database.
-
-        Attributes
-        ----------
-        __tablename__ : str
-            Name of the database table.
-        id : Integer
-            Primary key for the user table.
-        name : String
-            Name of the user. Default is "Test user".
-        email : String
-            Email of the user. Cannot be null.
-        login : String
-            Login identifier for the user. Cannot be null.
-        password_hashed : String
-            Hashed password for the user. Cannot be null.
-        birthday : String
-            Birthday of the user. Cannot be null.
-        additional_info : String
-            Any additional information about the user. Can be null.
-        address : String
-            Address of the user. Cannot be null.
-        chats : Mapped[List["Chat"]]
-            List of chats the user is part of. Many-to-many relationship.
-        chats_in_administration : Mapped[List["Chat"]]
-            List of chats the user administrates. Many-to-many relationship.
-    """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, default="Test user", nullable=False)
+    gender = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
+    current_address = Column(String, nullable=True)
+    permanent_address = Column(String, nullable=False)
     email = Column(String, nullable=False)
+    birthday = Column(DateTime, nullable=True)
+
+    bio_header = Column(String, nullable=True)
+    bio_description = Column(String, nullable=True)
+    interests = Column(JSON, default=list)
+
+    is_active = Column(Boolean, default=True)
+    member_since = Column(DateTime, default=datetime.now())
+
     login = Column(String, nullable=False)
     password_hashed = Column(String, nullable=False)
-    birthday = Column(String, nullable=False)
-    additional_info = Column(String, nullable=True)
-    address = Column(String, nullable=False)
+
     chats: Mapped[List["Chat"]] = relationship(secondary=user_chat_association, back_populates="users")
     chats_in_administration: Mapped[List["Chat"]] = relationship(secondary=user_chat_administration_association, back_populates="admins")
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
