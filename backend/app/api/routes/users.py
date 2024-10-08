@@ -46,11 +46,11 @@ def get_user(request: Request, username: str, user_payload=None) -> UserResponse
                 interests=user.interests,
                 birthday=user.birthday,
             )
-        
+
 
 @users_router.get("/my_profile/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def my_profile(request: Request, user_payload=None) -> UserResponse:
+async def my_profile(request: Request, user_payload=None) -> UserResponse:
     with SessionLocal() as session:
         with session.begin():
             current_user_id = user_payload.get("user_id")
@@ -70,11 +70,12 @@ def my_profile(request: Request, user_payload=None) -> UserResponse:
                 interests=user.interests,
                 birthday=user.birthday,
             )
-        
+
 
 @users_router.post("/modify_profile/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def modify_profile(request: Request, profile_request: ModifyProfileRequest, user_payload=None) -> ModifyProfileResponse:
+async def modify_profile(request: Request, profile_request: ModifyProfileRequest,
+                         user_payload=None) -> ModifyProfileResponse:
     with SessionLocal() as session:
         with session.begin():
             current_user_id = user_payload.get("user_id")

@@ -22,7 +22,7 @@ auth_router = APIRouter()
 
 
 @auth_router.post("/register")
-def register(request: RegisterRequest) -> RegisterResponse:
+async def register(request: RegisterRequest) -> RegisterResponse:
     """
     :param request: The registration request object containing user details such as email, login, full name, password, address, birthday, and additional information.
     :return: The response object indicating successful registration or raises an HTTPException with appropriate error messages if registration fails.
@@ -62,7 +62,7 @@ def register(request: RegisterRequest) -> RegisterResponse:
 
 
 @auth_router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None):
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
     :type form_data: OAuth2PasswordRequestForm
@@ -87,3 +87,20 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), response: Response =
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
             return {"access_token": jwt_token, "token_type": "bearer"}
+
+@auth_router.get("/users/{user_id}", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+    """
+    :param request: The current request being processed.
+    :param user_id: The unique identifier of the user to be retrieved.
+    :param user_payload: The payload containing information about the user, typically extracted from the JWT token.
+    :return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.
+    """
+    print(user_payload)
+    with SessionLocal() as session:
+        with session.begin():
+            user = session.query(User).filter_by(id=user_id).first()
+            if not user:
+                raise HTTPException(404, f'User with id {user_id} does not exist')
+            return UserResponse(id=user.id, fullName=user.name, email=user.email, address=user.address)

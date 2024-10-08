@@ -20,7 +20,7 @@ incidents_router = APIRouter()
 
 @incidents_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_incident(request: Request, create_request: CreateIncidentRequest,
+async def create_incident(request: Request, create_request: CreateIncidentRequest,
                     user_payload=None) -> CreateIncidentResponse:
     """
     :param request: Incoming HTTP request object
@@ -47,7 +47,8 @@ def create_incident(request: Request, create_request: CreateIncidentRequest,
                 status='pending',
                 created_at=create_request.created_at,
                 updated_at=create_request.created_at,
-                location=create_request.location
+                location=create_request.location,
+                image_id=create_request.image_id
             )
             session.add(incident)
 
@@ -56,7 +57,7 @@ def create_incident(request: Request, create_request: CreateIncidentRequest,
 
 @incidents_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
+async def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
     with SessionLocal() as session:
         with session.begin():
             incidents = session.query(Incident).all()
@@ -70,7 +71,8 @@ def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse
                     status=incident.status,
                     created_at=incident.created_at,
                     updated_at=incident.updated_at,
-                    location=incident.location
+                    location=incident.location,
+                    image_id=incident.image_id
                 )
 
             return ListIncidentsResponse(incidents=[to_pydantic(incident) for incident in incidents])
@@ -78,7 +80,7 @@ def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse
 
 @incidents_router.delete("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
+async def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
     """
     :param request: The HTTP request object.
     :param incident_id: The ID of the incident to be deleted.
@@ -104,7 +106,7 @@ def delete_incident(request: Request, incident_id: int, user_payload=None) -> De
 
 @incidents_router.put("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
+async def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
                        user_payload=None) -> EditIncidentDataResponse:
     """
     :param request: The request object containing metadata about the request.
@@ -140,7 +142,7 @@ def edit_incident_data(request: Request, incident_id: int, edit_request: EditInc
 
 @incidents_router.post("/{incident_id}/authorize", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
+async def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
                        user_payload=None) -> AuthorizeIncidentResponse:
     """
     :param request: The request object containing the HTTP request details.
