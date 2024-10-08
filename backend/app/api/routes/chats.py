@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.constants import MAX_INVITED_USERS, MAX_MESSAGE_CONTENT_LENGTH
+from app.api.constants import MAX_INVITED_USERS, MAX_MESSAGE_CONTENT_LENGTH, PAGE_SIZE
 from app.api_models.chats import (
     Message as APIMessage,
     UserShortInfo as APIUserInfo,
@@ -22,7 +22,7 @@ from app.api_models.chats import (
     GetOwnChatsResponse,
 )
 import logging, sqlalchemy
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
@@ -267,7 +267,7 @@ def send_message(
 def list_messages(
     request: Request, chat_id: int, page_id: int | None = None, user_payload=None
 ) -> ListMessagesResponse:
-    """List all messages in the chat, or its portion if pagination is used (currently not working). Access: chat member."""
+    """List all messages in the chat, or its portion if pagination is used. Access: chat member."""
 
     sender_id = user_payload["user_id"]
 
@@ -282,17 +282,44 @@ def list_messages(
                 403, f"User {sender_id} does not have access to this chat"
             )
 
-        # todo: pagination
+        # 0 => first page, next_page_id ...
 
-        # n = len(chat.messages)
-        # if n <= 0:
-        #     return ListMessagesResponse(messages=[], next_page_id=None)
-        # pages_amount = (n + PAGE_SIZE - 1) // PAGE_SIZE
-        # if page_id is None:
-        #     page_id = max(pages_amount - 1, 0)
-        # messages = session.query(Message).filter(Message.chat_id == chat.id).order_by(
-        #     sqlalchemy.asc(Message.created_at)).offset(page_id * PAGE_SIZE).limit(PAGE_SIZE).all()
-        # next_page_id = None if page_id + 1 >= pages_amount else page_id + 1
+        if page_id is None:
+            # simply return all messages
+            next_page_id = None
+            messages = chat.messages
+        else:
+            chat_len = (
+                session.query(func.count(Message.id))
+                .filter(Message.chat_id == chat.id)
+                .scalar()
+            )
+
+            def ceildiv(a, b):
+                return -(a // -b)
+
+            total_pages = ceildiv(chat_len, PAGE_SIZE)
+            max_page_id = total_pages - 1
+
+            if total_pages == 0 and page_id == 0:
+                return  ListMessagesResponse(messages=[], next_page_id=None)
+
+            if page_id < 0 or page_id > max_page_id:
+                raise HTTPException(
+                    400,
+                    f"Page id {page_id} should be in range {0} <= ... <= {max_page_id}",
+                )
+
+            offset = PAGE_SIZE * page_id
+            messages = (
+                session.query(Message)
+                .filter(Message.chat_id == chat.id)
+                .order_by(Message.created_at.desc())
+                .offset(offset)
+                .limit(PAGE_SIZE)
+                .all()
+            )
+            next_page_id = None if page_id == max_page_id else page_id + 1
 
         def to_api_message(message: Message) -> APIMessage:
             return APIMessage(
@@ -303,9 +330,9 @@ def list_messages(
                 created_at=message.created_at,
             )
 
-        messages = [to_api_message(m) for m in chat.messages]
+        messages = [to_api_message(m) for m in messages]
 
-        return ListMessagesResponse(messages=messages, next_page_id=None)
+        return ListMessagesResponse(messages=messages, next_page_id=next_page_id)
 
 
 @chats_router.get("/own", dependencies=[Depends(security_scheme)])
