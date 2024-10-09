@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 @image_storage_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def store_image(request: Request, file: Annotated[UploadFile, File()], image_type: Annotated[ImageType, Form()], user_payload=None) -> StoreImageResponse:
-    sender_id = 0
-
+    sender_id = user_payload['user_id']
     image_contents = await file.read()
     # TODO crop image based on image_type and convert to png
     with SessionLocal() as session:
@@ -30,17 +29,15 @@ async def store_image(request: Request, file: Annotated[UploadFile, File()], ima
             image = Image(image=image_contents, random_id=uid, author_id=sender_id)
             image.uid = uid
             session.add(image)
-
-        print(image.random_id)
-        return StoreImageResponse(image_id=image.random_id)
+        return StoreImageResponse(image_id=image.id)
 
 
 @image_storage_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def get_image(request: Request, image_id: Optional[str] = Query(None), user_payload=None) -> StreamingResponse:
+async def get_image(request: Request, image_id: int, user_payload=None) -> StreamingResponse:
     with SessionLocal() as session:
         with session.begin():
-            image = session.query(Image.image).filter_by(random_id=image_id).first()
+            image = session.query(Image.image).filter_by(id=image_id).first()
             if image is None:
                 raise HTTPException(404, f'Image with id {image_id} does not exist')
             else:
