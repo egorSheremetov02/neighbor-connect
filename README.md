@@ -76,6 +76,9 @@ Neighbor Connect is a web application designed to facilitate communication and i
   - bcrypt = "^4.1.2"
 
 ## Running the Backend Server [backend folder]
+
+### Option 1: [Locally, manually]
+
 0. Dive into backend folder
     ```
     cd backend
@@ -97,6 +100,17 @@ Neighbor Connect is a web application designed to facilitate communication and i
    ```
 
 4. Test the backend server at: [http://localhost:8080/docs](http://localhost:8080/docs)
+
+### Option 2: [Locally or remote, automatic]
+
+0. Install docker (docker compose) locally if not already installed
+
+1. Move to root directory of your project
+
+2. Use the bash command below to build a backend container and postgres container, as well as run it
+    ```bash
+    docker-compose up --build
+    ```
 
 ## Running the Frontend Server [frontend folder]
 
