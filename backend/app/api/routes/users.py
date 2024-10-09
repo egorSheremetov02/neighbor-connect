@@ -1,4 +1,4 @@
-from fastapi import Request
+from fastapi import Request, Query
 
 from app.api_models.profile import ModifyProfileRequest, ModifyProfileResponse
 from app.api_models.auth import UserResponse
@@ -6,12 +6,13 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime
 from app.api.util import jwt_token_required
-
+from app.api_models.users import (GetUsersResponse, UserShortInfo)
 import logging
 
 from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
+from sqlalchemy import or_
 
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 users_router = APIRouter()
@@ -137,3 +138,49 @@ async def modify_profile(
             session.commit()
 
             return ModifyProfileResponse()
+
+
+
+@users_router.get("/users", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_users(
+    request: Request,
+    ids: list[int] | None = Query(None),
+    location_filter: str | None = Query(None),
+    name_filter: str | None = Query(None),
+    user_payload=None
+) -> GetUsersResponse:
+
+    sender_id = user_payload["user_id"]
+
+    with SessionLocal.begin() as session:
+        query = session.query(User)
+
+        # Filter by user ids if provided
+        if ids:
+            query = query.filter(User.id.in_(ids))
+
+        # Apply location filter if provided
+        if location_filter:
+            query = query.filter(
+                or_(
+                User.current_address.ilike(f"%{location_filter}%"),
+                User.permanent_address.ilike(f"%{location_filter}%")
+                )
+            )
+
+        if name_filter:
+            query = query.filter(User.name.ilike(f"%{name_filter}%"))
+
+        users = query.all()
+
+        # Convert the results into a list of `UserShortInfo`
+        users_info = [
+            UserShortInfo(
+                id=user.id,
+                name=user.name,
+                image_id=user.image_id
+            ) for user in users
+        ]
+
+        return GetUsersResponse(users_info=users_info)

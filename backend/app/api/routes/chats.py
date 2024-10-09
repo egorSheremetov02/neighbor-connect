@@ -3,9 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.api.constants import MAX_INVITED_USERS, MAX_MESSAGE_CONTENT_LENGTH, PAGE_SIZE
 from app.api_models.chats import (
     Message as APIMessage,
-    UserShortInfo as APIUserInfo,
-    GetAllUsersRequest,
-    GetAllUsersResponse,
     CreateChatRequest,
     CreateChatResponse,
     EditChatDataRequest,
@@ -21,6 +18,8 @@ from app.api_models.chats import (
     GetOwnChatsRequest,
     GetOwnChatsResponse,
 )
+
+from app.api_models.users import UserShortInfo as APIUserInfo
 import logging, sqlalchemy
 from sqlalchemy import func, select
 
@@ -40,21 +39,6 @@ chats_router = APIRouter()
 logger = logging.getLogger(__name__)
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 
-
-# Note: declaring `request` and `user_payload` params is necessary for JWT, even if not using it.
-
-
-@chats_router.get("/allusers", dependencies=[Depends(security_scheme)])
-@jwt_token_required
-async def get_all_users(request: Request, user_payload=None) -> GetAllUsersResponse:
-    """Get all users that can be added to a new chat."""
-
-    with SessionLocal.begin() as session:
-        # will automatically commit and close, thanks to sessionmaker
-        stmt = select(User.id)
-        result = session.execute(stmt)
-        users_ids = [r[0] for r in result]
-        return GetAllUsersResponse(users_ids=users_ids)
 
 
 @chats_router.post("/", dependencies=[Depends(security_scheme)])
@@ -177,7 +161,7 @@ async def get_chat_data(
             raise HTTPException(403, f"Sender is not a member of this chat")
 
         tags = [tag.name for tag in chat.tags]
-        users_infos = [APIUserInfo(id=user.id, name=user.name) for user in chat.users]
+        users_infos = [APIUserInfo(id=user.id, name=user.name, image_id=user.image_id) for user in chat.users]
         admins_ids = [admin.id for admin in chat.admins]
 
         return GetChatDataResponse(
