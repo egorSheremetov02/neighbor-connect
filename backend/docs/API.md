@@ -442,6 +442,8 @@ Create a new offer.
 
 ## Image Storage endpoints
 
+All this edpoints require auth token (don't forget add it to header)
+
 ### Store an image
 
 The image can be stored by submitting this form to `image_storage/`
