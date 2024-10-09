@@ -34,7 +34,7 @@ const AddIncidentModal = ({ open, onClose }) => {
     fetch("http://localhost:8080/incidents/", {
       method: "POST",
       headers: {
-        Authorization: token.substring(1, token.length - 1),
+        Authorization: "bearer " + token.substring(1, token.length - 1),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(incidentData),

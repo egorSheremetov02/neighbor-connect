@@ -27,15 +27,17 @@ const AddOfferModal = ({ open, onClose }) => {
     const offerData = {
       title,
       description,
-      price: parseFloat(price),
-      product,
+      // price: parseFloat(price),
+      tags: [product],
       date,
     };
+
+    console.log(offerData);
 
     fetch("http://localhost:8080/offers/", {
       method: "POST",
       headers: {
-        Authorization: token.substring(1, token.length - 1),
+        Authorization: "bearer " + token.substring(1, token.length - 1),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(offerData),

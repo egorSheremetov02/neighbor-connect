@@ -85,7 +85,7 @@ const PostCard = ({ props }) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: token.substring(1, token.length - 1),
+            Authorization: "bearer " + token.substring(1, token.length - 1),
           },
           body: JSON.stringify({ offer_id: id }),
         });
@@ -97,7 +97,7 @@ const PostCard = ({ props }) => {
         const response = await fetch(`http://localhost:8080/incidents/${id}`, {
           method: "DELETE",
           headers: {
-            Authorization: token.substring(1, token.length - 1),
+            Authorization: "bearer " + token.substring(1, token.length - 1),
           },
         });
 
