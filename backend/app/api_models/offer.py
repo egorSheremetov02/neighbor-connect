@@ -15,7 +15,6 @@ class Offer(BaseModel):
 class CreateOfferRequest(BaseModel):
     title: str
     description: str
-    author_id: int
     date: datetime | None = None
     tags: list[str]
     image_id: int | None = None

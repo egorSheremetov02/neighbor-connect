@@ -107,7 +107,7 @@ async def login(
 
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-            return {"access_token": jwt_token, "token_type": "bearer"}
+            return {"access_token": jwt_token, "token_type": "bearer", "user_id": user.id}
 
 
 @auth_router.get("/users/{user_id}")
