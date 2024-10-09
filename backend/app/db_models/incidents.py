@@ -37,3 +37,12 @@ class Incident(DBBase):
     updated_at: datetime = Column(DateTime, default=datetime.utcnow)
     location = Column(String, nullable=True)
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
+
+
+
+class IncidentVote(DBBase):
+    __tablename__ = 'incident_votes'
+
+    incident_id = mapped_column(ForeignKey("incidents.id", ondelete="CASCADE"), primary_key=True)
+    user_id = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    vote = Column(String, nullable=False)
