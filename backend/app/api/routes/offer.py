@@ -1,15 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from app.api_models.offer import (Offer as APIOffer, ListOffersResponse,
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import asc, and_, or_
+from typing import List, Optional
+
+from app.api_models.offer import (Offer as API_Offer, ListOffersResponse,
                                   CreateOfferRequest, CreateOfferResponse,
                                   DeleteOfferRequest, DeleteOfferResponse,
                                   EditOfferDataRequest, EditOfferDataResponse)
 
 import logging, sqlalchemy
+from sqlalchemy import select
 
-from app.db_models.chats import User
-from app.db_models.offer import Offer
+from app.db_models.offer import Offer, OfferTag
 from app.core.db import SessionLocal
-from app.api.util import validate_tags, jwt_token_required
+from app.api.util import jwt_token_required
 from fastapi import HTTPException
 from fastapi.security import APIKeyHeader
 
@@ -20,16 +24,21 @@ logger = logging.getLogger(__name__)
 
 @offers_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
+async def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
     """
-    :param request: The request object representing the current API request.
-    :type request: Request
-    :param create_offer_request: The request body containing offer creation details such as title, description, price, product, and date.
-    :type create_offer_request: CreateOfferRequest
-    :param user_payload: User payload containing user-specific information extracted from the JWT. Defaults to None.
-    :type user_payload: dict, optional
-    :return: The response containing the ID of the newly created offer.
-    :rtype: CreateOfferResponse
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    create_offer_request : CreateOfferRequest
+        The request data for creating an offer, which includes title, description, image_id, tags, and date.
+    user_payload : dict, optional
+        The payload containing user-specific information extracted from JWT token; it includes user_id.
+
+    Returns
+    -------
+    CreateOfferResponse
+        The response containing the ID of the newly created offer.
     """
     sender_id = user_payload['user_id']
 
@@ -37,13 +46,17 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
         raise HTTPException(400, f'Offer title is missing')
     if len(create_offer_request.description) == 0:
         raise HTTPException(400, f'Offer description is missing')
-    if create_offer_request.price <= 0:
-        raise HTTPException(400, f'Offer price should be positive')
 
     with SessionLocal() as session:
         with session.begin():
-            offer = Offer(title=create_offer_request.title, description=create_offer_request.description,
-                          author_id=sender_id, price=create_offer_request.price, product=create_offer_request.product,
+            # TODO: Maybe throw exception on empty tag
+            all_tags = validate_and_get_offers_tags(create_offer_request.tags, session)
+
+            offer = Offer(title=create_offer_request.title,
+                          description=create_offer_request.description,
+                          author_id=sender_id,
+                          image_id=create_offer_request.image_id,
+                          tags=all_tags,
                           date=create_offer_request.date)
             session.add(offer)
 
@@ -52,78 +65,159 @@ def create_offer(request: Request, create_offer_request: CreateOfferRequest, use
 
 @offers_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def list_offers(request: Request, user_payload=None) -> ListOffersResponse:
+async def list_offers(request: Request, query_text: Optional[str] = Query(None),
+                tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
     """
-    :param request: The request object.
-    :param user_payload: The payload containing user-specific data, typically decoded from a JWT token.
-    :return: A ListOffersResponse object containing a list of offers.
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    tags : Optional[List[str]], default None
+        List of tags to filter the offers.
+    user_payload : dict, optional
+        Payload information obtained from the JWT token.
     """
-    sender_id = user_payload['user_id']
-    print("SENDER ID: ", sender_id)
+    # sender_id = user_payload['user_id']
     with SessionLocal() as session:
         with session.begin():
-            offers = session.query(Offer).all()
-
-            def to_pydantic(offer: Offer) -> APIOffer:
-                return APIOffer(
+            def to_pydantic(offer: Offer) -> API_Offer:
+                return API_Offer(
                     id=offer.id,
                     title=offer.title,
                     description=offer.description,
                     author_id=offer.author_id,
-                    price=offer.price,
-                    product=offer.product,
                     date=offer.date,
-                    image_id=offer.image_id
+                    image_id=offer.image_id,
+                    tags=list(map(lambda tag: tag.name, offer.tags))
                 )
 
-            return ListOffersResponse(offers=[to_pydantic(offer) for offer in offers], next_page_id=None)
+            command = session.query(Offer).options(sqlalchemy.orm.joinedload(Offer.tags)).order_by(asc(Offer.date))
+            if tags:
+                tags = list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), tags)))
+                for tag in tags:
+                    command = command.filter(Offer.tags.any(OfferTag.name == tag))
+
+            if query_text:
+                query_text = query_text.strip()
+                if query_text:
+                    command = command.filter(
+                        or_(
+                            Offer.title.ilike(f'%{query_text}%'),
+                            Offer.description.ilike(f'%{query_text}%')
+                        )
+                    )
+            offers_with_tags = command.all()
+            return ListOffersResponse(offers=[to_pydantic(offer) for offer in offers_with_tags])
+
+
+def validate_and_get_offers_tags(tags: list[str], session: Session) -> list[OfferTag]:
+    """
+    Parameters
+    ----------
+    tags : list[str]
+        List of tag names to be validated and processed.
+
+    session : Session
+        Database session object to facilitate database operations.
+
+    Returns
+    -------
+    list[OfferTag]
+        List of validated and processed OfferTag objects, including both existing and new tags.
+    """
+    valid_tag_names = list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), tags)))
+
+    existing_tags = list(session.scalars(
+        select(OfferTag).where(OfferTag.name.in_(valid_tag_names))
+    ).all())
+
+    existing_tag_names = {tag.name for tag in existing_tags}
+    new_tag_names = set(valid_tag_names) - existing_tag_names
+    new_tags = [OfferTag(name=name) for name in new_tag_names]
+    session.add_all(new_tags)
+
+    all_tags = existing_tags + new_tags
+    return all_tags
 
 
 @offers_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def edit_offer_data(request: Request, edit_offer_data_request: EditOfferDataRequest,
+async def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
                     user_payload=None) -> EditOfferDataResponse:
     """
-    :param request: The current request instance containing request data.
-    :param edit_offer_data_request: An instance of EditOfferDataRequest containing the offer details to be edited.
-    :param user_payload: The payload extracted from the user's JWT token, containing user-specific information.
-    :return: An instance of EditOfferDataResponse indicating the result of the offer edit operation.
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    edit_request : EditOfferDataRequest
+        The request object containing the new offer data to be edited.
+    user_payload : dict, optional
+        A dictionary containing the payload data extracted from the JWT token, default is None.
+
+    Returns
+    -------
+    EditOfferDataResponse
+        The response object indicating the result of the edit operation.
+
+    Raises
+    ------
+    HTTPException
+        If the offer title is missing.
+        If the offer description is missing.
+        If the offer with the specified ID does not exist.
+        If the offer is not authored by the sender (user making the request).
+
+    Notes
+    -----
+    This function requires a valid JWT token to be provided in the request.
+    It checks the authorization and validates the input data before updating an offer.
+    The offer can only be edited by its author.
+    The tags associated with the offer are validated and updated.
     """
     sender_id = user_payload['user_id']
 
-    if len(edit_offer_data_request.title) == 0:
+    if len(edit_request.title) == 0:
         raise HTTPException(400, f'Offer title is missing')
-    if len(edit_offer_data_request.description) == 0:
+    if len(edit_request.description) == 0:
         raise HTTPException(400, f'Offer description is missing')
-    if edit_offer_data_request.price <= 0:
-        raise HTTPException(400, f'Offer price should be positive')
 
     with SessionLocal() as session:
         with session.begin():
-            offer = session.query(Offer).filter_by(id=edit_offer_data_request.offer_id).first()
+            offer = session.query(Offer).filter_by(id=edit_request.offer_id).first()
             if offer is None:
-                raise HTTPException(400, f'Offer with id {edit_offer_data_request.offer_id} does not exist')
+                raise HTTPException(400, f'Offer with id {edit_request.offer_id} does not exist')
 
             if offer.author_id != sender_id:
                 raise HTTPException(400, f'Offer can be edited only by its author')
 
-            offer.title = edit_offer_data_request.title
-            offer.description = edit_offer_data_request.description
-            offer.price = edit_offer_data_request.price
-            offer.product = edit_offer_data_request.product
-            offer.date = edit_offer_data_request.date
+            tags = validate_and_get_offers_tags(edit_request.tags, session)
 
-        return EditOfferDataResponse()
+            offer.title = edit_request.title
+            offer.description = edit_request.description
+            offer.image_id = edit_request.image_id
+            offer.date = edit_request.date
+            offer.tags = tags
+
+    return EditOfferDataResponse()
 
 
 @offers_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
+async def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
     """
-    :param request: The incoming HTTP request.
-    :param delete_offer_request: The request object containing information necessary to delete an offer, such as offer_id.
-    :param user_payload: The payload object from the JWT token containing user-specific information, such as user_id.
-    :return: A response object indicating the successful deletion of the offer.
+    Parameters
+    ----------
+    request : Request
+        The request object that contains metadata about the request.
+    delete_offer_request : DeleteOfferRequest
+        The request payload containing details about the offer to be deleted.
+    user_payload : dict, optional
+        Contains user-related information extracted from the JWT token, including the user_id.
+
+    Returns
+    -------
+    DeleteOfferResponse
+        An object indicating the outcome of the delete operation.
     """
     sender_id = user_payload['user_id']
 

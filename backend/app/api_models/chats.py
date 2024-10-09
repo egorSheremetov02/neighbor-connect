@@ -2,23 +2,10 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class Message(BaseModel):
-    """
-        The Message class represents a message object with various attributes.
+# ---- data models ----
 
-        Attributes
-        ----------
-        content : str
-            The textual content of the message.
-        image_id : int or None
-            The identifier of the attached image, if any.
-        author_id : int
-            The identifier of the author of the message.
-        author_name : str
-            The name of the author of the message.
-        created_at : datetime
-            The timestamp when the message was created.
-    """
+
+class Message(BaseModel):
     content: str
     image_id: int | None
     author_id: int
@@ -26,48 +13,38 @@ class Message(BaseModel):
     created_at: datetime
 
 
-class CreateChatRequest(BaseModel):
-    """
-        The CreateChatRequest class represents a data model for creating a new chat request.
-
-        Attributes:
-            name (str): The name of the chat.
-            description (str): A description of the chat.
-            tags (list[str]): A list of tags associated with the chat.
-            image_id (Optional[int]): An optional ID of an image associated with the chat. Defaults to None.
-            users (list[int]): A list of user IDs who are part of the chat.
-    """
+class UserShortInfo(BaseModel):
+    id: int
     name: str
-    description: str
+
+
+# ---- request / response models ----
+
+
+class GetAllUsersRequest(BaseModel):
+    """Request all users that can be added to new chats."""
+    pass
+
+
+class GetAllUsersResponse(BaseModel):
+    users_ids: list[int]
+
+
+class CreateChatRequest(BaseModel):
+    """Create a new chat with users. Creator is the initial admin."""
+    name: str
+    description: str | None
     tags: list[str]
     image_id: int | None = None
     users: list[int]
 
 
 class CreateChatResponse(BaseModel):
-    """
-    CreateChatResponse is a response model that represents the result of a chat creation request.
-    It contains the unique identifier for the created chat.
-
-    Attributes:
-        chat_id (int): The unique identifier of the created chat.
-    """
     chat_id: int
 
 
 class EditChatDataRequest(BaseModel):
-    """
-    Represents a request to edit chat data, including basic chat information and user management.
-
-    Attributes:
-        chat_id (int): The identifier for the chat.
-        name (str): The name of the chat.
-        description (str): A textual description of the chat.
-        tags (list[str]): A list of tags associated with the chat.
-        image_id (int | None): An optional identifier for the chat's image.
-        users (list[int]): A list of user identifiers who are part of the chat.
-        admin_users (list[int]): A list of user identifiers with administrative privileges.
-    """
+    """Edit chat data. Can only be done by chat admin."""
     chat_id: int
     name: str
     description: str
@@ -78,28 +55,35 @@ class EditChatDataRequest(BaseModel):
 
 
 class EditChatDataResponse(BaseModel):
+    pass
+
+
+class GetChatDataRequest(BaseModel):
+    """Get chat data, including its users. Must be a member to request."""
     chat_id: int
 
 
+class GetChatDataResponse(BaseModel):
+    chat_id: int
+    name: str
+    description: str | None
+    tags: list[str]
+    image_id: int | None = None
+    users_infos: list[UserShortInfo]
+    admin_users: list[int]
+
+
 class DeleteChatRequest(BaseModel):
+    """Delete a chat, including all its messages."""
     chat_id: int
 
 
 class DeleteChatResponse(BaseModel):
-    deleted_chat_id: int
+    pass
 
 
 class SendMessageRequest(BaseModel):
-    """
-        A model representing a request to send a message.
-
-        Attributes
-        ----------
-        content : str
-            The text content of the message.
-        image_id : int | None, optional
-            An optional identifier for an image attached to the message.
-    """
+    """Send a message to a chat. Author is implied from auth token."""
     content: str
     image_id: int | None = None
 
@@ -108,31 +92,21 @@ class SendMessageResponse(BaseModel):
     pass
 
 
+# unused: GET requests cannot have body. kept for consistency
 class ListMessagesRequest(BaseModel):
-    page_id: int | None = None
+    """List all messages in a chat, sorted by creation time. Pagination is currently unused."""
+    pass
 
 
 class ListMessagesResponse(BaseModel):
-    """
-        Represents the response of a list messages request.
-
-        Attributes
-        ----------
-        messages : list[Message]
-            A list of Message objects.
-        next_page_id : int, optional
-            An identifier for the next page of messages, if any.
-    """
     messages: list[Message]
     next_page_id: int | None = None
 
 
-class UserInfo(BaseModel):
-    id: int
-    fullname: str
+class GetOwnChatsRequest(BaseModel):
+    """Get the chats the token bearer is a member of."""
+    pass
 
 
-class ListChatUsersResponse(BaseModel):
-    users: list[UserInfo]
-
-
+class GetOwnChatsResponse(BaseModel):
+    chats_ids: list[int]
