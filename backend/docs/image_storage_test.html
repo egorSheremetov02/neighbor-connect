@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Avatar Image</title>
+</head>
+<body>
+    <h1>Upload Your Avatar Image</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="post">
+        <label for="file">Choose an image:</label>
+        <input type="file" id="file" name="file" accept="image/*" required>
+        <input type="hidden" name="image_type" value="avatar">
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <p id="response"></p>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('http://localhost:8080/image_storage/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('response').innerText = `Image uploaded successfully! Image ID: ${result.image_id}`;
+                } else {
+                    document.getElementById('response').innerText = 'Failed to upload image.';
+                }
+            } catch (error) {
+                document.getElementById('response').innerText = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
