@@ -33,13 +33,12 @@ const PostCard = ({ props }) => {
     date,
     created_at,
     location,
-    price,
-    product,
+    tags,
     id,
   } = props;
 
   const dateFormatted = formatDate(date || created_at);
-  const type = product ? "offer" : "incident";
+  const type = tags ? "offer" : "incident";
   const token = sessionStorage.getItem("TOKEN");
 
   const [expanded, setExpanded] = useState(false);
@@ -153,7 +152,7 @@ const PostCard = ({ props }) => {
             <Typography variant="body2" color="text.secondary">
               {location}
             </Typography>
-            {price && (
+            {tags && (
               <Stack
                 direction="row"
                 spacing={2}
@@ -163,10 +162,7 @@ const PostCard = ({ props }) => {
                 }}
               >
                 <Typography variant="body2" color="text.secondary">
-                  ${price}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {product}
+                  {tags[0]}
                 </Typography>
               </Stack>
             )}
