@@ -10,17 +10,15 @@ import {
 } from "@mui/material";
 
 const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
-  console.log(offer?.tags?.[0]);
-
   const [formData, setFormData] = useState({
     offer_id: offer?.id || "",
     title: offer?.title || "",
     description: offer?.description || "",
-    tags: offer?.tags?.[0] || "", // Set tags as an empty array if none
+    tags: offer?.tags?.[0] || "",
     date: new Date(),
     image_id: 0,
   });
-  // const [tag, setTag] = useState();
+
   const token = sessionStorage.getItem("TOKEN");
 
   const handleChange = (e) => {

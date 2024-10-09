@@ -16,7 +16,6 @@ const modalStyle = {
 const AddOfferModal = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
   const [product, setProduct] = useState("");
   const [date, setDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,7 +26,6 @@ const AddOfferModal = ({ open, onClose }) => {
     const offerData = {
       title,
       description,
-      // price: parseFloat(price),
       tags: [product],
       date,
     };
@@ -90,28 +88,6 @@ const AddOfferModal = ({ open, onClose }) => {
           label="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-          InputProps={{
-            sx: {
-              borderRadius: "8px",
-              backgroundColor: "#f9f9f9",
-              height: "40px",
-              fontSize: "14px",
-            },
-          }}
-          InputLabelProps={{
-            sx: {
-              fontSize: "14px",
-            },
-          }}
-        />
-        <TextField
-          label="Price"
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
           fullWidth
           margin="normal"
           required
