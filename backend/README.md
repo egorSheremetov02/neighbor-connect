@@ -29,8 +29,10 @@ Schema:
 
 ```
 .
-├── API.md
-├── API_Chats.md
+├── docs                        # backend documentation
+│   ├── API.md
+│   ├── API_Chats.md
+│   ├── image_storage_test.html
 ├── README.md
 ├── app                         # application root
 │   ├── __init__.py
