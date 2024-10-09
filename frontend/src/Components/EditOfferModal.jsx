@@ -10,31 +10,43 @@ import {
 } from "@mui/material";
 
 const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
+  console.log(offer?.tags?.[0]);
+
   const [formData, setFormData] = useState({
-    offer_id: offer.id,
-    title: offer.title,
-    description: offer.description,
-    price: offer.price,
-    product: offer.product,
+    offer_id: offer?.id || "",
+    title: offer?.title || "",
+    description: offer?.description || "",
+    tags: offer?.tags?.[0] || "", // Set tags as an empty array if none
     date: new Date(),
     image_id: 0,
   });
+  // const [tag, setTag] = useState();
   const token = sessionStorage.getItem("TOKEN");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async () => {
+    const dataToSubmit = {
+      ...formData,
+      tags: formData.tags.split(",").map((tag) => tag.trim()), // split and trim tags
+    };
+
+    console.log(dataToSubmit);
+
     try {
       const response = await fetch("http://localhost:8080/offers/", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "bearer " + token.substring(1, token.length - 1),
+          Authorization: token.substring(1, token.length - 1),
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
 
       if (!response.ok) {
@@ -105,33 +117,10 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
         />
         <TextField
           margin="dense"
-          name="price"
-          label="Price"
-          type="number"
+          name="tags"
+          label="Tags"
           fullWidth
-          value={formData.price}
-          onChange={handleChange}
-          required
-          InputProps={{
-            sx: {
-              borderRadius: "8px",
-              backgroundColor: "#f9f9f9",
-              height: "40px",
-              fontSize: "14px",
-            },
-          }}
-          InputLabelProps={{
-            sx: {
-              fontSize: "14px",
-            },
-          }}
-        />
-        <TextField
-          margin="dense"
-          name="product"
-          label="Product"
-          fullWidth
-          value={formData.product}
+          value={formData.tags}
           onChange={handleChange}
           required
           InputProps={{
