@@ -13,8 +13,8 @@ class StoreImageRequest(BaseModel):
 
 
 class StoreImageResponse(BaseModel):
-    image_id: str
+    image_id: int
 
 class GetImageResponse(BaseModel):
-    image_id: str
+    image_id: int
 

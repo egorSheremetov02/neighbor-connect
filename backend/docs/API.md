@@ -439,3 +439,37 @@ Create a new offer.
   "image_id": int
 }
 ```
+
+## Image Storage endpoints
+
+All this edpoints require auth token (don't forget add it to header)
+
+### Store an image
+
+The image can be stored by submitting this form to `image_storage/`
+
+```html
+<form id="uploadForm" enctype="multipart/form-data" method="post">
+  <label for="file">Choose an image:</label>
+  <input type="file" id="file" name="file" accept="image/*" required>
+  <input type="hidden" name="image_type" value="avatar">
+  <button type="submit">Upload Image</button>
+</form>
+```
+
+You can choose between `avatar` and `image` image types. This parameter is responsible for compression.
+Avatars will be compressed and cropped further to reduce storage cost.
+
+This request will return an id of the stored picture. 
+The example page that can send such request can be found in `docs/image_storage_test.html` 
+(the test html doesn't handle authentication, so it needs to be disabled).
+
+### Retrieving an image
+
+The image can be retrieved by sending a get request:
+
+```
+/image_storage?image_id=...
+```
+
+`image_id` is the id returned in the previous step.
