@@ -26,7 +26,7 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: token.substring(1, token.length - 1),
+            Authorization: "bearer " + token.substring(1, token.length - 1),
           },
           body: JSON.stringify(formData),
         }

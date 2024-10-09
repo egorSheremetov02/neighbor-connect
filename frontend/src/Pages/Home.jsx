@@ -18,12 +18,14 @@ const Home = () => {
     return <Navigate to="/login" />;
   }
 
+  console.log(token, token.substring(1, token.length - 1));
+
   useEffect(() => {
     const fetchOffers = async () => {
       try {
         const response = await fetch("http://localhost:8080/offers/", {
           headers: {
-            Authorization: token.substring(1, token.length - 1),
+            Authorization: "bearer " + token.substring(1, token.length - 1),
             "Content-Type": "application/x-www-form-urlencoded",
           },
         });
@@ -44,7 +46,7 @@ const Home = () => {
       try {
         const response = await fetch("http://localhost:8080/incidents/", {
           headers: {
-            Authorization: token.substring(1, token.length - 1),
+            Authorization: "bearer " + token.substring(1, token.length - 1),
             "Content-Type": "application/x-www-form-urlencoded",
           },
         });
