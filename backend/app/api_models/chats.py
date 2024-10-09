@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+from app.api_models.users import UserShortInfo
 
 # ---- data models ----
 
@@ -13,21 +14,8 @@ class Message(BaseModel):
     created_at: datetime
 
 
-class UserShortInfo(BaseModel):
-    id: int
-    name: str
-
-
 # ---- request / response models ----
 
-
-class GetAllUsersRequest(BaseModel):
-    """Request all users that can be added to new chats."""
-    pass
-
-
-class GetAllUsersResponse(BaseModel):
-    users_ids: list[int]
 
 
 class CreateChatRequest(BaseModel):
