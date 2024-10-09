@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 @image_storage_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def store_image(request: Request, file: Annotated[UploadFile, File()], image_type: Annotated[ImageType, Form()], user_payload=None) -> StoreImageResponse:
-    sender_id = 0
-
+    sender_id = user_payload['user_id']
     image_contents = await file.read()
     # TODO crop image based on image_type and convert to png
     with SessionLocal() as session:
@@ -30,7 +29,7 @@ async def store_image(request: Request, file: Annotated[UploadFile, File()], ima
             image = Image(image=image_contents, random_id=uid, author_id=sender_id)
             image.uid = uid
             session.add(image)
-            return StoreImageResponse(image_id=image.id)
+        return StoreImageResponse(image_id=image.id)
 
 
 @image_storage_router.get("/", dependencies=[Depends(security_scheme)])
