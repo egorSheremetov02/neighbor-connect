@@ -13,7 +13,6 @@ class Offer(BaseModel):
 
 
 class CreateOfferRequest(BaseModel):
-    id: int
     title: str
     description: str
     author_id: int
