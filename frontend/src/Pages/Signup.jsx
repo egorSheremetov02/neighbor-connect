@@ -53,9 +53,9 @@ const SingUp = () => {
       email: event.target.elements.email.value,
       login: event.target.elements.login.value,
       password: event.target.elements.password.value,
-      address: event.target.elements.address.value,
-      birthday: event.target.elements.birthday.value,
-      additionalInfo: event.target.elements.additionalInfo.value,
+      permanent_address: event.target.elements.address.value,
+      // birthday: event.target.elements.birthday.value,
+      // additionalInfo: event.target.elements.additionalInfo.value,
     };
 
     try {
@@ -201,52 +201,6 @@ const SingUp = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Your Address"
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
-                }}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="birthday" sx={{ fontSize: "0.875rem" }}>
-                Birthday
-              </FormLabel>
-              <TextField
-                id="birthday"
-                name="birthday"
-                type="date"
-                required
-                fullWidth
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
-                }}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="additionalInfo" sx={{ fontSize: "0.875rem" }}>
-                Additional Info
-              </FormLabel>
-              <TextField
-                id="additionalInfo"
-                name="additionalInfo"
-                // multiline
-                rows={3}
-                fullWidth
-                variant="outlined"
-                placeholder="Additional information"
                 InputProps={{
                   sx: {
                     borderRadius: "8px",
