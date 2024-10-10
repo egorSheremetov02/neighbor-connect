@@ -130,7 +130,6 @@ def jwt_token_required(f):
             raise HTTPException(status_code=401, detail="Request object not found.")
 
         token = request.cookies.get("access_token")
-        print("Token: ", token)
         if not token:
             try:
                 authorization = request.headers["Authorization"]
