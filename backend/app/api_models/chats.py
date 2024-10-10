@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.api_models.users import UserShortInfo
@@ -8,7 +8,7 @@ from app.api_models.users import UserShortInfo
 
 class Message(BaseModel):
     content: str
-    image_id: int | None
+    image_id: int | None = Field(None)
     author_id: int
     author_name: str
     created_at: datetime
@@ -21,9 +21,9 @@ class Message(BaseModel):
 class CreateChatRequest(BaseModel):
     """Create a new chat with users. Creator is the initial admin."""
     name: str
-    description: str | None
+    description: str | None = Field(None)
     tags: list[str]
-    image_id: int | None = None
+    image_id: int | None = Field(None)
     users: list[int]
 
 
@@ -37,7 +37,7 @@ class EditChatDataRequest(BaseModel):
     name: str
     description: str
     tags: list[str]
-    image_id: int | None = None
+    image_id: int | None = Field(None)
     users: list[int]
     admin_users: list[int]
 
@@ -54,9 +54,9 @@ class GetChatDataRequest(BaseModel):
 class GetChatDataResponse(BaseModel):
     chat_id: int
     name: str
-    description: str | None
+    description: str | None = Field(None)
     tags: list[str]
-    image_id: int | None = None
+    image_id: int | None = Field(None)
     users_infos: list[UserShortInfo]
     admin_users: list[int]
 
@@ -73,7 +73,7 @@ class DeleteChatResponse(BaseModel):
 class SendMessageRequest(BaseModel):
     """Send a message to a chat. Author is implied from auth token."""
     content: str
-    image_id: int | None = None
+    image_id: int | None = Field(None)
 
 
 class SendMessageResponse(BaseModel):
@@ -88,7 +88,7 @@ class ListMessagesRequest(BaseModel):
 
 class ListMessagesResponse(BaseModel):
     messages: list[Message]
-    next_page_id: int | None = None
+    next_page_id: int | None = Field(None)
 
 
 class GetOwnChatsRequest(BaseModel):

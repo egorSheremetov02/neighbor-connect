@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 from typing import Union
@@ -53,10 +53,10 @@ class Incident(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
-    location: str | None = None
-    image_id: int | None = None
+    location: str | None = Field(None)
+    image_id: int | None = Field(None)
     votes: 'IncidentVotesData'
-    user_vote: Union['IncidentVote', None] = None
+    user_vote: Union['IncidentVote', None] = Field(None)
 
 
 class IncidentVote(str, Enum):
@@ -101,7 +101,7 @@ class ListIncidentsResponse(BaseModel):
     incidents: list[Incident]
 
 class IncidentVoteRequest(BaseModel):
-    vote: Union['IncidentVote', None] = None
+    vote: Union['IncidentVote', None] = Field(None)
 
 
 class CreateIncidentRequest(BaseModel):
@@ -119,9 +119,9 @@ class CreateIncidentRequest(BaseModel):
     title: str
     description: str
     created_at: datetime
-    updated_at: datetime | None = None
+    updated_at: datetime | None = Field(None)
     location: str
-    image_id: int | None = None
+    image_id: int | None = Field(None)
 
 
 class CreateIncidentResponse(BaseModel):
@@ -156,7 +156,7 @@ class EditIncidentDataRequest(BaseModel):
     title: str
     description: str
     location: str
-    image_id: int | None = None
+    image_id: int | None = Field(None)
     updated_at: datetime
 
 
