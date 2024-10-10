@@ -58,7 +58,7 @@ async def register(request: RegisterRequest) -> RegisterResponse:
             if len(request.fullName) > 255:
                 raise HTTPException(400, f"Full name is too long")
 
-            if len(request.password) < 8:
+            if len(request.password) < 6:
                 raise HTTPException(400, f"Password is too short")
 
             user = User(
@@ -75,9 +75,8 @@ async def register(request: RegisterRequest) -> RegisterResponse:
                 member_since=datetime.now(),
             )
             session.add(user)
-            session.commit()
 
-            return RegisterResponse(user_id=user.id)
+        return RegisterResponse(user_id=user.id)
 
 
 @auth_router.post("/login")

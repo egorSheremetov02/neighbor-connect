@@ -24,7 +24,6 @@ def login_user(client, username, password):
 
 def create_and_login_user(client, create_request):
     create_response = create_user(client, create_request)
-    print(f'JKBCKJHBSAFBHK SHJKZBHJ S:\n\n\n\n\n\n{create_response}')
     assert create_response.status_code == 200
     return login_user(client, create_request["login"], create_request["password"])
 
