@@ -49,9 +49,10 @@ def test_get_user(client):
         "password": "nooooooooooooooooooooooooo",
         "permanent_address": "Constructor University",
     }
-    assert create_user(client, create_request).status_code == 200
-
-    response = client.get("/users/users/killmekillme")
+    result = create_user(client, create_request)
+    assert result.status_code == 200
+    user_id = result.json()["user_id"]
+    response = client.get(f"/users/users/{user_id}")
     assert response.status_code == 200
     check_user_response_validity_by_initial_create_request(response, create_request)
 

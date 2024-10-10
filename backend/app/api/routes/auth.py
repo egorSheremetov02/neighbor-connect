@@ -77,7 +77,7 @@ async def register(request: RegisterRequest) -> RegisterResponse:
             session.add(user)
             session.commit()
 
-            return RegisterResponse()
+            return RegisterResponse(user_id=user.id)
 
 
 @auth_router.post("/login")

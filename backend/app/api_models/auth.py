@@ -22,7 +22,7 @@ class RegisterRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    pass
+    user_id: int
 
 
 class LoginRequest(BaseModel):
