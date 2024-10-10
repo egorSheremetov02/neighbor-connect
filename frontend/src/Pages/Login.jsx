@@ -81,6 +81,7 @@ const SignIn = () => {
           "TOKEN",
           JSON.stringify(responseData.access_token)
         );
+        sessionStorage.setItem("myid", JSON.stringify(responseData.user_id));
         window.location.href = "/home";
       } else {
         const responseData = await response.json();
