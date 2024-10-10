@@ -39,6 +39,7 @@ const PostCard = ({ props }) => {
 
   const dateFormatted = formatDate(date || created_at);
   const type = tags ? "offer" : "incident";
+  const ismypost = sessionStorage.getItem("myid") == author_id;
   const token = sessionStorage.getItem("TOKEN");
 
   const [expanded, setExpanded] = useState(false);
@@ -147,13 +148,18 @@ const PostCard = ({ props }) => {
       <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: "#000" }}>
+            <Avatar
+              sx={{ bgcolor: "#000", cursor: "pointer" }}
+              onClick={() => {
+                window.location.href = `neighbors/${author_id}`;
+              }}
+            >
               {authorData?.fullName?.[0]}
             </Avatar>
           }
           action={
             <IconButton onClick={handleMenuOpen}>
-              <MoreVertIcon />
+              {ismypost && <MoreVertIcon />}
             </IconButton>
           }
           title={
