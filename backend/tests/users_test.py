@@ -24,7 +24,6 @@ def login_user(client, username, password):
 
 def create_and_login_user(client, create_request):
     create_response = create_user(client, create_request)
-    print(f'JKBCKJHBSAFBHK SHJKZBHJ S:\n\n\n\n\n\n{create_response}')
     assert create_response.status_code == 200
     return login_user(client, create_request["login"], create_request["password"])
 
@@ -49,9 +48,10 @@ def test_get_user(client):
         "password": "nooooooooooooooooooooooooo",
         "permanent_address": "Constructor University",
     }
-    assert create_user(client, create_request).status_code == 200
-
-    response = client.get("/users/users/killmekillme")
+    result = create_user(client, create_request)
+    assert result.status_code == 200
+    user_id = result.json()["user_id"]
+    response = client.get(f"/users/users/{user_id}")
     assert response.status_code == 200
     check_user_response_validity_by_initial_create_request(response, create_request)
 
@@ -107,7 +107,7 @@ def test_login(client):
     }
     response = create_and_login_user(client, create_request)
     assert response.status_code == 200
-    assert list(response.json().keys()) == ["access_token", "token_type"]
+    assert list(response.json().keys()) == ["access_token", "token_type", "user_id"]
     assert response.json()["token_type"] == "bearer"
 
 
