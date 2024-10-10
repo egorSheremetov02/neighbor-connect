@@ -1,5 +1,10 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
+
 from datetime import datetime
+from enum import Enum
+from app.api_models.auth import UserResponse
+from datetime import date
+
 from app.api.constants import (
     MAX_BIO_HEADER_LENGTH,
     MAX_CHAT_DESCRIPTION_LENGTH, 
@@ -8,37 +13,36 @@ from app.api.constants import (
 )
 
 
-class ModifyProfileRequest(BaseModel):
-    fullName: str
-    email: str
-    login: str
-    password: str
-    permanent_address: str
-    current_address: str | None
-    gender: str | None
-    phone_number: str | None
-    birthday: str | None
-    bio_header: str | None
-    bio_description: str | None
-    interests: list[str]
-    
-    @validator('gender')
-    def validate_gender(cls, value):
-        
-        if value and value.lower() not in {"male", "female"}:
-            raise ValueError("Gender must be 'male' or 'female'")
-        return value
+class Gender(str, Enum):
+    MALE = 'male'
+    FEMALE = 'female'
+    OTHER = 'other'
 
-    @validator('birthday')
-    def validate_birthday(cls, value):
-        if value:
-            try:
-                birthday_date = datetime.strptime(value, "%Y-%m-%d")
-                if birthday_date >= datetime.now():
-                    raise ValueError("Birthday must be a date in the past")
-            except ValueError:
-                raise ValueError("Invalid date format for birthday, expected YYYY-MM-DD")
-        return value
+
+class ModifyProfileRequest(BaseModel):
+    fullName: str | None = Field(None)
+    email: str | None = Field(None)
+    login: str | None = Field(None)
+    password: str | None = Field(None)
+    permanent_address: str | None = Field(None)
+    current_address: str | None = Field(None)
+    gender: Gender | None = Field(None)
+    phone_number: str | None = Field(None)
+    birthday: date | None = Field(None)
+    bio_header: str | None = Field(None)
+    bio_description: str | None = Field(None)
+    interests: list[str] | None = Field(None)
+
+    # @validator('birthday')
+    # def validate_birthday(cls, value):
+    #     if value:
+    #         try:
+    #             birthday_date = datetime.strptime(value, "%Y-%m-%d")
+    #             if birthday_date >= datetime.now():
+    #                 raise ValueError("Birthday must be a date in the past")
+    #         except ValueError:
+    #             raise ValueError("Invalid date format for birthday, expected YYYY-MM-DD")
+    #     return value
 
     @validator('bio_header')
     def validate_bio_header_length(cls, value):
@@ -54,7 +58,7 @@ class ModifyProfileRequest(BaseModel):
 
     @validator('interests')
     def validate_interests(cls, value):
-        if len(value) > MAX_TAGS_AMOUNT:
+        if value and len(value) > MAX_TAGS_AMOUNT:
             raise ValueError(f"Interests list cannot have more than {MAX_TAGS_AMOUNT} items")
         for interest in value:
             if len(interest) > MAX_TAG_LENGTH:

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
@@ -22,7 +22,7 @@ class RegisterRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    pass
+    user_id: int
 
 
 class LoginRequest(BaseModel):
@@ -62,12 +62,12 @@ class UserResponse(BaseModel):
     member_since: datetime
     is_active: bool
 
-    gender: str | None
-    phone_number: str | None
-    current_address: str | None
-    birthday: datetime | None
-    bio_header: str | None
-    bio_description: str | None
+    gender: str | None = Field(None)
+    phone_number: str | None = Field(None)
+    current_address: str | None = Field(None)
+    birthday: datetime | None = Field(None)
+    bio_header: str | None = Field(None)
+    bio_description: str | None = Field(None)
     interests: list[str]
 
 
