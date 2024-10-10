@@ -184,6 +184,28 @@ const EditProfileModal = ({
         />
         <TextField
           margin="dense"
+          name="birthday"
+          type="date"
+          fullWidth
+          value={editData.birthday}
+          onChange={handleInputChange}
+          required
+          InputProps={{
+            sx: {
+              borderRadius: "8px",
+              backgroundColor: "#f9f9f9",
+              height: "40px",
+              fontSize: "14px",
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              fontSize: "14px",
+            },
+          }}
+        />
+        <TextField
+          margin="dense"
           name="gender"
           label="Gender"
           fullWidth
