@@ -19,8 +19,8 @@ users_router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@users_router.get("/users/{username}")
-def get_user(request: Request, username: str, user_payload=None) -> UserResponse:
+@users_router.get("/users/{user_id}")
+def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
     """
     :param request: The current request being processed.
     :param user_id: The unique identifier of the user to be retrieved.
@@ -29,9 +29,9 @@ def get_user(request: Request, username: str, user_payload=None) -> UserResponse
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=username).first()
+            user = session.query(User).filter_by(id=user_id).first()
             if not user:
-                raise HTTPException(404, f"User with login {username} does not exist")
+                raise HTTPException(404, f"User with id {user_id} does not exist")
             return UserResponse(
                 id=user.id,
                 fullName=user.name,
