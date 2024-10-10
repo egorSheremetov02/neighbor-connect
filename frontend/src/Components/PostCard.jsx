@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -13,12 +13,12 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import img_source from "../../public/images/fast_food.png";
+import incident_img from "../../public/images/incident.webp";
+import offer_img from "../../public/images/offer.jpg";
 import EditOfferModal from "./EditOfferModal";
 import EditIncidentModal from "./EditIncidentModal";
 import DeleteModal from "./DeleteModal";
@@ -46,6 +46,7 @@ const PostCard = ({ props }) => {
   const [editIncidentModalOpen, setEditIncidentModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [authorData, setAuthorData] = useState();
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -76,6 +77,34 @@ const PostCard = ({ props }) => {
   const handleEditSuccess = () => {
     window.location.reload();
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/users/users/${author_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setAuthorData(data);
+        } else {
+          setError("Error fetching profile");
+        }
+      } catch (error) {
+        setError("Error fetching profile", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleDeleteConfirm = async () => {
     try {
@@ -117,7 +146,11 @@ const PostCard = ({ props }) => {
     <>
       <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
         <CardHeader
-          avatar={<Avatar sx={{ bgcolor: red[500] }}>R</Avatar>}
+          avatar={
+            <Avatar sx={{ bgcolor: "#000" }}>
+              {authorData?.fullName?.[0]}
+            </Avatar>
+          }
           action={
             <IconButton onClick={handleMenuOpen}>
               <MoreVertIcon />
@@ -137,7 +170,7 @@ const PostCard = ({ props }) => {
         <CardMedia
           component="img"
           height="194"
-          image={img_source}
+          image={tags ? offer_img : incident_img}
           alt="post image"
         />
         <CardContent>
