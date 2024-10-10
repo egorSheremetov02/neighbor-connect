@@ -19,8 +19,8 @@ users_router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@users_router.get("/users/{username}")
-def get_user(request: Request, username: str, user_payload=None) -> UserResponse:
+@users_router.get("/users/{user_id}")
+def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
     """
     :param request: The current request being processed.
     :param user_id: The unique identifier of the user to be retrieved.
@@ -29,9 +29,9 @@ def get_user(request: Request, username: str, user_payload=None) -> UserResponse
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=username).first()
+            user = session.query(User).filter_by(id=user_id).first()
             if not user:
-                raise HTTPException(404, f"User with login {username} does not exist")
+                raise HTTPException(404, f"User with id {user_id} does not exist")
             return UserResponse(
                 id=user.id,
                 fullName=user.name,
@@ -75,17 +75,17 @@ async def my_profile(request: Request, user_payload=None) -> UserResponse:
             )
 
 
-@users_router.post("/modify_profile/", dependencies=[Depends(security_scheme)])
+@users_router.post("/modify_my_profile/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def modify_profile(
     request: Request, profile_request: ModifyProfileRequest, user_payload=None
 ) -> ModifyProfileResponse:
+    sender_id = user_payload.get("user_id")
+
     with SessionLocal() as session:
         with session.begin():
-            current_user_id = user_payload.get("user_id")
-            print(current_user_id)
 
-            user = session.query(User).filter_by(id=current_user_id).first()
+            user = session.query(User).filter_by(id=sender_id).first()
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
 
@@ -96,12 +96,16 @@ async def modify_profile(
                 if existing_user:
                     raise HTTPException(status_code=409, detail="Email already in use")
 
+                user.email = profile_request.email
+
             if profile_request.login and profile_request.login != user.login:
                 existing_user = (
                     session.query(User).filter_by(login=profile_request.login).first()
                 )
                 if existing_user:
                     raise HTTPException(status_code=409, detail="Login already in use")
+                user.login = profile_request.login
+
 
             if (
                 profile_request.phone_number
@@ -116,6 +120,7 @@ async def modify_profile(
                     raise HTTPException(
                         status_code=409, detail="Phone number already in use"
                     )
+                user.phone_number = profile_request.phone_number
 
             user.name = profile_request.fullName or user.name
             user.email = profile_request.email or user.email
@@ -135,9 +140,7 @@ async def modify_profile(
             )
             user.interests = profile_request.interests or user.interests
 
-            session.commit()
-
-            return ModifyProfileResponse()
+        return ModifyProfileResponse()
 
 
 
