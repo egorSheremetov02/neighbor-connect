@@ -1,10 +1,12 @@
 ## Application
+
 Language and frameworks in backend: python, fastApi + pydantic + sqlAlchemy
 
 ## Running app
 
 Running application:
-``` shell
+
+```shell
 poetry install
 
 docker run -d -p 5433:5432 --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres
@@ -13,7 +15,8 @@ poetry run uvicorn app.main:app --port 8080
 ```
 
 # Testing (swagger):
-``` shell
+
+```shell
 http://localhost:8080/docs
 ```
 
@@ -21,7 +24,6 @@ Endpoints:
 ![Endpoints](images/endpoints.png)
 Schema:
 ![Schema](images/schema.png)
-
 
 # Project structure:
 
@@ -61,7 +63,7 @@ Schema:
 │   │   ├── incidents.py
 │   │   └── offer.py
 │   ├── init_db.py
-│   └── main.py                # database initialization 
+│   └── main.py                # database initialization
 ├── poetry.lock
-└── pyproject.toml             # a file listing python dependencies 
+└── pyproject.toml             # a file listing python dependencies
 ```
