@@ -39,7 +39,18 @@ const Profile = () => {
           const data = await response.json();
           console.log(data);
           setProfile(data);
-          setEditData(data);
+          setEditData((prev) => ({
+            ...prev,
+            fullName: data.fullName,
+            permanent_address: data.permanent_address,
+            current_address: data.current_address,
+            gender: data.gender,
+            phone_number: data.phone_number,
+            birthday: data.birthday,
+            bio_header: data.bio_header,
+            bio_description: data.bio_description,
+            interests: data.interests,
+          }));
         } else {
           setError("Error fetching profile");
         }
@@ -67,16 +78,22 @@ const Profile = () => {
 
   const handleSave = async () => {
     console.log(editData);
+    const dataToSubmit = {
+      ...editData,
+      interests: editData.interests
+        .split(",")
+        .map((interest) => interest.trim()), // split and trim interests
+    };
     try {
       const response = await fetch(
-        "http://localhost:8080/users/modify_profile/",
+        "http://localhost:8080/users/modify_my_profile/",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `bearer ${token.substring(1, token.length - 1)}`,
           },
-          body: JSON.stringify(editData),
+          body: JSON.stringify(dataToSubmit),
         }
       );
 
@@ -84,6 +101,7 @@ const Profile = () => {
         setProfile(editData);
         setIsEditing(false);
         console.log("Profile updated successfully");
+        window.location.reload();
       } else {
         console.error("Error updating profile");
       }
