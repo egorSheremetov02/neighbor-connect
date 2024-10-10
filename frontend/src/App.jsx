@@ -33,7 +33,15 @@ const App = () => {
           }
         />
         <Route
-          path="/neighbors/:id"
+          path="/neighbors/:userid"
+          element={
+            <Wrapper>
+              <Profile />
+            </Wrapper>
+          }
+        />
+        <Route
+          path="/profile/:userid"
           element={
             <Wrapper>
               <Profile />
