@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { HiOutlineMenu } from "react-icons/hi";
 import { RiCloseLine } from "react-icons/ri";
@@ -17,6 +17,7 @@ const NavLinks = ({ onLinkClick }) => (
               sessionStorage.removeItem("TOKEN");
               window.location.href = "login";
             }}
+            key={name}
           >
             <Icon className="w-6 h-6 mr-2" />
             {name}
@@ -24,15 +25,17 @@ const NavLinks = ({ onLinkClick }) => (
         );
       } else {
         return (
-          <NavLink
-            key={name}
-            to={to}
-            className="flex flex-row justify-start items-center my-8 text-sm font-medium text-black"
-            onClick={onLinkClick}
-          >
-            <Icon className="w-6 h-6 mr-2" />
-            {name}
-          </NavLink>
+          <Fragment key={name}>
+            <NavLink
+              key={name}
+              to={to}
+              className="flex flex-row justify-start items-center my-8 text-sm font-medium text-black"
+              onClick={onLinkClick}
+            >
+              <Icon className="w-6 h-6 mr-2" />
+              {name}
+            </NavLink>
+          </Fragment>
         );
       }
     })}
