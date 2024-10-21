@@ -32,9 +32,12 @@ app.add_middleware(
 app.include_router(api_router)
 
 
-os.makedirs('../schema/', exist_ok=True)
-with open('../schema/schema.json', 'w') as file:
-    json.dump(app.openapi(), file, indent=4)
+@app.on_event("startup")
+def save_openapi_json():
+    openapi_data = app.openapi()
+    os.makedirs('../schema/', exist_ok=True)
+    with open("../schema/openapi.json", "w") as file:
+        json.dump(openapi_data, file, indent=4)
 
 
 if __name__ == "__main__":
