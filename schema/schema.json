@@ -829,7 +829,9 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
                             }
                         }
                     },
@@ -2368,6 +2370,30 @@
                     "offers"
                 ],
                 "title": "ListOffersResponse"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "title": "Token Type"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "user_id"
+                ],
+                "title": "LoginResponse",
+                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
             },
             "Message": {
                 "properties": {
