@@ -43,13 +43,23 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     """
-    Class representing the response obtained after a successful login process.
+        class LoginResponse(BaseModel):
+            access_token: str
+            token_type: str
+            user_id: int
 
-    Attributes:
-        token (str): A string containing the authentication token.
+        Attributes
+        ----------
+        access_token : str
+            The token provided to the user for authentication purposes.
+        token_type : str
+            The type of token issued, e.g., Bearer.
+        user_id : int
+            The unique identifier of the user.
     """
-
-    token: str
+    access_token: str
+    token_type: str
+    user_id: int
 
 
 class UserResponse(BaseModel):

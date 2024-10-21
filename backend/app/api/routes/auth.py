@@ -4,7 +4,7 @@ from app.api_models.auth import (
     RegisterRequest,
     RegisterResponse,
     UserResponse,
-    UsersResponse,
+    UsersResponse, LoginResponse,
 )
 from fastapi import APIRouter, Response, Depends
 
@@ -82,7 +82,7 @@ async def register(request: RegisterRequest) -> RegisterResponse:
 @auth_router.post("/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
-):
+) -> LoginResponse:
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
     :type form_data: OAuth2PasswordRequestForm
@@ -106,7 +106,7 @@ async def login(
 
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-            return {"access_token": jwt_token, "token_type": "bearer", "user_id": user.id}
+            return LoginResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
 
 
 @auth_router.get("/users/{user_id}")
