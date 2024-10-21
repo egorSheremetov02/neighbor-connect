@@ -5,6 +5,8 @@ from app.api.main import api_router
 from app.core.config import *
 from app.core.db import DBBase, engine
 from app.init_db import init_db
+import json
+import os
 
 DBBase.metadata.create_all(engine)
 init_db()
@@ -28,6 +30,12 @@ app.add_middleware(
 
 # Include your router
 app.include_router(api_router)
+
+
+os.makedirs('../schema/', exist_ok=True)
+with open('../schema/schema.json', 'w') as file:
+    json.dump(app.openapi(), file, indent=4)
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8000, log_level="info")
