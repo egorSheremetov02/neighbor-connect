@@ -13,7 +13,7 @@ from sqlalchemy import select
 
 from app.db_models.offer import Offer, OfferTag
 from app.core.db import SessionLocal
-from app.api.util import jwt_token_required
+from app.api.util import jwt_token_required, hidden_user_payload
 from fastapi import HTTPException
 from fastapi.security import APIKeyHeader
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @offers_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=None) -> CreateOfferResponse:
+async def create_offer(request: Request, create_offer_request: CreateOfferRequest, user_payload=Depends(hidden_user_payload)) -> CreateOfferResponse:
     """
     Parameters
     ----------
@@ -66,7 +66,7 @@ async def create_offer(request: Request, create_offer_request: CreateOfferReques
 @offers_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def list_offers(request: Request, query_text: Optional[str] = Query(None),
-                tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=None) -> ListOffersResponse:
+                tags: Optional[List[str]] = Query(None, alias='tag'), user_payload=Depends(hidden_user_payload)) -> ListOffersResponse:
     """
     Parameters
     ----------
@@ -143,7 +143,7 @@ def validate_and_get_offers_tags(tags: list[str], session: Session) -> list[Offe
 @offers_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
-                    user_payload=None) -> EditOfferDataResponse:
+                    user_payload=Depends(hidden_user_payload)) -> EditOfferDataResponse:
     """
     Parameters
     ----------
@@ -203,7 +203,7 @@ async def edit_offer_data(request: Request, edit_request: EditOfferDataRequest,
 
 @offers_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=None) -> DeleteOfferResponse:
+async def delete_offer(request: Request, delete_offer_request: DeleteOfferRequest, user_payload=Depends(hidden_user_payload)) -> DeleteOfferResponse:
     """
     Parameters
     ----------

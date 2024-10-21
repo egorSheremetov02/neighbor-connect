@@ -30,6 +30,7 @@ from app.api.util import (
     check_image_exists,
     validate_chat_request,
     jwt_token_required,
+    hidden_user_payload
 )
 import app.api.db_util as db_util
 from fastapi import HTTPException
@@ -44,7 +45,7 @@ security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 @chats_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def create_chat(
-    request: Request, create_chat_request: CreateChatRequest, user_payload=None
+    request: Request, create_chat_request: CreateChatRequest, user_payload=Depends(hidden_user_payload)
 ) -> CreateChatResponse:
     """Create a new chat and add some users to it. The sender must be one of the invited users.
     They will also be chat's admin."""
@@ -88,7 +89,7 @@ async def create_chat(
 @chats_router.put("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def edit_chat_data(
-    request: Request, edit_chat_data_request: EditChatDataRequest, user_payload=None
+    request: Request, edit_chat_data_request: EditChatDataRequest, user_payload=Depends(hidden_user_payload)
 ) -> EditChatDataResponse:
     """Edit the info of the chat, add/remove users, change admins. Access: chat admins."""
 
@@ -146,7 +147,7 @@ async def edit_chat_data(
 @chats_router.get("/{chat_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def get_chat_data(
-    request: Request, chat_id: int, user_payload=None
+    request: Request, chat_id: int, user_payload=Depends(hidden_user_payload)
 ) -> GetChatDataResponse:
     """Get the data of the chat, including member users and admins. Access: chat members."""
 
@@ -178,7 +179,7 @@ async def get_chat_data(
 @chats_router.delete("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def delete_chat(
-    request: Request, delete_chat_request: DeleteChatRequest, user_payload=None
+    request: Request, delete_chat_request: DeleteChatRequest, user_payload=Depends(hidden_user_payload)
 ) -> DeleteChatResponse:
     """Delete the chat, including all its messages. Access: chat admins."""
 
@@ -206,7 +207,7 @@ async def send_message(
     request: Request,
     chat_id: int,
     send_message_request: SendMessageRequest,
-    user_payload=None,
+    user_payload=Depends(hidden_user_payload),
 ) -> SendMessageResponse:
     """Send a new message to a chat. Access: chat member."""
 
@@ -246,7 +247,7 @@ async def send_message(
 @chats_router.get("/{chat_id}/messages", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def list_messages(
-    request: Request, chat_id: int, page_id: int | None = None, user_payload=None
+    request: Request, chat_id: int, page_id: int | None = None, user_payload=Depends(hidden_user_payload)
 ) -> ListMessagesResponse:
     """List all messages in the chat, or its portion if pagination is used. Access: chat member."""
 
@@ -318,7 +319,7 @@ async def list_messages(
 
 @chats_router.get("/own", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def get_own_chats(request: Request, user_payload=None) -> GetOwnChatsResponse:
+async def get_own_chats(request: Request, user_payload=Depends(hidden_user_payload)) -> GetOwnChatsResponse:
     """Get all chats the sender is a member of."""
 
     sender_id = user_payload["user_id"]

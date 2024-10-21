@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.db_models.chats import User
 from app.db_models.incidents import Incident, IncidentVote as IncidentVoteDB
 from app.core.db import SessionLocal
-from app.api.util import jwt_token_required
+from app.api.util import jwt_token_required, hidden_user_payload
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ incidents_router = APIRouter()
 @incidents_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def create_incident(request: Request, create_request: CreateIncidentRequest,
-                    user_payload=None) -> CreateIncidentResponse:
+                    user_payload=Depends(hidden_user_payload)) -> CreateIncidentResponse:
     """
     :param request: Incoming HTTP request object
     :param create_request: Data required to create a new incident, containing title, description, created_at, and location
@@ -101,7 +101,7 @@ def get_votes_for_user_incidents(session: Session, user_id: int, incident_ids: l
 
 @incidents_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def list_incidents(request: Request, user_payload=None) -> ListIncidentsResponse:
+async def list_incidents(request: Request, user_payload=Depends(hidden_user_payload)) -> ListIncidentsResponse:
 
     sender_id = user_payload['user_id']
 
@@ -135,7 +135,7 @@ async def list_incidents(request: Request, user_payload=None) -> ListIncidentsRe
 
 @incidents_router.delete("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def delete_incident(request: Request, incident_id: int, user_payload=None) -> DeleteIncidentResponse:
+async def delete_incident(request: Request, incident_id: int, user_payload=Depends(hidden_user_payload)) -> DeleteIncidentResponse:
     """
     :param request: The HTTP request object.
     :param incident_id: The ID of the incident to be deleted.
@@ -162,7 +162,7 @@ async def delete_incident(request: Request, incident_id: int, user_payload=None)
 @incidents_router.put("/{incident_id}", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def edit_incident_data(request: Request, incident_id: int, edit_request: EditIncidentDataRequest,
-                       user_payload=None) -> EditIncidentDataResponse:
+                       user_payload=Depends(hidden_user_payload)) -> EditIncidentDataResponse:
     """
     :param request: The request object containing metadata about the request.
     :param incident_id: The unique identifier of the incident to be edited.
@@ -200,7 +200,7 @@ def is_admin(user_id: int) -> bool:
 @incidents_router.post("/{incident_id}/authorize", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def authorize_incident(request: Request, incident_id: int, auth_request: AuthorizeIncidentRequest,
-                       user_payload=None) -> AuthorizeIncidentResponse:
+                       user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
     """
     :param request: The request object containing the HTTP request details.
     :param incident_id: An integer representing the unique identifier of the incident to be authorized.
@@ -228,7 +228,7 @@ async def authorize_incident(request: Request, incident_id: int, auth_request: A
 @incidents_router.put("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def incident_vote(request: Request, incident_id: int, vote_request: IncidentVoteRequest,
-                       user_payload=None) -> AuthorizeIncidentResponse:
+                       user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
     """
     Parameters
     ----------
