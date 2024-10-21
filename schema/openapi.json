@@ -6,61 +6,6 @@
     },
     "paths": {
         "/chats/": {
-            "post": {
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Create Chat",
-                "description": "Create a new chat and add some users to it. The sender must be one of the invited users.\nThey will also be chat's admin.",
-                "operationId": "create_chat_chats__post",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateChatRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateChatResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "put": {
                 "tags": [
                     "chats"
@@ -68,30 +13,15 @@
                 "summary": "Edit Chat Data",
                 "description": "Edit the info of the chat, add/remove users, change admins. Access: chat admins.",
                 "operationId": "edit_chat_data_chats__put",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/EditChatDataRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -114,7 +44,57 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Create Chat",
+                "description": "Create a new chat and add some users to it. The sender must be one of the invited users.\nThey will also be chat's admin.",
+                "operationId": "create_chat_chats__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateChatRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateChatResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -123,30 +103,15 @@
                 "summary": "Delete Chat",
                 "description": "Delete the chat, including all its messages. Access: chat admins.",
                 "operationId": "delete_chat_chats__delete",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/DeleteChatRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -169,7 +134,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
             }
         },
         "/chats/{chat_id}": {
@@ -193,14 +163,6 @@
                         "schema": {
                             "type": "integer",
                             "title": "Chat Id"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],
@@ -249,14 +211,6 @@
                         "schema": {
                             "type": "integer",
                             "title": "Chat Id"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],
@@ -330,14 +284,6 @@
                             ],
                             "title": "Page Id"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -372,21 +318,6 @@
                 "summary": "Get Own Chats",
                 "description": "Get all chats the sender is a member of.",
                 "operationId": "get_own_chats_chats_own_get",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -397,21 +328,40 @@
                                 }
                             }
                         }
-                    },
-                    "422": {
-                        "description": "Validation Error",
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/incidents/": {
+            "get": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "List Incidents",
+                "operationId": "list_incidents_incidents__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/ListIncidentsResponse"
                                 }
                             }
                         }
                     }
-                }
-            }
-        },
-        "/incidents/": {
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "incidents"
@@ -419,30 +369,15 @@
                 "summary": "Create Incident",
                 "description": ":param request: Incoming HTTP request object\n:param create_request: Data required to create a new incident, containing title, description, created_at, and location\n:param user_payload: Payload containing user information, used here to extract the sender's user ID\n:return: Response object containing the ID of the newly created incident",
                 "operationId": "create_incident_incidents__post",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CreateIncidentRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -465,51 +400,12 @@
                             }
                         }
                     }
-                }
-            },
-            "get": {
-                "tags": [
-                    "incidents"
-                ],
-                "summary": "List Incidents",
-                "operationId": "list_incidents_incidents__get",
+                },
                 "security": [
                     {
                         "APIKeyHeader": []
                     }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListIncidentsResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
+                ]
             }
         },
         "/incidents/{incident_id}": {
@@ -533,14 +429,6 @@
                         "schema": {
                             "type": "integer",
                             "title": "Incident Id"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],
@@ -587,14 +475,6 @@
                         "schema": {
                             "type": "integer",
                             "title": "Incident Id"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],
@@ -654,14 +534,6 @@
                             "type": "integer",
                             "title": "Incident Id"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "requestBody": {
@@ -719,14 +591,6 @@
                         "schema": {
                             "type": "integer",
                             "title": "Incident Id"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],
@@ -865,14 +729,6 @@
                             "type": "integer",
                             "title": "User Id"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -923,14 +779,6 @@
                             },
                             "title": "Ids"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -968,16 +816,6 @@
                 "security": [
                     {
                         "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "requestBody": {
@@ -1060,14 +898,6 @@
                             ],
                             "title": "Tag"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -1103,16 +933,6 @@
                 "security": [
                     {
                         "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "requestBody": {
@@ -1160,16 +980,6 @@
                         "APIKeyHeader": []
                     }
                 ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1214,16 +1024,6 @@
                 "security": [
                     {
                         "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "requestBody": {
@@ -1279,14 +1079,6 @@
                             "type": "integer",
                             "title": "Image Id"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -1328,14 +1120,6 @@
                             "type": "integer",
                             "title": "User Id"
                         }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
                     }
                 ],
                 "responses": {
@@ -1369,21 +1153,6 @@
                 ],
                 "summary": "My Profile",
                 "operationId": "my_profile_users_my_profile__get",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -1394,18 +1163,13 @@
                                 }
                             }
                         }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
             }
         },
         "/users/modify_my_profile/": {
@@ -1415,30 +1179,15 @@
                 ],
                 "summary": "Modify Profile",
                 "operationId": "modify_profile_users_modify_my_profile__post",
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
-                        }
-                    }
-                ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/ModifyProfileRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -1461,7 +1210,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
             }
         },
         "/users/users": {
@@ -1526,14 +1280,6 @@
                                 }
                             ],
                             "title": "Name Filter"
-                        }
-                    },
-                    {
-                        "name": "user_payload",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "title": "User Payload"
                         }
                     }
                 ],

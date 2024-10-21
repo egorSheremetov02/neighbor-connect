@@ -27,6 +27,7 @@ from app.api.util import (
     verify_password,
     create_jwt,
     jwt_token_required,
+    hidden_user_payload
 )
 from sqlalchemy import select
 
@@ -111,7 +112,7 @@ async def login(
 
 @auth_router.get("/users/{user_id}")
 @jwt_token_required
-async def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+async def get_user(request: Request, user_id: int, user_payload=Depends(hidden_user_payload)) -> UserResponse:
     """
     :param request: The current request being processed.
     :param user_id: The unique identifier of the user to be retrieved.
@@ -144,7 +145,7 @@ async def get_user(request: Request, user_id: int, user_payload=None) -> UserRes
 @auth_router.get("/users", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def get_many_users(
-    request: Request, ids: list[int] = Query(...), user_payload=None
+    request: Request, ids: list[int] = Query(...), user_payload=Depends(hidden_user_payload)
 ) -> UsersResponse:
     with SessionLocal.begin() as session:
         result = session.scalars(select(User).where(User.id.in_(ids))).all()
