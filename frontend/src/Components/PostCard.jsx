@@ -48,6 +48,7 @@ const PostCard = ({ props }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [authorData, setAuthorData] = useState();
+  const [liked, setLiked] = useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -104,8 +105,58 @@ const PostCard = ({ props }) => {
       }
     };
 
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setLiked(data.is_liked);
+        } else {
+          console.error("Error fetching like status");
+        }
+      } catch (error) {
+        console.error("Error fetching like status", error);
+      }
+    };
+
     fetchProfile();
+    fetchLikeStatus();
   }, []);
+
+  const handleLikeToggle = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token.substring(1, token.length - 1),
+          },
+          body: JSON.stringify({ vote: liked ? "dislike" : "like" }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle like");
+      }
+
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
 
   const handleDeleteConfirm = async () => {
     try {
@@ -209,8 +260,8 @@ const PostCard = ({ props }) => {
           <Typography variant="body2">{description}</Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+          <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
+            <FavoriteIcon sx={{ color: liked ? "red" : "inherit" }} />
           </IconButton>
           <IconButton aria-label="share">
             <ShareIcon />
