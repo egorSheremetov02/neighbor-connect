@@ -10,6 +10,9 @@ from app.api.constants import (
 from app.core.db import SessionLocal
 from app.db_models.chats import User
 from app.db_models.image_storage import Image
+from app.db_models.auth_2fa import Auth2FactorSecret, Auth2FactorSecretState
+
+
 import bcrypt
 import jwt
 import datetime
@@ -19,7 +22,7 @@ from functools import wraps
 from typing import Callable
 from pydantic import BaseModel
 from starlette.types import ASGIApp
-
+import pyotp
 
 MAX_TAG_LENGTH = 64
 SECRET = "e8b7e8b7e8b7e8b7e8b7e8b7e8b7e8b7"
@@ -170,3 +173,22 @@ def generate_email_code(length=8):
     characters = string.ascii_letters + string.digits
     email_code = ''.join(secrets.choice(characters) for i in range(length))
     return email_code
+
+def get_2fa_totp(secret_key: str) -> pyotp.totp.TOTP:
+    return pyotp.totp.TOTP(secret_key, interval=60)
+
+
+def verify_2fa_auth_code(user_id: int, session, code: str | None = None) -> bool | None:
+        auth_2fa_secret = session.query(Auth2FactorSecret).filter_by(user_id=user_id, state=Auth2FactorSecretState.CONFIRMED).first()
+        if auth_2fa_secret is None:
+            return None
+
+        if code is None:
+            return False
+
+        code = code.strip()
+        if len(code) != 6 or not code.isdigit():
+            return False
+
+        totp = get_2fa_totp(auth_2fa_secret.secret_key)
+        return totp.verify(code)

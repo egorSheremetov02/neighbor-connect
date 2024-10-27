@@ -25,23 +25,15 @@ class RegisterResponse(BaseModel):
     user_id: int
 
 
-class LoginRequest(BaseModel):
-    """
-    A class representing a login request.
-
-    Attributes
-    ----------
-    login : str
-        The username or email used for login.
-    password : str
-        The password associated with the login.
-    """
-
-    login: str
-    password: str
+class Auth2Fa(BaseModel):
+    code: str
 
 
-class LoginResponse(BaseModel):
+class LoginRequired2FaCodeResponse(BaseModel):
+    state: str = "2fa"
+
+
+class LoginSuccessResponse(BaseModel):
     """
         class LoginResponse(BaseModel):
             access_token: str
