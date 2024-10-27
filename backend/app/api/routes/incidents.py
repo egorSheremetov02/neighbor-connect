@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from app.api_models.incidents import (Incident as APIIncident, ListIncidentsResponse,
                                       CreateIncidentRequest, CreateIncidentResponse,
-                                      DeleteIncidentRequest, DeleteIncidentResponse,
-                                      EditIncidentDataRequest, EditIncidentDataResponse,
-                                      AuthorizeIncidentRequest, AuthorizeIncidentResponse,
-                                      IncidentStatus, IncidentVote, IncidentVoteRequest, IncidentVotesData)
+                                      DeleteIncidentResponse, EditIncidentDataRequest,
+                                      EditIncidentDataResponse, AuthorizeIncidentRequest,
+                                      AuthorizeIncidentResponse, IncidentStatus, IncidentVote,
+                                      IncidentVoteRequest, IncidentVotesData, IncidentIsLiked)
 from fastapi.security import APIKeyHeader
-import logging, sqlalchemy
-from sqlalchemy import func, and_
+import logging
+import sqlalchemy
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.db_models.chats import User
@@ -228,7 +229,7 @@ async def authorize_incident(request: Request, incident_id: int, auth_request: A
 @incidents_router.put("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def incident_vote(request: Request, incident_id: int, vote_request: IncidentVoteRequest,
-                       user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
+                        user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
     """
     Parameters
     ----------
@@ -260,7 +261,7 @@ async def incident_vote(request: Request, incident_id: int, vote_request: Incide
             if incident is None:
                 raise HTTPException(404, f'Incident with id {incident_id} does not exist')
 
-            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id = sender_id).first()
+            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id=sender_id).first()
 
             if user_vote is None:
                 if vote_request.vote:
@@ -274,3 +275,43 @@ async def incident_vote(request: Request, incident_id: int, vote_request: Incide
 
         return AuthorizeIncidentResponse()
 
+
+@incidents_router.get("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_incident_vote(request: Request, incident_id: int, user_payload=Depends(hidden_user_payload)
+                            ) -> IncidentIsLiked:
+    """
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    incident_id : int
+        The unique identifier of the incident to vote on.
+    user_payload : dict, optional
+        The payload containing user information extracted from the JWT token (default is None).
+
+    Returns
+    -------
+    AuthorizeIncidentResponse
+        Response indicating the result whether the incident is liked.
+
+    Raises
+    ------
+    HTTPException
+        If the incident with the specified ID does not exist.
+    """
+    sender_id = user_payload['user_id']
+
+    with SessionLocal() as session:
+        with session.begin():
+            incident = session.query(Incident).filter_by(id=incident_id).first()
+
+            if incident is None:
+                raise HTTPException(404, f'Incident with id {incident_id} does not exist')
+
+            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id=sender_id).first()
+
+            if user_vote is None:
+                IncidentIsLiked(is_liked=False)
+
+            return IncidentIsLiked(is_liked=user_vote.vote == 'like')
