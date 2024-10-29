@@ -17,11 +17,13 @@ from app.api_models.chats import (
     ListMessagesResponse,
     GetOwnChatsRequest,
     GetOwnChatsResponse,
+    AdvertiseRequest,
+    AdvertiseResponse
 )
 
 from app.api_models.users import UserShortInfo as APIUserInfo
 import logging, sqlalchemy
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 
 from app.db_models.chats import Chat, Tag, User, Message
 from app.core.db import SessionLocal
@@ -328,3 +330,41 @@ async def get_own_chats(request: Request, user_payload=Depends(hidden_user_paylo
         result = session.execute(stmt).all()
         chats_ids = [r[0] for r in result]
         return GetOwnChatsResponse(chats_ids=chats_ids)
+
+
+@chats_router.post("/advertise", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def advertise(
+    request: Request,
+    advertise_request: AdvertiseRequest,
+    user_payload=Depends(hidden_user_payload),
+) -> SendMessageResponse:
+    """Send a new message to a chat. Access: chat member."""
+
+    sender_id = user_payload["user_id"]
+
+    if (
+        len(advertise_request.advert_text) == 0
+        or len(advertise_request.advert_text) > MAX_MESSAGE_CONTENT_LENGTH
+    ):
+        raise HTTPException(
+            400,
+            f"Length of message content should be in range [1 .. {MAX_MESSAGE_CONTENT_LENGTH}]",
+        )
+
+    with SessionLocal.begin() as session:
+        sender = session.get(User, sender_id)
+        
+        chats_ids = session.query(Chat.id).all()
+        messages = [
+            {
+                "content": advertise_request.advert_text,
+                "image_id": None,
+                "author_id": sender.id,
+                "chat_id": chat_id_tuple[0],
+            } 
+            for chat_id_tuple in chats_ids
+        ]
+        session.execute(insert(Message), messages)
+
+        return SendMessageResponse()

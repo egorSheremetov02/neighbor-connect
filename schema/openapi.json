@@ -337,6 +337,53 @@
                 ]
             }
         },
+        "/chats/advertise": {
+            "post": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Advertise",
+                "description": "Send a new message to a chat. Access: chat member.",
+                "operationId": "advertise_chats_advertise_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdvertiseRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SendMessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
         "/incidents/": {
             "get": {
                 "tags": [
@@ -1310,6 +1357,19 @@
     },
     "components": {
         "schemas": {
+            "AdvertiseRequest": {
+                "properties": {
+                    "advert_text": {
+                        "type": "string",
+                        "title": "Advert Text"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "advert_text"
+                ],
+                "title": "AdvertiseRequest"
+            },
             "AuthorizeIncidentRequest": {
                 "properties": {
                     "status": {

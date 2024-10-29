@@ -98,3 +98,11 @@ class GetOwnChatsRequest(BaseModel):
 
 class GetOwnChatsResponse(BaseModel):
     chats_ids: list[int]
+
+
+class AdvertiseRequest(BaseModel):
+    advert_text: str
+
+
+class AdvertiseResponse(BaseModel):
+    pass
