@@ -37,6 +37,9 @@ class User(DBBase):
     login = Column(String, nullable=False)
     password_hashed = Column(String, nullable=False)
 
+    email_code = Column(String, nullable=True, default=None)
+    email_code_expiry = Column(DateTime, nullable=True, default=None)
+
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 
