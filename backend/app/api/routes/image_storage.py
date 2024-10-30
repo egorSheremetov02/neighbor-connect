@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Request, Query, UploadFile, HTTPExceptio
 from fastapi.security import APIKeyHeader
 from starlette.responses import StreamingResponse
 
-from app.api.util import jwt_token_required
+from app.api.util import jwt_token_required, hidden_user_payload
 from app.api_models.image_storage import StoreImageResponse, ImageType
 from app.core.db import SessionLocal
 from app.db_models.image_storage import Image
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @image_storage_router.post("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def store_image(request: Request, file: Annotated[UploadFile, File()], image_type: Annotated[ImageType, Form()], user_payload=None) -> StoreImageResponse:
+async def store_image(request: Request, file: Annotated[UploadFile, File()], image_type: Annotated[ImageType, Form()], user_payload=Depends(hidden_user_payload)) -> StoreImageResponse:
     sender_id = user_payload['user_id']
     image_contents = await file.read()
     # TODO crop image based on image_type and convert to png
@@ -34,7 +34,7 @@ async def store_image(request: Request, file: Annotated[UploadFile, File()], ima
 
 @image_storage_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def get_image(request: Request, image_id: int, user_payload=None) -> StreamingResponse:
+async def get_image(request: Request, image_id: int, user_payload=Depends(hidden_user_payload)) -> StreamingResponse:
     with SessionLocal() as session:
         with session.begin():
             image = session.query(Image.image).filter_by(id=image_id).first()
