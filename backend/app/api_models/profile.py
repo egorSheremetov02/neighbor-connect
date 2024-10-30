@@ -69,6 +69,7 @@ class ModifyProfileResponse(BaseModel):
     message: str = "Profile updated successfully"
 
 class ChangePasswordRequest(BaseModel):
+    old_password: str
     new_password: str
 
 class ChangePasswordResponse(BaseModel):

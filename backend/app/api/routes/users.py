@@ -5,7 +5,7 @@ from app.api_models.auth import UserResponse
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime
-from app.api.util import jwt_token_required, hidden_user_payload, get_password_hash
+from app.api.util import jwt_token_required, hidden_user_payload, get_password_hash, verify_password
 from app.api_models.users import (GetUsersResponse, UserShortInfo)
 import logging
 
@@ -164,7 +164,8 @@ async def change_password(
             user = session.query(User).filter_by(id=sender_id).first()
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
-
+            if not verify_password(user.password_hashed, profile_request.old_password):
+                raise HTTPException(status_code=400, detail="Incorrect password")
             user.password_hashed = get_password_hash(profile_request.new_password)
 
         return ChangePasswordResponse()

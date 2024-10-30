@@ -1593,6 +1593,10 @@
             },
             "ChangePasswordRequest": {
                 "properties": {
+                    "old_password": {
+                        "type": "string",
+                        "title": "Old Password"
+                    },
                     "new_password": {
                         "type": "string",
                         "title": "New Password"
@@ -1600,6 +1604,7 @@
                 },
                 "type": "object",
                 "required": [
+                    "old_password",
                     "new_password"
                 ],
                 "title": "ChangePasswordRequest"
