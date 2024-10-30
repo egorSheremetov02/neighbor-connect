@@ -5,6 +5,8 @@ from app.api_models.auth import (
     RegisterResponse,
     UserResponse,
     UsersResponse, LoginResponse,
+    ForgetPasswordRequest, ForgetPasswordResponse,
+    LoginWithCodeRequest, LoginWithCodeResponse
 )
 from fastapi import APIRouter, Response, Depends
 
@@ -13,7 +15,9 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     APIKeyHeader,
 )
-from datetime import datetime
+import datetime
+
+from app.api.util import generate_email_code
 
 
 import logging
@@ -22,6 +26,7 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 
+from app.services.email_service import send_reset_code_to_email
 from app.api.util import (
     get_password_hash,
     verify_password,
@@ -73,7 +78,7 @@ async def register(request: RegisterRequest) -> RegisterResponse:
                 bio_description=None,
                 interests=[],
                 is_active=True,
-                member_since=datetime.now(),
+                member_since=datetime.datetime.now(),
             )
             session.add(user)
 
@@ -169,3 +174,52 @@ async def get_many_users(
             for user in result
         ]
         return UsersResponse(users=users)
+
+@auth_router.post("/forget_password")
+async def forget_password(request: ForgetPasswordRequest) -> ForgetPasswordResponse:
+    """
+    Send a password reset code to the user's registered email.
+
+    :param request: The ForgetPasswordRequest object containing the user's login information.
+    :return: A ForgetPasswordResponse indicating the email was successfully sent.
+    :raises HTTPException: If the user does not exist or if an error occurs while generating or sending the code.
+    """
+    with SessionLocal() as session:
+        with session.begin():
+            user = session.query(User).filter_by(login=request.login).first()
+            if not user:
+                raise HTTPException(404, f"User with login {request.login} does not exist")
+            email_code = generate_email_code()
+
+            user.email_code = email_code
+            user.email_code_expiry = datetime.datetime.now() + datetime.timedelta(hours=1)
+
+            send_reset_code_to_email(user.email, user.name, user.email_code)
+
+        return ForgetPasswordResponse()
+
+@auth_router.post("/login_with_code")
+async def login_with_code(
+    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
+) -> LoginWithCodeResponse:
+    """
+    Log in a user using a previously generated email code.
+
+    :param form_data: The form data containing the username (login) and the code sent to the user's email.
+    :raises HTTPException: If the user does not exist, the code is incorrect, or the code has expired.
+    """
+    with SessionLocal() as session:
+        with session.begin():
+            user = session.query(User).filter_by(login=form_data.username).first()
+            if not user:
+                raise HTTPException(404, "User with credentials does not exist")
+
+            if not user.email_code == form_data.password:
+                raise HTTPException(400, "Incorrect code")
+            
+            if user.email_code_expiry < datetime.datetime.now():
+                raise HTTPException(400, "Code is expired")
+
+            jwt_token = create_jwt(user.id)
+            response.set_cookie(key="access_token", value=jwt_token, httponly=True)
+            return LoginWithCodeResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
