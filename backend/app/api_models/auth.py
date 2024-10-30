@@ -61,7 +61,6 @@ class LoginResponse(BaseModel):
     token_type: str
     user_id: int
 
-
 class UserResponse(BaseModel):
     id: int
 
@@ -83,3 +82,44 @@ class UserResponse(BaseModel):
 
 class UsersResponse(BaseModel):
     users: list[UserResponse]
+
+class ForgetPasswordRequest(BaseModel):
+    login: str
+
+class ForgetPasswordResponse(BaseModel):
+    msg: str = "Email sent successfuly"
+
+class LoginWithCodeRequest(BaseModel):
+    """
+    A class representing a login via code request.
+
+    Attributes
+    ----------
+    login : str
+        The username or email used for login.
+    code : str
+        The code received from the email.
+    """
+
+    login: str
+    code: str
+
+class LoginWithCodeResponse(BaseModel):
+    """
+        class LoginResponse(BaseModel):
+            access_token: str
+            token_type: str
+            user_id: int
+
+        Attributes
+        ----------
+        access_token : str
+            The token provided to the user for authentication purposes.
+        token_type : str
+            The type of token issued, e.g., Bearer.
+        user_id : int
+            The unique identifier of the user.
+    """
+    access_token: str
+    token_type: str
+    user_id: int
