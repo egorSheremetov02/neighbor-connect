@@ -65,6 +65,11 @@ class ModifyProfileRequest(BaseModel):
                 raise ValueError(f"Each interest must be less than {MAX_TAG_LENGTH} characters")
         return value
 
-
 class ModifyProfileResponse(BaseModel):
+    message: str = "Profile updated successfully"
+
+class ChangePasswordRequest(BaseModel):
+    new_password: str
+
+class ChangePasswordResponse(BaseModel):
     message: str = "Profile updated successfully"

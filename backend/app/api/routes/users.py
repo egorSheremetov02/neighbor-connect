@@ -1,11 +1,11 @@
 from fastapi import Request, Query
 
-from app.api_models.profile import ModifyProfileRequest, ModifyProfileResponse
+from app.api_models.profile import ModifyProfileRequest, ModifyProfileResponse, ChangePasswordRequest, ChangePasswordResponse
 from app.api_models.auth import UserResponse
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime
-from app.api.util import jwt_token_required, hidden_user_payload
+from app.api.util import jwt_token_required, hidden_user_payload, get_password_hash
 from app.api_models.users import (GetUsersResponse, UserShortInfo)
 import logging
 
@@ -142,6 +142,32 @@ async def modify_profile(
 
         return ModifyProfileResponse()
 
+
+@users_router.post("/change_password/", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def change_password(
+    request: Request, profile_request: ChangePasswordRequest, user_payload=Depends(hidden_user_payload)
+) -> ChangePasswordResponse:
+    """
+    Change the password of the authenticated user.
+
+    :param request: The current request being processed.
+    :param profile_request: A ChangePasswordRequest object containing the new password.
+    :return: A ChangePasswordResponse indicating that the profile was updated successfully.
+    :raises HTTPException: If the user does not exist or there is an error during password change.
+    """
+    sender_id = user_payload.get("user_id")
+
+    with SessionLocal() as session:
+        with session.begin():
+
+            user = session.query(User).filter_by(id=sender_id).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            user.password_hashed = get_password_hash(profile_request.new_password)
+
+        return ChangePasswordResponse()
 
 
 @users_router.get("/users", dependencies=[Depends(security_scheme)])
