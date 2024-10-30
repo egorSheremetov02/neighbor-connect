@@ -115,6 +115,11 @@ def verify_password(stored_hash: str, provided_password: str) -> bool:
     return bcrypt.checkpw(provided_password.encode(), stored_hash.encode())
 
 
+# HACK HOW TO HIDE userpayload
+def hidden_user_payload():
+    return None
+
+
 def jwt_token_required(f):
     """
     :param f: Function to be decorated.
@@ -133,7 +138,7 @@ def jwt_token_required(f):
         if not token:
             try:
                 authorization = request.headers["Authorization"]
-                print(authorization)
+                # print(authorization)
                 # HERE MUST BE 1 (!!!)
                 token = authorization.split()[1]
             except KeyError:

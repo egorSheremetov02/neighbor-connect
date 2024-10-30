@@ -5,7 +5,7 @@ from app.api_models.auth import UserResponse
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime
-from app.api.util import jwt_token_required
+from app.api.util import jwt_token_required, hidden_user_payload
 from app.api_models.users import (GetUsersResponse, UserShortInfo)
 import logging
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @users_router.get("/users/{user_id}")
-def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
+def get_user(request: Request, user_id: int, user_payload=Depends(hidden_user_payload)) -> UserResponse:
     """
     :param request: The current request being processed.
     :param user_id: The unique identifier of the user to be retrieved.
@@ -52,7 +52,7 @@ def get_user(request: Request, user_id: int, user_payload=None) -> UserResponse:
 
 @users_router.get("/my_profile/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def my_profile(request: Request, user_payload=None) -> UserResponse:
+async def my_profile(request: Request, user_payload=Depends(hidden_user_payload)) -> UserResponse:
     with SessionLocal() as session:
         with session.begin():
             current_user_id = user_payload.get("user_id")
@@ -78,7 +78,7 @@ async def my_profile(request: Request, user_payload=None) -> UserResponse:
 @users_router.post("/modify_my_profile/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def modify_profile(
-    request: Request, profile_request: ModifyProfileRequest, user_payload=None
+    request: Request, profile_request: ModifyProfileRequest, user_payload=Depends(hidden_user_payload)
 ) -> ModifyProfileResponse:
     sender_id = user_payload.get("user_id")
 
@@ -151,7 +151,7 @@ async def get_users(
     ids: list[int] | None = Query(None),
     location_filter: str | None = Query(None),
     name_filter: str | None = Query(None),
-    user_payload=None
+    user_payload=Depends(hidden_user_payload)
 ) -> GetUsersResponse:
 
     sender_id = user_payload["user_id"]
