@@ -6,7 +6,9 @@ import Signup from "./Pages/Signup";
 import Neighbors from "./Pages/Neighbors";
 import Profile from "./Pages/Profile";
 import Wrapper from "./Components/Wrapper";
+import PasswordRecovery from "./Pages/PasswordRecovery";  
 import "@fontsource/inter";
+import ResetPassword from "./Pages/PasswordReset";
 
 const App = () => {
   console.log(sessionStorage.getItem("token"));
@@ -24,6 +26,8 @@ const App = () => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/passwordrecovery" element={<PasswordRecovery />} />
+        <Route path="/passwordreset" element={<ResetPassword />} />
         <Route
           path="/neighbors"
           element={
@@ -48,7 +52,9 @@ const App = () => {
             </Wrapper>
           }
         />
+         
       </Routes>
+      
     </Router>
   );
 };

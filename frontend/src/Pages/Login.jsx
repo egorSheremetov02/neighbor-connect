@@ -214,6 +214,10 @@ const SignIn = () => {
               <Link href="/signup" variant="body2">
                 Sign up
               </Link>
+              <br></br>
+              <Link href="/passwordrecovery" variant="body2">
+                Recover password
+              </Link>
             </Typography>
           </Box>
         </Card>
