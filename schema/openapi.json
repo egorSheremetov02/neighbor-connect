@@ -805,6 +805,90 @@
                 }
             }
         },
+        "/auth/forget_password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Forget Password",
+                "description": "Send a password reset code to the user's registered email.\n\n:param request: The ForgetPasswordRequest object containing the user's login information.\n:return: A ForgetPasswordResponse indicating the email was successfully sent.\n:raises HTTPException: If the user does not exist or if an error occurs while generating or sending the code.",
+                "operationId": "forget_password_auth_forget_password_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ForgetPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForgetPasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login_with_code": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login With Code",
+                "description": "Log in a user using a previously generated email code.\n\n:param form_data: The form data containing the username (login) and the code sent to the user's email.\n:raises HTTPException: If the user does not exist, the code is incorrect, or the code has expired.",
+                "operationId": "login_with_code_auth_login_with_code_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_login_with_code_auth_login_with_code_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginWithCodeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/offers/": {
             "post": {
                 "tags": [
@@ -1218,6 +1302,53 @@
                 ]
             }
         },
+        "/users/change_password/": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Change Password",
+                "description": "Change the password of the authenticated user.\n\n:param request: The current request being processed.\n:param profile_request: A ChangePasswordRequest object containing the new password.\n:return: A ChangePasswordResponse indicating that the profile was updated successfully.\n:raises HTTPException: If the user does not exist or there is an error during password change.",
+                "operationId": "change_password_users_change_password__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChangePasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
         "/users/users": {
             "get": {
                 "tags": [
@@ -1385,6 +1516,63 @@
                 ],
                 "title": "Body_login_auth_login_post"
             },
+            "Body_login_with_code_auth_login_with_code_post": {
+                "properties": {
+                    "grant_type": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "pattern": "password"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Grant Type"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "title": "Scope",
+                        "default": ""
+                    },
+                    "client_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "title": "Body_login_with_code_auth_login_with_code_post"
+            },
             "Body_store_image_image_storage__post": {
                 "properties": {
                     "file": {
@@ -1402,6 +1590,35 @@
                     "image_type"
                 ],
                 "title": "Body_store_image_image_storage__post"
+            },
+            "ChangePasswordRequest": {
+                "properties": {
+                    "old_password": {
+                        "type": "string",
+                        "title": "Old Password"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "title": "New Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "old_password",
+                    "new_password"
+                ],
+                "title": "ChangePasswordRequest"
+            },
+            "ChangePasswordResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "default": "Profile updated successfully"
+                    }
+                },
+                "type": "object",
+                "title": "ChangePasswordResponse"
             },
             "CreateChatRequest": {
                 "properties": {
@@ -1807,6 +2024,30 @@
                 "type": "object",
                 "title": "EditOfferDataResponse"
             },
+            "ForgetPasswordRequest": {
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "login"
+                ],
+                "title": "ForgetPasswordRequest"
+            },
+            "ForgetPasswordResponse": {
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "title": "Msg",
+                        "default": "Email sent successfuly"
+                    }
+                },
+                "type": "object",
+                "title": "ForgetPasswordResponse"
+            },
             "Gender": {
                 "type": "string",
                 "enum": [
@@ -2139,6 +2380,30 @@
                     "user_id"
                 ],
                 "title": "LoginResponse",
+                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
+            },
+            "LoginWithCodeResponse": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "title": "Token Type"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "user_id"
+                ],
+                "title": "LoginWithCodeResponse",
                 "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
             },
             "Message": {

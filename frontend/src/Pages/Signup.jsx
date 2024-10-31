@@ -16,8 +16,8 @@ import { SitemarkIcon } from "../Components/CustomIcons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 // Define validation schema with zod
 const validationSchema = z.object({
@@ -34,7 +34,7 @@ const validationSchema = z.object({
       /[!@#$%^&*(),.?":{}|<>]/,
       "Password must include at least one special character"
     ),
-  address: z.string().min(1, "Address is required"),
+  permanent_address: z.string().min(1, "Address is required"),
 });
 
 const passwordRequirements = [
@@ -42,7 +42,10 @@ const passwordRequirements = [
   { label: "At least one uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
   { label: "At least one lowercase letter", test: (pw) => /[a-z]/.test(pw) },
   { label: "At least one number", test: (pw) => /\d/.test(pw) },
-  { label: "At least one special character", test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw) },
+  {
+    label: "At least one special character",
+    test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw),
+  },
 ];
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -87,6 +90,7 @@ const SingUp = () => {
   );
 
   const onSubmit = async (formData) => {
+    console.log(formData);
     try {
       const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
@@ -244,7 +248,10 @@ const SingUp = () => {
                   Password must meet the following criteria:
                 </Typography>
                 {passwordRequirements.map((req, index) => (
-                  <Box key={index} sx={{ display: "flex", alignItems: "center" }}>
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     {passwordStatus[index] ? (
                       <CheckIcon color="success" fontSize="small" />
                     ) : (
@@ -253,7 +260,9 @@ const SingUp = () => {
                     <Typography
                       variant="body2"
                       sx={{ ml: 1 }}
-                      color={passwordStatus[index] ? "success.main" : "error.main"}
+                      color={
+                        passwordStatus[index] ? "success.main" : "error.main"
+                      }
                     >
                       {req.label}
                     </Typography>
@@ -263,13 +272,16 @@ const SingUp = () => {
             )}
 
             <FormControl>
-              <FormLabel htmlFor="address" sx={{ fontSize: "0.875rem" }}>
-                Address
+              <FormLabel
+                htmlFor="permanent_address"
+                sx={{ fontSize: "0.875rem" }}
+              >
+                Permanent Address
               </FormLabel>
               <TextField
-                {...register("address")}
-                id="address"
-                name="address"
+                {...register("permanent_address")}
+                id="permanent_address"
+                name="permanent_address"
                 required
                 fullWidth
                 variant="outlined"
@@ -287,7 +299,9 @@ const SingUp = () => {
               />
             </FormControl>
 
-            {signError && <p className="text-center text-red-500">{signError}</p>}
+            {signError && (
+              <p className="text-center text-red-500">{signError}</p>
+            )}
 
             <Button
               type="submit"

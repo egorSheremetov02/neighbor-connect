@@ -13,6 +13,8 @@ from app.db_models.image_storage import Image
 import bcrypt
 import jwt
 import datetime
+import string
+import secrets
 from functools import wraps
 from typing import Callable
 from pydantic import BaseModel
@@ -163,3 +165,8 @@ def jwt_token_required(f):
         return await f(*args, **kwargs)
 
     return decorated_function
+
+def generate_email_code(length=8):
+    characters = string.ascii_letters + string.digits
+    email_code = ''.join(secrets.choice(characters) for i in range(length))
+    return email_code
