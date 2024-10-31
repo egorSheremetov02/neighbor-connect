@@ -1,3 +1,5 @@
+import random
+
 from fastapi import Query, Request
 
 from app.api_models.auth import (
@@ -18,7 +20,6 @@ from fastapi.security import (
 import datetime
 
 from app.api.util import generate_email_code
-
 
 import logging
 
@@ -42,6 +43,56 @@ security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 auth_router = APIRouter()
 
 
+def generate_proposed_login(session: SessionLocal) -> str:
+    """
+    :param session: The database session object.
+
+    Generates an alternative login if the desired login is already taken.
+    Appends a number to the login to make it unique.
+    """
+
+    adjectives = [
+        "Agile", "Bold", "Brave", "Bright", "Calm", "Clever", "Cool", "Curious", "Daring", "Dazzling",
+        "Eager", "Elegant", "Energetic", "Fearless", "Friendly", "Gentle", "Glorious", "Happy", "Heroic", "Intrepid",
+        "Jolly", "Joyful", "Keen", "Kind", "Lively", "Loyal", "Merry", "Mighty", "Nimble", "Noble",
+        "Optimistic", "Peaceful", "Plucky", "Polite", "Powerful", "Proud", "Quick", "Quiet", "Radiant", "Reflective",
+        "Regal", "Resolute", "Robust", "Serene", "Sincere", "Sleek", "Smart", "Spirited", "Spry", "Stalwart",
+        "Strong", "Surefooted", "Swift", "Thoughtful", "Tranquil", "Trustworthy", "Vibrant", "Vigorous", "Vivid",
+        "Warm",
+        "Wise", "Witty", "Zany", "Zestful", "Adventurous", "Artistic", "Athletic", "Attentive", "Balanced", "Blissful",
+        "Bouncy", "Brave", "Bright", "Buoyant", "Capable", "Charming", "Cheerful", "Compassionate", "Confident",
+        "Considerate",
+        "Creative", "Dynamic", "Enthusiastic", "Fabulous", "Forthright", "Funny", "Generous", "Gracious", "Imaginative",
+        "Impartial",
+        "Independent", "Inspirational", "Intuitive", "Innovative", "Inventive", "Jovial", "Just", "Meticulous",
+        "Miraculous", "Persistent"
+    ]
+
+    nouns = [
+        "Lion", "Tiger", "Bear", "Eagle", "Hawk", "Falcon", "Wolf", "Fox", "Deer", "Rabbit",
+        "Panther", "Jaguar", "Leopard", "Cheetah", "Zebra", "Camel", "Donkey", "Horse", "Sheep", "Goat",
+        "Cow", "Moose", "Bison", "Buffalo", "Hippo", "Rhino", "Whale", "Dolphin", "Shark", "Octopus",
+        "Squid", "Crab", "Lobster", "Turtle", "Frog", "Salamander", "Giraffe", "Elephant", "Owl", "Parrot",
+        "Penguin", "Seal", "Walrus", "Otter", "Raccoon", "Squirrel", "Chipmunk", "Armadillo", "Hedgehog", "Badger",
+        "Mink", "Weasel", "Lynx", "Ocelot", "Manatee", "Koala", "Kangaroo", "Wallaby", "Platypus", "Echidna",
+        "Dingo", "Sloth", "Monkey", "Gorilla", "Orangutan", "Chimpanzee", "Lemur", "Macaw", "Toucan", "Dove",
+        "Swallow", "Sparrow", "Crow", "Raven", "Nightingale", "Peacock", "Turkey", "Flamingo", "Swan", "Seal",
+        "Carp", "Goldfish", "Trout", "Salmon", "Minnow", "Bass", "Pike", "Barracuda", "Marlin", "Swordfish",
+        "Seahorse", "Starfish", "Jellyfish", "Narwhal", "Behemoth", "Kraken", "Phoenix", "Pegasus", "Griffin", "Dragon"
+    ]
+
+    logins = session.query(User.login).all()
+    proposed_login = None
+
+    while proposed_login in logins or not proposed_login:
+        adjective = random.choice(adjectives)
+        noun = random.choice(nouns)
+        number = random.randint(1, 10000)
+        proposed_login = adjective + noun + str(number)
+
+    return proposed_login
+
+
 @auth_router.post("/register")
 async def register(request: RegisterRequest) -> RegisterResponse:
     """
@@ -57,8 +108,13 @@ async def register(request: RegisterRequest) -> RegisterResponse:
                 )
             user = session.query(User).filter_by(login=request.login).first()
             if user:
+                proposed_login = generate_proposed_login(session)
                 raise HTTPException(
-                    409, f"User with login {request.login} already exists"
+                    409,
+                    {
+                        "reason": f"User with login {request.login} already exists.",
+                        "proposed_login": proposed_login
+                    }
                 )
 
             if len(request.fullName) > 255:
@@ -89,7 +145,7 @@ async def register(request: RegisterRequest) -> RegisterResponse:
 
 @auth_router.post("/login")
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
+        form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
 ) -> LoginResponse:
     """
     :param form_data: The form data containing the username and password of the user trying to log in.
@@ -111,7 +167,7 @@ async def login(
 
             if not verify_password(user.password_hashed, form_data.password):
                 raise HTTPException(400, "Incorrect password")
-            
+
             send_on_login_email(user.email, user.name)
 
             jwt_token = create_jwt(user.id)
@@ -154,7 +210,7 @@ async def get_user(request: Request, user_id: int, user_payload=Depends(hidden_u
 @auth_router.get("/users", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def get_many_users(
-    request: Request, ids: list[int] = Query(...), user_payload=Depends(hidden_user_payload)
+        request: Request, ids: list[int] = Query(...), user_payload=Depends(hidden_user_payload)
 ) -> UsersResponse:
     with SessionLocal.begin() as session:
         result = session.scalars(select(User).where(User.id.in_(ids))).all()
@@ -178,6 +234,7 @@ async def get_many_users(
             for user in result
         ]
         return UsersResponse(users=users)
+
 
 @auth_router.post("/forget_password")
 async def forget_password(request: ForgetPasswordRequest) -> ForgetPasswordResponse:
@@ -217,7 +274,7 @@ async def change_password_with_code(request: ChangePasswordWithCodeRequest) -> C
 
             if not user.email_code == request.code:
                 raise HTTPException(400, "Incorrect code")
-            
+
             if user.email_code_expiry < datetime.datetime.now():
                 raise HTTPException(400, "Code is expired")
 

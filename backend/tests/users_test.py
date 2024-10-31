@@ -94,7 +94,13 @@ def test_same_login_users(client):
     }
 
     assert create_user(client, create_first_guy).status_code == 200
-    assert create_user(client, create_second_guy).status_code == 409
+    create_second_guy_response = create_user(client, create_second_guy)
+    assert create_second_guy_response.status_code == 409
+    assert create_second_guy_response.json()["detail"][
+               "reason"] == f"User with login {create_second_guy['login']} already exists."
+
+    create_second_guy["login"] = create_second_guy_response.json()["detail"]["proposed_login"]
+    assert create_user(client, create_second_guy).status_code == 200
 
 
 def test_login(client):
