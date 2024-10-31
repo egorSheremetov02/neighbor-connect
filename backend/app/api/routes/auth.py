@@ -26,7 +26,7 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 
-from app.services.email_service import send_reset_code_to_email
+from app.services.email_service import send_on_login_email, send_on_registration_email, send_reset_code_to_email
 from app.api.util import (
     get_password_hash,
     verify_password,
@@ -82,6 +82,8 @@ async def register(request: RegisterRequest) -> RegisterResponse:
             )
             session.add(user)
 
+        send_on_registration_email(user.email, user.name)
+
         return RegisterResponse(user_id=user.id)
 
 
@@ -109,6 +111,8 @@ async def login(
 
             if not verify_password(user.password_hashed, form_data.password):
                 raise HTTPException(400, "Incorrect password")
+            
+            send_on_login_email(user.email, user.name)
 
             jwt_token = create_jwt(user.id)
             response.set_cookie(key="access_token", value=jwt_token, httponly=True)
@@ -220,4 +224,3 @@ async def change_password_with_code(request: ChangePasswordWithCodeRequest) -> C
             user.password_hashed = get_password_hash(request.new_password)
 
         return ChangePasswordWithCodeResponse()
-
