@@ -81,6 +81,18 @@ const ResetPassword = () => {
             </FormControl>
 
             <FormControl fullWidth margin="normal">
+              <FormLabel>Old Password</FormLabel>
+              <TextField
+                id="old_password"
+                name="old_password"
+                type="password"
+                required
+                fullWidth
+                variant="outlined"
+              />
+            </FormControl>
+
+            <FormControl fullWidth margin="normal">
               <FormLabel>New Password</FormLabel>
               <TextField
                 id="new_password"
