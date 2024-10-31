@@ -34,31 +34,42 @@ const ResetPassword = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = {
-      login: location.state?.login, // Use login from state passed in navigation
-      code: event.target.elements.code.value,
-      new_password: event.target.elements.new_password.value,
-    };
-
+  
+    const formData = new URLSearchParams();
+    formData.append("username", location.state?.login); // Send as 'username'
+    formData.append("password", event.target.elements.code?.value); // Send as 'password'
+  
+    if (!formData.get("username") || !formData.get("password")) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+  
     try {
       const response = await fetch("http://localhost:8080/auth/login_with_code", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
       });
       const responseData = await response.json();
-
+  
       if (response.ok) {
-        setSuccessMessage("Your password has been reset successfully!");
-        setTimeout(() => navigate("/login"), 3000);
+        console.log(responseData.access_token);
+        sessionStorage.setItem("TOKEN", JSON.stringify(responseData.access_token));
+        sessionStorage.setItem("myid", JSON.stringify(responseData.user_id));
+        setSuccessMessage("You have successfully logged in! Redirecting to home...");
+        setTimeout(() => navigate("/home"), 3000);  // Redirect to /home after 3 seconds
       } else {
-        setErrorMessage(responseData.detail || "Failed to reset password.");
+        setErrorMessage(
+          typeof responseData.detail === "string"
+            ? responseData.detail
+            : "Failed to verify the code. Please try again."
+        );
       }
     } catch (error) {
-      setErrorMessage("Network error.");
+      setErrorMessage("Network error. Please try again.");
     }
   };
-
+  
   return (
     <>
       <CssBaseline enableColorScheme />
@@ -68,8 +79,9 @@ const ResetPassword = () => {
             Reset Password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
+            
             <FormControl fullWidth margin="normal">
-              <FormLabel>Reset Code</FormLabel>
+              <FormLabel>Verification Code</FormLabel>
               <TextField
                 id="code"
                 name="code"
@@ -80,35 +92,11 @@ const ResetPassword = () => {
               />
             </FormControl>
 
-            <FormControl fullWidth margin="normal">
-              <FormLabel>Old Password</FormLabel>
-              <TextField
-                id="old_password"
-                name="old_password"
-                type="password"
-                required
-                fullWidth
-                variant="outlined"
-              />
-            </FormControl>
-
-            <FormControl fullWidth margin="normal">
-              <FormLabel>New Password</FormLabel>
-              <TextField
-                id="new_password"
-                name="new_password"
-                type="password"
-                required
-                fullWidth
-                variant="outlined"
-              />
-            </FormControl>
-
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
             {successMessage && <Typography color="success.main">{successMessage}</Typography>}
 
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
-              Reset Password
+              Verify Code
             </Button>
           </Box>
         </Card>
