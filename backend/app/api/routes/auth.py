@@ -98,7 +98,7 @@ async def login(
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=form_data.username).first()
+            user = session.query(User).filter_by(email=form_data.username).first()
             if not user:
                 raise HTTPException(404, "User with credentials does not exist")
 
