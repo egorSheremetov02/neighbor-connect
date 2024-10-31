@@ -6,7 +6,7 @@ from app.api_models.auth import (
     UserResponse,
     UsersResponse, LoginResponse,
     ForgetPasswordRequest, ForgetPasswordResponse,
-    LoginWithCodeRequest, LoginWithCodeResponse
+    ChangePasswordWithCodeRequest, ChangePasswordWithCodeResponse
 )
 from fastapi import APIRouter, Response, Depends
 
@@ -198,28 +198,26 @@ async def forget_password(request: ForgetPasswordRequest) -> ForgetPasswordRespo
 
         return ForgetPasswordResponse()
 
-@auth_router.post("/login_with_code")
-async def login_with_code(
-    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
-) -> LoginWithCodeResponse:
-    """
-    Log in a user using a previously generated email code.
 
-    :param form_data: The form data containing the username (login) and the code sent to the user's email.
-    :raises HTTPException: If the user does not exist, the code is incorrect, or the code has expired.
+@auth_router.post("/change_password_with_code")
+async def change_password_with_code(request: ChangePasswordWithCodeRequest) -> ChangePasswordWithCodeResponse:
+    """
+    :param request: The change password with code request object containing user login, code, sent to user's email and new password.
+    :return: The response object indicating successful password change or raises an HTTPException with appropriate error messages if password change fails.
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=form_data.username).first()
+            user = session.query(User).filter_by(login=request.login).first()
             if not user:
                 raise HTTPException(404, "User with credentials does not exist")
 
-            if not user.email_code == form_data.password:
+            if not user.email_code == request.code:
                 raise HTTPException(400, "Incorrect code")
             
             if user.email_code_expiry < datetime.datetime.now():
                 raise HTTPException(400, "Code is expired")
 
-            jwt_token = create_jwt(user.id)
-            response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-            return LoginWithCodeResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
+            user.password_hashed = get_password_hash(request.new_password)
+
+        return ChangePasswordWithCodeResponse()
+
