@@ -157,7 +157,7 @@ def test_modify_profile(client):
     headers = {"Authorization": f"Bearer {access_token}"}
 
     response = client.post(
-        "/users/modify_profile", json=modify_request, headers=headers
+        "/users/modify_my_profile", json=modify_request, headers=headers
     )
     assert response.status_code == 200
 
