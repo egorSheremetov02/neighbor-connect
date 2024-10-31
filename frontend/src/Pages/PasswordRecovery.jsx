@@ -43,7 +43,6 @@ const RequestResetCode = () => {
       const responseData = await response.json();
 
       if (response.ok) {
-        // Navigate to the ResetPassword page with login as state
         navigate("/passwordreset", { state: { login } });
       } else {
         setErrorMessage(responseData.detail || "Failed to send reset code.");
@@ -63,7 +62,7 @@ const RequestResetCode = () => {
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
             <FormControl fullWidth margin="normal">
-              <FormLabel>Login (Username or Email)</FormLabel>
+              <FormLabel htmlFor="login">Login (Username or Email)</FormLabel>
               <TextField
                 id="login"
                 name="login"
@@ -71,6 +70,7 @@ const RequestResetCode = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter your login or email"
+                inputProps={{ 'aria-labelledby': 'login-label' }}
               />
             </FormControl>
 

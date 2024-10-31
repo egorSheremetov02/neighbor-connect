@@ -36,8 +36,8 @@ const ResetPassword = () => {
     event.preventDefault();
   
     const formData = new URLSearchParams();
-    formData.append("username", location.state?.login); // Send as 'username'
-    formData.append("password", event.target.elements.code?.value); // Send as 'password'
+    formData.append("username", location.state?.login);
+    formData.append("password", event.target.elements.code?.value);
   
     if (!formData.get("username") || !formData.get("password")) {
       setErrorMessage("Please fill in all fields.");
@@ -53,11 +53,10 @@ const ResetPassword = () => {
       const responseData = await response.json();
   
       if (response.ok) {
-        console.log(responseData.access_token);
         sessionStorage.setItem("TOKEN", JSON.stringify(responseData.access_token));
         sessionStorage.setItem("myid", JSON.stringify(responseData.user_id));
         setSuccessMessage("You have successfully logged in! Redirecting to home...");
-        setTimeout(() => navigate("/home"), 3000);  // Redirect to /home after 3 seconds
+        setTimeout(() => navigate("/home"), 3000);
       } else {
         setErrorMessage(
           typeof responseData.detail === "string"
@@ -79,9 +78,8 @@ const ResetPassword = () => {
             Reset Password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
-            
             <FormControl fullWidth margin="normal">
-              <FormLabel>Verification Code</FormLabel>
+              <FormLabel htmlFor="code">Verification Code</FormLabel>
               <TextField
                 id="code"
                 name="code"
@@ -89,6 +87,7 @@ const ResetPassword = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter the code sent to your email"
+                inputProps={{ 'aria-labelledby': 'code-label' }}
               />
             </FormControl>
 
