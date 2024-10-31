@@ -25,7 +25,7 @@ def login_user(client, username, password):
 def create_and_login_user(client, create_request):
     create_response = create_user(client, create_request)
     assert create_response.status_code == 200
-    return login_user(client, create_request["login"], create_request["password"])
+    return login_user(client, create_request["email"], create_request["password"])
 
 
 def test_create_user(client):
@@ -157,7 +157,7 @@ def test_modify_profile(client):
     headers = {"Authorization": f"Bearer {access_token}"}
 
     response = client.post(
-        "/users/modify_profile", json=modify_request, headers=headers
+        "/users/modify_my_profile", json=modify_request, headers=headers
     )
     assert response.status_code == 200
 
