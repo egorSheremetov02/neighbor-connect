@@ -1,0 +1,24 @@
+.sponsored-polls {
+  padding: 20px;
+}
+
+.poll {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.option {
+  margin: 5px 0;
+}
+
+.results {
+  margin-top: 10px;
+}
+
+.offer {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f0f8ff;
+  border: 1px solid #ccc;
+}

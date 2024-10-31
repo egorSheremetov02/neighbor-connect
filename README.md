@@ -47,6 +47,12 @@ The Neighborhood Connect app strengthens community bonds by making it easy to sh
 
 - Platform for neighbors to list and browse items for sale or trade.
 
+### 5. Sponsored Polls
+
+![Sponsored Polls](./assets/intro-images/Sponsored%20Polls.png)
+
+- Allows local businesses to create and sponsor polls within the community. These polls help businesses gather insights and offer relevant discounts based on poll results. Users can participate in these polls and receive tailored offers from the sponsoring businesses.
+
 ## Conclusion
 
 In conclusion, the Neighborhood Connect app fosters stronger, safer, and more engaged communities through its suite of practical features. By simplifying login and registration, neighbors can easily connect with verified local residents. The chat functionality promotes communication and collaboration, while incident reporting enhances neighborhood safety by keeping everyone informed of potential threats. Additionally, the sales offer feature supports local commerce, enabling users to buy, sell, and trade within their community. Together, these features create a more supportive, connected, and thriving neighborhood environment.
@@ -224,3 +230,77 @@ Here’s a list of the tools and technologies used to develop Neighbor Connect, 
 
 - Requirement Documentation: https://docs.google.com/document/d/17m9Jp-vsVd-kxuXfa2swfchQc2MezCDiDNIYg4LUKDc/edit?usp=sharing
 - Architecture Documentation: https://docs.google.com/document/d/19VOkKtT8052kxtNJWQu7MV0q74wyAkBZtGdiUQUfWQw/edit?usp=sharing
+
+## Sponsored Polls Feature
+
+### Description
+
+The Sponsored Polls feature allows local businesses to create and sponsor polls within the community. These polls help businesses gather insights and offer relevant discounts based on poll results. Users can participate in these polls and receive tailored offers from the sponsoring businesses.
+
+### API Endpoints
+
+- **GET /api/sponsored-polls/**: Retrieve a list of all sponsored polls.
+- **POST /api/sponsored-polls/{id}/vote/**: Vote on a specific poll.
+
+### Data Model
+
+The `SponsoredPoll` model includes the following fields:
+- `question`: The poll question.
+- `options`: The available options for the poll.
+- `business_name`: The name of the sponsoring business.
+- `offer`: The offer provided by the business based on poll results.
+- `created_at`: The timestamp when the poll was created.
+- `updated_at`: The timestamp when the poll was last updated.
+
+### Frontend Integration
+
+The frontend component `SponsoredPolls` displays the list of sponsored polls, allows users to vote, and shows the poll results and offers. The component is styled using the `SponsoredPolls.css` file.
+
+### Example Usage
+
+```jsx
+import React from 'react';
+import SponsoredPolls from './components/SponsoredPolls';
+
+function App() {
+  return (
+    <div className="App">
+      <SponsoredPolls />
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/neighbor-connect.git
+   cd neighbor-connect
+   ```
+
+2. Install backend dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. Run the development server:
+   ```bash
+   npm start
+   ```
+
+### Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+### License
+
+This project is licensed under the MIT License.
