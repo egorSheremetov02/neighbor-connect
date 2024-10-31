@@ -48,7 +48,7 @@ async def get_state_2fa(request: Request,
 @auth_2fa_router.post("/generate", summary="Generate 2-Factor Authentication Code",
                       dependencies=[Depends(security_scheme)])
 @jwt_token_required
-async def generate_2fa_code(request: Request, generate_2fa_request: Generate2FaRequest,
+async def generate_2fa_code(request: Request, generate_2fa_request: Generate2FaRequest = None,
                             user_payload=Depends(hidden_user_payload)) -> Generate2FaResponse:
     """
     :param request: The current HTTP request object.
