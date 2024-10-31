@@ -16,38 +16,38 @@ Neighborhood Connect strengthens community bonds by making it easy to share reso
 
 ### 1. Login and Registration
 
-![Login and Registration](./assets/intro-images/signup.png)
-![Login and Registration](./assets/intro-images/signin.png)
+![Login and Registration](./assets/intro-images/signup.PNG)
+![Login and Registration](./assets/intro-images/signin.PNG)
 
 - Secure login and registration functionality for managing user access.
 
 ### 2. Chat Functionality
 
-![Chat Functionality](./assets/intro-images/chats.png)
+![Chat Functionality](./assets/intro-images/chats.PNG)
 
 - Real-time messaging system for neighbors to communicate.
 
 ### 3. Incident Reporting
 
-![Incident Reporting](./assets/intro-images/addincident.png)
+![Incident Reporting](./assets/intro-images/addincident.PNG)
 
 - Easy-to-use form for reporting incidents within the community.
 
 ### 4. Sales Offer
 
-![Sales Offer](./assets/intro-images/home.png)
+![Sales Offer](./assets/intro-images/home.PNG)
 
 - A platform for neighbors to list and browse items for sale or trade.
 
 ### 5. Sales Offer
 
-![Neighbors](./assets/intro-images/neigbors.png)
+![Neighbors](./assets/intro-images/neigbors.PNG)
 
 - A platform for neighbors to communicate.
 
 ### 6. Profile
 
-![Profile](./assets/intro-images/myprofile.png)
+![Profile](./assets/intro-images/myprofile.PNG)
 
 - Your profile to Edit.
 
