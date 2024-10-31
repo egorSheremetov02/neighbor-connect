@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Union
 
+
 class Incident(BaseModel):
     """
     Incident(id: int, title: str, description: str, author_id: int, status: str, created_at: datetime,
@@ -75,6 +76,7 @@ class IncidentVote(str, Enum):
     LIKE = 'like'
     DISLIKE = 'dislike'
 
+
 class IncidentStatus(str, Enum):
     """
     IncidentStatus defines the various statuses that an incident can have.
@@ -97,8 +99,10 @@ class IncidentVotesData(BaseModel):
     likes: int
     dislikes: int
 
+
 class ListIncidentsResponse(BaseModel):
     incidents: list[Incident]
+
 
 class IncidentVoteRequest(BaseModel):
     vote: Union['IncidentVote', None] = Field(None)
@@ -170,3 +174,7 @@ class AuthorizeIncidentRequest(BaseModel):
 
 class AuthorizeIncidentResponse(BaseModel):
     pass
+
+
+class IncidentIsLiked(BaseModel):
+    is_liked: bool

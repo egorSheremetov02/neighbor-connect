@@ -1,17 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Query
+from fastapi import APIRouter, Depends, Request, Query
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import asc, and_, or_
+from sqlalchemy import asc, or_
 from typing import List, Optional
 
 from app.api_models.offer import (Offer as API_Offer, ListOffersResponse,
                                   CreateOfferRequest, CreateOfferResponse,
                                   DeleteOfferRequest, DeleteOfferResponse,
-                                  EditOfferDataRequest, EditOfferDataResponse)
+                                  EditOfferDataRequest, EditOfferDataResponse, OfferVoteRequest, AuthorizeOfferResponse,
+                                  OfferIsLiked)
 
 import logging, sqlalchemy
 from sqlalchemy import select
 
-from app.db_models.offer import Offer, OfferTag
+from app.db_models.offer import Offer, OfferTag, OfferVote as OfferVoteDB
 from app.core.db import SessionLocal
 from app.api.util import jwt_token_required, hidden_user_payload
 from fastapi import HTTPException
@@ -234,3 +235,93 @@ async def delete_offer(request: Request, delete_offer_request: DeleteOfferReques
             session.delete(offer)
 
         return DeleteOfferResponse()
+
+
+@offers_router.put("/{offer_id}/vote", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def offer_vote(request: Request, offer_id: int, vote_request: OfferVoteRequest,
+                        user_payload=Depends(hidden_user_payload)) -> AuthorizeOfferResponse:
+    """
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    offer : int
+        The unique identifier of the offer to vote on.
+    vote_request : OfferVoteRequest
+        The request body containing the user's vote.
+    user_payload : dict, optional
+        The payload containing user information extracted from the JWT token (default is None).
+
+    Returns
+    -------
+    AuthorizeOfferResponse
+        Response indicating the result of the voting action.
+
+    Raises
+    ------
+    HTTPException
+        If the incident with the specified ID does not exist.
+    """
+    sender_id = user_payload['user_id']
+
+    with SessionLocal() as session:
+        with session.begin():
+            offer = session.query(Offer).filter_by(id=offer_id).first()
+
+            if offer is None:
+                raise HTTPException(404, f'Offer with id {offer_id} does not exist')
+
+            user_vote = session.query(OfferVoteDB).filter_by(offer_id=offer_id, user_id=sender_id).first()
+            if user_vote is None:
+                if vote_request.vote:
+                    user_vote = OfferVoteDB(user_id=sender_id, offer_id=offer_id, vote=vote_request.vote)
+                    session.add(user_vote)
+            else:
+                if vote_request.vote is None:
+                    session.delete(user_vote)
+                else:
+                    user_vote.vote = vote_request.vote
+
+        return AuthorizeOfferResponse()
+
+
+@offers_router.get("/{offer_id}/vote", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_offer_vote(request: Request, offer_id: int, user_payload=Depends(hidden_user_payload)
+                            ) -> OfferIsLiked:
+    """
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    offer_id : int
+        The unique identifier of the offer to vote on.
+    user_payload : dict, optional
+        The payload containing user information extracted from the JWT token (default is None).
+
+    Returns
+    -------
+    AuthorizeOfferResponse
+        Response indicating the result whether the offer is liked.
+
+    Raises
+    ------
+    HTTPException
+        If the offer with the specified ID does not exist.
+    """
+    sender_id = user_payload['user_id']
+
+    with SessionLocal() as session:
+        with session.begin():
+            offer = session.query(Offer).filter_by(id=offer_id).first()
+
+            if offer is None:
+                raise HTTPException(404, f'Offer with id {offer_id} does not exist')
+
+            user_vote = session.query(OfferVoteDB).filter_by(offer_id=offer_id, user_id=sender_id).first()
+
+            if user_vote is None:
+                OfferIsLiked(is_liked=False)
+
+            return OfferIsLiked(is_liked=user_vote.vote == 'like')
