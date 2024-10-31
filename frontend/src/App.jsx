@@ -1,13 +1,15 @@
+import "@fontsource/inter";
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Wrapper from "./Components/Wrapper";
+import Chat from "./Pages/Chat";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
-import Signup from "./Pages/Signup";
 import Neighbors from "./Pages/Neighbors";
 import Profile from "./Pages/Profile";
-import Wrapper from "./Components/Wrapper";
+import Signup from "./Pages/Signup";
 import PasswordRecovery from "./Pages/PasswordRecovery";  
-import "@fontsource/inter";
+import { ChatProvider } from "./utilities/ChatContext";
 import ResetPassword from "./Pages/PasswordReset";
 
 const App = () => {
@@ -52,9 +54,7 @@ const App = () => {
             </Wrapper>
           }
         />
-         
       </Routes>
-      
     </Router>
   );
 };
