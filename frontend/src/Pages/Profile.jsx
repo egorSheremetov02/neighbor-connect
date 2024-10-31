@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Card, CardContent, Button, Typography } from "@mui/material";
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  Stack,
+} from "@mui/material";
 import EditProfileModal from "../Components/EditProfileModal";
 
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -10,11 +18,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import InfoIcon from "@mui/icons-material/Info";
 import EditIcon from "@mui/icons-material/Edit";
+import ChangePasswordModal from "../Components/EditPasswordModal";
 
 const Profile = () => {
   const { userid } = useParams();
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
   const [editData, setEditData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState();
@@ -70,6 +81,9 @@ const Profile = () => {
   const handleClose = () => {
     setIsEditing(false);
   };
+
+  const handlePasswordChangeClick = () => setIsPasswordModalOpen(true);
+  const handleClosePasswordModal = () => setIsPasswordModalOpen(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -206,23 +220,50 @@ const Profile = () => {
           </div>
 
           {isMyProfile && (
-            <Button
-              variant="contained"
-              color="primary"
-              className="mt-4"
-              startIcon={<EditIcon />}
-              onClick={handleEditClick}
+            <Stack
+              direction={"row"}
               sx={{
-                color: "black",
-                background: "#e2e2e2",
-                fontSize: "10px",
-                "&:hover": {
-                  background: "#e2e2e2",
-                },
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "30px",
+                gap: "20px",
               }}
             >
-              Edit Profile
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className="mt-4"
+                startIcon={<EditIcon />}
+                onClick={handleEditClick}
+                sx={{
+                  color: "black",
+                  background: "#e2e2e2",
+                  fontSize: "10px",
+                  "&:hover": {
+                    background: "#e2e2e2",
+                  },
+                }}
+              >
+                Edit Profile
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className="mt-4"
+                startIcon={<LockOpenIcon />}
+                onClick={handlePasswordChangeClick}
+                sx={{
+                  color: "black",
+                  background: "#e2e2e2",
+                  fontSize: "10px",
+                  "&:hover": {
+                    background: "#e2e2e2",
+                  },
+                }}
+              >
+                Change Password
+              </Button>
+            </Stack>
           )}
         </CardContent>
       </Card>
@@ -234,6 +275,10 @@ const Profile = () => {
         editData={editData}
         handleInputChange={handleInputChange}
         handleSave={handleSave}
+      />
+      <ChangePasswordModal
+        open={isPasswordModalOpen}
+        handleClose={handleClosePasswordModal}
       />
     </div>
   );
