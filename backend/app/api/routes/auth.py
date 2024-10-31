@@ -115,11 +115,10 @@ async def login(
             code = auth_2fa_code
             result = verify_2fa_auth_code(user.id, session, code)
 
-            if result is False: # need valid code
+            if result is False:  # need valid code
                 return LoginRequired2FaCodeResponse()
             elif result is True or result is None: # success
                 send_on_login_email(user.email, user.name)
-
                 jwt_token = create_jwt(user.id)
                 response.set_cookie(key="access_token", value=jwt_token, httponly=True)
                 return LoginSuccessResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
