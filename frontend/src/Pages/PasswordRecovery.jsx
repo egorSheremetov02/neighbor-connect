@@ -35,7 +35,7 @@ const RequestResetCode = () => {
     const login = event.target.elements.login.value;
 
     try {
-      const response = await fetch("http://localhost:8080/auth/forgot_password", {
+      const response = await fetch("http://localhost:8080/auth/forget_password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login }),
