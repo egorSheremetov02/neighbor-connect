@@ -15,5 +15,10 @@ export const links = [
     icon: HiOutlineUserGroup,
   },
   { name: "Profile", to: `/profile/${userid}`, icon: HiOutlinePhotograph },
+  {
+    name: "Chat",
+    to: "/chat",
+    icon: HiOutlineUserGroup,
+  },
   { name: "Logout", to: "/logout", icon: HiOutlineHashtag },
 ];
