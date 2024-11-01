@@ -893,19 +893,19 @@
                 }
             }
         },
-        "/auth/login_with_code": {
+        "/auth/change_password_with_code": {
             "post": {
                 "tags": [
                     "auth"
                 ],
-                "summary": "Login With Code",
-                "description": "Log in a user using a previously generated email code.\n\n:param form_data: The form data containing the username (login) and the code sent to the user's email.\n:raises HTTPException: If the user does not exist, the code is incorrect, or the code has expired.",
-                "operationId": "login_with_code_auth_login_with_code_post",
+                "summary": "Change Password With Code",
+                "description": ":param request: The change password with code request object containing user login, code, sent to user's email and new password.\n:return: The response object indicating successful password change or raises an HTTPException with appropriate error messages if password change fails.",
+                "operationId": "change_password_with_code_auth_change_password_with_code_post",
                 "requestBody": {
                     "content": {
-                        "application/x-www-form-urlencoded": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Body_login_with_code_auth_login_with_code_post"
+                                "$ref": "#/components/schemas/ChangePasswordWithCodeRequest"
                             }
                         }
                     },
@@ -917,7 +917,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/LoginWithCodeResponse"
+                                    "$ref": "#/components/schemas/ChangePasswordWithCodeResponse"
                                 }
                             }
                         }
@@ -1671,63 +1671,6 @@
                 ],
                 "title": "Body_login_auth_login_post"
             },
-            "Body_login_with_code_auth_login_with_code_post": {
-                "properties": {
-                    "grant_type": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "pattern": "password"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Grant Type"
-                    },
-                    "username": {
-                        "type": "string",
-                        "title": "Username"
-                    },
-                    "password": {
-                        "type": "string",
-                        "title": "Password"
-                    },
-                    "scope": {
-                        "type": "string",
-                        "title": "Scope",
-                        "default": ""
-                    },
-                    "client_id": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Id"
-                    },
-                    "client_secret": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Client Secret"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "username",
-                    "password"
-                ],
-                "title": "Body_login_with_code_auth_login_with_code_post"
-            },
             "Body_store_image_image_storage__post": {
                 "properties": {
                     "file": {
@@ -1774,6 +1717,42 @@
                 },
                 "type": "object",
                 "title": "ChangePasswordResponse"
+            },
+            "ChangePasswordWithCodeRequest": {
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    },
+                    "code": {
+                        "type": "string",
+                        "title": "Code"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "title": "New Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "login",
+                    "code",
+                    "new_password"
+                ],
+                "title": "ChangePasswordWithCodeRequest",
+                "description": "A class representing a change password via code request.\n\nAttributes\n----------\nlogin : str\n    The username or email used for login.\ncode : str\n    The code received from the email.\nnew_password : str\n    New password"
+            },
+            "ChangePasswordWithCodeResponse": {
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "title": "Msg",
+                        "default": "Password changed successfully"
+                    }
+                },
+                "type": "object",
+                "title": "ChangePasswordWithCodeResponse",
+                "description": "Attributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
             },
             "CreateChatRequest": {
                 "properties": {
@@ -2550,30 +2529,6 @@
                 "title": "LoginResponse",
                 "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
             },
-            "LoginWithCodeResponse": {
-                "properties": {
-                    "access_token": {
-                        "type": "string",
-                        "title": "Access Token"
-                    },
-                    "token_type": {
-                        "type": "string",
-                        "title": "Token Type"
-                    },
-                    "user_id": {
-                        "type": "integer",
-                        "title": "User Id"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "access_token",
-                    "token_type",
-                    "user_id"
-                ],
-                "title": "LoginWithCodeResponse",
-                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
-            },
             "Message": {
                 "properties": {
                     "content": {
@@ -2648,17 +2603,6 @@
                             }
                         ],
                         "title": "Login"
-                    },
-                    "password": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Password"
                     },
                     "permanent_address": {
                         "anyOf": [
@@ -3154,3 +3098,4 @@
             }
         }
     }
+}
