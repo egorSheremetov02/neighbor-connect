@@ -89,9 +89,9 @@ class ForgetPasswordRequest(BaseModel):
 class ForgetPasswordResponse(BaseModel):
     msg: str = "Email sent successfuly"
 
-class LoginWithCodeRequest(BaseModel):
+class ChangePasswordWithCodeRequest(BaseModel):
     """
-    A class representing a login via code request.
+    A class representing a change password via code request.
 
     Attributes
     ----------
@@ -99,27 +99,23 @@ class LoginWithCodeRequest(BaseModel):
         The username or email used for login.
     code : str
         The code received from the email.
+    new_password : str
+        New password
     """
 
     login: str
     code: str
+    new_password: str
 
-class LoginWithCodeResponse(BaseModel):
+class ChangePasswordWithCodeResponse(BaseModel):
     """
-        class LoginResponse(BaseModel):
-            access_token: str
-            token_type: str
-            user_id: int
-
-        Attributes
-        ----------
-        access_token : str
-            The token provided to the user for authentication purposes.
-        token_type : str
-            The type of token issued, e.g., Bearer.
-        user_id : int
-            The unique identifier of the user.
+    Attributes
+    ----------
+    access_token : str
+        The token provided to the user for authentication purposes.
+    token_type : str
+        The type of token issued, e.g., Bearer.
+    user_id : int
+        The unique identifier of the user.
     """
-    access_token: str
-    token_type: str
-    user_id: int
+    msg: str = "Password changed successfully"

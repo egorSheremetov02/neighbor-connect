@@ -1,0 +1,2892 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FastAPI",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/chats/": {
+            "put": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Edit Chat Data",
+                "description": "Edit the info of the chat, add/remove users, change admins. Access: chat admins.",
+                "operationId": "edit_chat_data_chats__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditChatDataRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EditChatDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Create Chat",
+                "description": "Create a new chat and add some users to it. The sender must be one of the invited users.\nThey will also be chat's admin.",
+                "operationId": "create_chat_chats__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateChatRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateChatResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Delete Chat",
+                "description": "Delete the chat, including all its messages. Access: chat admins.",
+                "operationId": "delete_chat_chats__delete",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteChatRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteChatResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/chats/{chat_id}": {
+            "get": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get Chat Data",
+                "description": "Get the data of the chat, including member users and admins. Access: chat members.",
+                "operationId": "get_chat_data_chats__chat_id__get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "chat_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Chat Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetChatDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chats/{chat_id}/messages": {
+            "post": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Send Message",
+                "description": "Send a new message to a chat. Access: chat member.",
+                "operationId": "send_message_chats__chat_id__messages_post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "chat_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Chat Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SendMessageRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SendMessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "List Messages",
+                "description": "List all messages in the chat, or its portion if pagination is used. Access: chat member.",
+                "operationId": "list_messages_chats__chat_id__messages_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "chat_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Chat Id"
+                        }
+                    },
+                    {
+                        "name": "page_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Page Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListMessagesResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chats/own": {
+            "get": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get Own Chats",
+                "description": "Get all chats the sender is a member of.",
+                "operationId": "get_own_chats_chats_own_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetOwnChatsResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/incidents/": {
+            "get": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "List Incidents",
+                "operationId": "list_incidents_incidents__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListIncidentsResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Create Incident",
+                "description": ":param request: Incoming HTTP request object\n:param create_request: Data required to create a new incident, containing title, description, created_at, and location\n:param user_payload: Payload containing user information, used here to extract the sender's user ID\n:return: Response object containing the ID of the newly created incident",
+                "operationId": "create_incident_incidents__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateIncidentRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateIncidentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/incidents/{incident_id}": {
+            "delete": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Delete Incident",
+                "description": ":param request: The HTTP request object.\n:param incident_id: The ID of the incident to be deleted.\n:param user_payload: The payload containing user information, with a default value of None.\n:return: An instance of DeleteIncidentResponse indicating the result of the delete operation.",
+                "operationId": "delete_incident_incidents__incident_id__delete",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteIncidentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Edit Incident Data",
+                "description": ":param request: The request object containing metadata about the request.\n:param incident_id: The unique identifier of the incident to be edited.\n:param edit_request: An object containing the new data for the incident including title, description, location, and updated_at values.\n:param user_payload: An optional payload that includes user information such as user_id. Defaults to None.\n:return: An `EditIncidentDataResponse` object indicating the result of the operation.",
+                "operationId": "edit_incident_data_incidents__incident_id__put",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditIncidentDataRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EditIncidentDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/incidents/{incident_id}/authorize": {
+            "post": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Authorize Incident",
+                "description": ":param request: The request object containing the HTTP request details.\n:param incident_id: An integer representing the unique identifier of the incident to be authorized.\n:param auth_request: An object of type AuthorizeIncidentRequest containing the authorization request data.\n:param user_payload: A dictionary containing user-related data extracted from the JWT token. Default is None.\n:return: An instance of AuthorizeIncidentResponse indicating the result of the authorization process.",
+                "operationId": "authorize_incident_incidents__incident_id__authorize_post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthorizeIncidentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizeIncidentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/incidents/{incident_id}/vote": {
+            "put": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Incident Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\nincident_id : int\n    The unique identifier of the incident to vote on.\nvote_request : IncidentVoteRequest\n    The request body containing the user's vote.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeIncidentResponse\n    Response indicating the result of the voting action.\n\nRaises\n------\nHTTPException\n    If the incident with the specified ID does not exist.",
+                "operationId": "incident_vote_incidents__incident_id__vote_put",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IncidentVoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizeIncidentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Get Incident Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\nincident_id : int\n    The unique identifier of the incident to vote on.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeIncidentResponse\n    Response indicating the result whether the incident is liked.\n\nRaises\n------\nHTTPException\n    If the incident with the specified ID does not exist.",
+                "operationId": "get_incident_vote_incidents__incident_id__vote_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IncidentIsLiked"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register",
+                "description": ":param request: The registration request object containing user details such as email, login, full name, password, address, birthday, and additional information.\n:return: The response object indicating successful registration or raises an HTTPException with appropriate error messages if registration fails.",
+                "operationId": "register_auth_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "description": ":param form_data: The form data containing the username and password of the user trying to log in.\n:type form_data: OAuth2PasswordRequestForm\n\n:param response: The response object used to set the HTTP cookie for the access token.\n:type response: Response\n\n:return: A dictionary containing the access token and the token type.\n:rtype: dict\n\n:raises HTTPException: If the user does not exist or the password is incorrect.",
+                "operationId": "login_auth_login_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_login_auth_login_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/users/{user_id}": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get User",
+                "description": ":param request: The current request being processed.\n:param user_id: The unique identifier of the user to be retrieved.\n:param user_payload: The payload containing information about the user, typically extracted from the JWT token.\n:return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.",
+                "operationId": "get_user_auth_users__user_id__get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/users": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Many Users",
+                "operationId": "get_many_users_auth_users_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "title": "Ids"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UsersResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/offers/": {
+            "post": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Create Offer",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\ncreate_offer_request : CreateOfferRequest\n    The request data for creating an offer, which includes title, description, image_id, tags, and date.\nuser_payload : dict, optional\n    The payload containing user-specific information extracted from JWT token; it includes user_id.\n\nReturns\n-------\nCreateOfferResponse\n    The response containing the ID of the newly created offer.",
+                "operationId": "create_offer_offers__post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateOfferRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateOfferResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "List Offers",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\ntags : Optional[List[str]], default None\n    List of tags to filter the offers.\nuser_payload : dict, optional\n    Payload information obtained from the JWT token.",
+                "operationId": "list_offers_offers__get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "query_text",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Query Text"
+                        }
+                    },
+                    {
+                        "name": "tag",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Tag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListOffersResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Edit Offer Data",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\nedit_request : EditOfferDataRequest\n    The request object containing the new offer data to be edited.\nuser_payload : dict, optional\n    A dictionary containing the payload data extracted from the JWT token, default is None.\n\nReturns\n-------\nEditOfferDataResponse\n    The response object indicating the result of the edit operation.\n\nRaises\n------\nHTTPException\n    If the offer title is missing.\n    If the offer description is missing.\n    If the offer with the specified ID does not exist.\n    If the offer is not authored by the sender (user making the request).\n\nNotes\n-----\nThis function requires a valid JWT token to be provided in the request.\nIt checks the authorization and validates the input data before updating an offer.\nThe offer can only be edited by its author.\nThe tags associated with the offer are validated and updated.",
+                "operationId": "edit_offer_data_offers__put",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditOfferDataRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EditOfferDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Delete Offer",
+                "description": "Parameters\n----------\nrequest : Request\n    The request object that contains metadata about the request.\ndelete_offer_request : DeleteOfferRequest\n    The request payload containing details about the offer to be deleted.\nuser_payload : dict, optional\n    Contains user-related information extracted from the JWT token, including the user_id.\n\nReturns\n-------\nDeleteOfferResponse\n    An object indicating the outcome of the delete operation.",
+                "operationId": "delete_offer_offers__delete",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteOfferRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteOfferResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/offers/{offer_id}/vote": {
+            "put": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Offer Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\noffer : int\n    The unique identifier of the offer to vote on.\nvote_request : OfferVoteRequest\n    The request body containing the user's vote.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeOfferResponse\n    Response indicating the result of the voting action.\n\nRaises\n------\nHTTPException\n    If the incident with the specified ID does not exist.",
+                "operationId": "offer_vote_offers__offer_id__vote_put",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "offer_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Offer Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OfferVoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizeOfferResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Get Offer Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\noffer_id : int\n    The unique identifier of the offer to vote on.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeOfferResponse\n    Response indicating the result whether the offer is liked.\n\nRaises\n------\nHTTPException\n    If the offer with the specified ID does not exist.",
+                "operationId": "get_offer_vote_offers__offer_id__vote_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "offer_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Offer Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferIsLiked"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/image_storage/": {
+            "post": {
+                "tags": [
+                    "image_storage"
+                ],
+                "summary": "Store Image",
+                "operationId": "store_image_image_storage__post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_store_image_image_storage__post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StoreImageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "image_storage"
+                ],
+                "summary": "Get Image",
+                "operationId": "get_image_image_storage__get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "image_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Image Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/users/{user_id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User",
+                "description": ":param request: The current request being processed.\n:param user_id: The unique identifier of the user to be retrieved.\n:param user_payload: The payload containing information about the user, typically extracted from the JWT token.\n:return: A UserResponse object containing the user's details if found, otherwise raises an HTTPException if the user is not found.",
+                "operationId": "get_user_users_users__user_id__get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/my_profile/": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "My Profile",
+                "operationId": "my_profile_users_my_profile__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/users/modify_my_profile/": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Modify Profile",
+                "operationId": "modify_profile_users_modify_my_profile__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ModifyProfileRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModifyProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/users/users": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get Users",
+                "operationId": "get_users_users_users_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer"
+                                    }
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Ids"
+                        }
+                    },
+                    {
+                        "name": "location_filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Location Filter"
+                        }
+                    },
+                    {
+                        "name": "name_filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Name Filter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUsersResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthorizeIncidentRequest": {
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "status"
+                ],
+                "title": "AuthorizeIncidentRequest"
+            },
+            "AuthorizeIncidentResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "AuthorizeIncidentResponse"
+            },
+            "AuthorizeOfferResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "AuthorizeOfferResponse"
+            },
+            "Body_login_auth_login_post": {
+                "properties": {
+                    "grant_type": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "pattern": "password"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Grant Type"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "title": "Scope",
+                        "default": ""
+                    },
+                    "client_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "title": "Body_login_auth_login_post"
+            },
+            "Body_store_image_image_storage__post": {
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "title": "File"
+                    },
+                    "image_type": {
+                        "$ref": "#/components/schemas/ImageType"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "file",
+                    "image_type"
+                ],
+                "title": "Body_store_image_image_storage__post"
+            },
+            "CreateChatRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "users": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Users"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "tags",
+                    "users"
+                ],
+                "title": "CreateChatRequest",
+                "description": "Create a new chat with users. Creator is the initial admin."
+            },
+            "CreateChatResponse": {
+                "properties": {
+                    "chat_id": {
+                        "type": "integer",
+                        "title": "Chat Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "chat_id"
+                ],
+                "title": "CreateChatResponse"
+            },
+            "CreateIncidentRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Updated At"
+                    },
+                    "location": {
+                        "type": "string",
+                        "title": "Location"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "created_at",
+                    "location"
+                ],
+                "title": "CreateIncidentRequest",
+                "description": "Represents a request to create a new incident.\n\nAttributes:\n    title (str): The title of the incident.\n    description (str): Detailed description of the incident.\n    created_at (datetime): The timestamp when the incident was created.\n    updated_at (datetime | None): The timestamp when the incident was last updated, can be None.\n    location (str): The location where the incident occurred.\n    image_id (int | None): The ID of the associated image, can be None."
+            },
+            "CreateIncidentResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "title": "CreateIncidentResponse"
+            },
+            "CreateOfferRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "date": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Date"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "tags"
+                ],
+                "title": "CreateOfferRequest"
+            },
+            "CreateOfferResponse": {
+                "properties": {
+                    "offer_id": {
+                        "type": "integer",
+                        "title": "Offer Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "offer_id"
+                ],
+                "title": "CreateOfferResponse"
+            },
+            "DeleteChatRequest": {
+                "properties": {
+                    "chat_id": {
+                        "type": "integer",
+                        "title": "Chat Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "chat_id"
+                ],
+                "title": "DeleteChatRequest",
+                "description": "Delete a chat, including all its messages."
+            },
+            "DeleteChatResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "DeleteChatResponse"
+            },
+            "DeleteIncidentResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "DeleteIncidentResponse"
+            },
+            "DeleteOfferRequest": {
+                "properties": {
+                    "offer_id": {
+                        "type": "integer",
+                        "title": "Offer Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "offer_id"
+                ],
+                "title": "DeleteOfferRequest"
+            },
+            "DeleteOfferResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "DeleteOfferResponse"
+            },
+            "EditChatDataRequest": {
+                "properties": {
+                    "chat_id": {
+                        "type": "integer",
+                        "title": "Chat Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "users": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Users"
+                    },
+                    "admin_users": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Admin Users"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "chat_id",
+                    "name",
+                    "description",
+                    "tags",
+                    "users",
+                    "admin_users"
+                ],
+                "title": "EditChatDataRequest",
+                "description": "Edit chat data. Can only be done by chat admin."
+            },
+            "EditChatDataResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "EditChatDataResponse"
+            },
+            "EditIncidentDataRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "location": {
+                        "type": "string",
+                        "title": "Location"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "location",
+                    "updated_at"
+                ],
+                "title": "EditIncidentDataRequest",
+                "description": "Represents a request to edit incident data.\n\nAttributes\n----------\ntitle : str\n    The title of the incident.\ndescription : str\n    A detailed description of the incident.\nlocation : str\n    The geographical location where the incident occurred.\nimage_id : int | None, optional\n    An identifier for an image related to the incident, if any (default is None).\nupdated_at : datetime\n    The timestamp when the incident data was last updated."
+            },
+            "EditIncidentDataResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "EditIncidentDataResponse"
+            },
+            "EditOfferDataRequest": {
+                "properties": {
+                    "offer_id": {
+                        "type": "integer",
+                        "title": "Offer Id"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "date": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Date"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "offer_id",
+                    "title",
+                    "description",
+                    "tags"
+                ],
+                "title": "EditOfferDataRequest"
+            },
+            "EditOfferDataResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "EditOfferDataResponse"
+            },
+            "Gender": {
+                "type": "string",
+                "enum": [
+                    "male",
+                    "female",
+                    "other"
+                ],
+                "title": "Gender"
+            },
+            "GetChatDataResponse": {
+                "properties": {
+                    "chat_id": {
+                        "type": "integer",
+                        "title": "Chat Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "users_infos": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserShortInfo"
+                        },
+                        "type": "array",
+                        "title": "Users Infos"
+                    },
+                    "admin_users": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Admin Users"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "chat_id",
+                    "name",
+                    "tags",
+                    "users_infos",
+                    "admin_users"
+                ],
+                "title": "GetChatDataResponse"
+            },
+            "GetOwnChatsResponse": {
+                "properties": {
+                    "chats_ids": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Chats Ids"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "chats_ids"
+                ],
+                "title": "GetOwnChatsResponse"
+            },
+            "GetUsersResponse": {
+                "properties": {
+                    "users_info": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserShortInfo"
+                        },
+                        "type": "array",
+                        "title": "Users Info"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "users_info"
+                ],
+                "title": "GetUsersResponse"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "ImageType": {
+                "type": "string",
+                "enum": [
+                    "image",
+                    "avatar"
+                ],
+                "title": "ImageType"
+            },
+            "Incident": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "author_id": {
+                        "type": "integer",
+                        "title": "Author Id"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    },
+                    "location": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Location"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "votes": {
+                        "$ref": "#/components/schemas/IncidentVotesData"
+                    },
+                    "user_vote": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/IncidentVote"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "author_id",
+                    "status",
+                    "created_at",
+                    "updated_at",
+                    "votes"
+                ],
+                "title": "Incident",
+                "description": "Incident(id: int, title: str, description: str, author_id: int, status: str, created_at: datetime,\n         updated_at: datetime, location: str | None = None, image_id: int | None = None,\n         votes: 'IncidentVotesData', user_vote: Union['IncidentVote', None] = None)\n\nA model representing an incident report in the system.\n\nAttributes\n----------\nid : int\n    The unique identifier of the incident.\n\ntitle : str\n    The title of the incident.\n\ndescription : str\n    A detailed description of the incident.\n\nauthor_id : int\n    The ID of the user who reported the incident.\n\nstatus : str\n    The current status of the incident.\n\ncreated_at : datetime\n    The timestamp when the incident was created.\n\nupdated_at : datetime\n    The timestamp when the incident was last updated.\n\nlocation : str, optional\n    The location where the incident occurred (default is None).\n\nimage_id : int, optional\n    The ID of the image associated with the incident (default is None).\n\nvotes : IncidentVotesData\n    The voting data related to the incident.\n\nuser_vote : IncidentVote, optional\n    The vote data of the current user for the incident (default is None)."
+            },
+            "IncidentIsLiked": {
+                "properties": {
+                    "is_liked": {
+                        "type": "boolean",
+                        "title": "Is Liked"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "is_liked"
+                ],
+                "title": "IncidentIsLiked"
+            },
+            "IncidentVote": {
+                "type": "string",
+                "enum": [
+                    "like",
+                    "dislike"
+                ],
+                "title": "IncidentVote",
+                "description": "IncidentVote(str, Enum)\n\nAn enumeration representing the possible voting options for an incident.\n\nAttributes\n----------\nLIKE : str\n    Indicates a 'like' vote for the incident.\nDISLIKE : str\n    Indicates a 'dislike' vote for the incident."
+            },
+            "IncidentVoteRequest": {
+                "properties": {
+                    "vote": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/IncidentVote"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "title": "IncidentVoteRequest"
+            },
+            "IncidentVotesData": {
+                "properties": {
+                    "likes": {
+                        "type": "integer",
+                        "title": "Likes"
+                    },
+                    "dislikes": {
+                        "type": "integer",
+                        "title": "Dislikes"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "likes",
+                    "dislikes"
+                ],
+                "title": "IncidentVotesData"
+            },
+            "ListIncidentsResponse": {
+                "properties": {
+                    "incidents": {
+                        "items": {
+                            "$ref": "#/components/schemas/Incident"
+                        },
+                        "type": "array",
+                        "title": "Incidents"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "incidents"
+                ],
+                "title": "ListIncidentsResponse"
+            },
+            "ListMessagesResponse": {
+                "properties": {
+                    "messages": {
+                        "items": {
+                            "$ref": "#/components/schemas/Message"
+                        },
+                        "type": "array",
+                        "title": "Messages"
+                    },
+                    "next_page_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Next Page Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "messages"
+                ],
+                "title": "ListMessagesResponse"
+            },
+            "ListOffersResponse": {
+                "properties": {
+                    "offers": {
+                        "items": {
+                            "$ref": "#/components/schemas/Offer"
+                        },
+                        "type": "array",
+                        "title": "Offers"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "offers"
+                ],
+                "title": "ListOffersResponse"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "title": "Token Type"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "user_id"
+                ],
+                "title": "LoginResponse",
+                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
+            },
+            "Message": {
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "title": "Content"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    },
+                    "author_id": {
+                        "type": "integer",
+                        "title": "Author Id"
+                    },
+                    "author_name": {
+                        "type": "string",
+                        "title": "Author Name"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "content",
+                    "author_id",
+                    "author_name",
+                    "created_at"
+                ],
+                "title": "Message"
+            },
+            "ModifyProfileRequest": {
+                "properties": {
+                    "fullName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Fullname"
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Email"
+                    },
+                    "login": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Login"
+                    },
+                    "password": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Password"
+                    },
+                    "permanent_address": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Permanent Address"
+                    },
+                    "current_address": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Current Address"
+                    },
+                    "gender": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Gender"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "phone_number": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Phone Number"
+                    },
+                    "birthday": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Birthday"
+                    },
+                    "bio_header": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio Header"
+                    },
+                    "bio_description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio Description"
+                    },
+                    "interests": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Interests"
+                    }
+                },
+                "type": "object",
+                "title": "ModifyProfileRequest"
+            },
+            "ModifyProfileResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "default": "Profile updated successfully"
+                    }
+                },
+                "type": "object",
+                "title": "ModifyProfileResponse"
+            },
+            "Offer": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "author_id": {
+                        "type": "integer",
+                        "title": "Author Id"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Date"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "author_id",
+                    "date",
+                    "tags"
+                ],
+                "title": "Offer"
+            },
+            "OfferIsLiked": {
+                "properties": {
+                    "is_liked": {
+                        "type": "boolean",
+                        "title": "Is Liked"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "is_liked"
+                ],
+                "title": "OfferIsLiked"
+            },
+            "OfferVote": {
+                "type": "string",
+                "enum": [
+                    "like",
+                    "dislike"
+                ],
+                "title": "OfferVote",
+                "description": "OfferVote(str, Enum)\n\nAn enumeration representing the possible voting options for an offer.\n\nAttributes\n----------\nLIKE : str\n    Indicates a 'like' vote for the offer.\nDISLIKE : str\n    Indicates a 'dislike' vote for the offer."
+            },
+            "OfferVoteRequest": {
+                "properties": {
+                    "vote": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVote"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "title": "OfferVoteRequest"
+            },
+            "RegisterRequest": {
+                "properties": {
+                    "fullName": {
+                        "type": "string",
+                        "title": "Fullname"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    },
+                    "permanent_address": {
+                        "type": "string",
+                        "title": "Permanent Address"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "fullName",
+                    "email",
+                    "login",
+                    "password",
+                    "permanent_address"
+                ],
+                "title": "RegisterRequest",
+                "description": "Class representing a user registration request.\n\nAttributes:\n    fullName (str): The full name of the user.\n    email (str): The email address of the user.\n    login (str): The login username of the user.\n    password (str): The login password of the user.\n    permanent_address (str): The physical address of the user."
+            },
+            "RegisterResponse": {
+                "properties": {
+                    "user_id": {
+                        "type": "integer",
+                        "title": "User Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_id"
+                ],
+                "title": "RegisterResponse"
+            },
+            "SendMessageRequest": {
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "title": "Content"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "content"
+                ],
+                "title": "SendMessageRequest",
+                "description": "Send a message to a chat. Author is implied from auth token."
+            },
+            "SendMessageResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "SendMessageResponse"
+            },
+            "StoreImageResponse": {
+                "properties": {
+                    "image_id": {
+                        "type": "integer",
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "image_id"
+                ],
+                "title": "StoreImageResponse"
+            },
+            "UserResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "fullName": {
+                        "type": "string",
+                        "title": "Fullname"
+                    },
+                    "permanent_address": {
+                        "type": "string",
+                        "title": "Permanent Address"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    },
+                    "member_since": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Member Since"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "title": "Is Active"
+                    },
+                    "gender": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Gender"
+                    },
+                    "phone_number": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Phone Number"
+                    },
+                    "current_address": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Current Address"
+                    },
+                    "birthday": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Birthday"
+                    },
+                    "bio_header": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio Header"
+                    },
+                    "bio_description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bio Description"
+                    },
+                    "interests": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Interests"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "fullName",
+                    "permanent_address",
+                    "email",
+                    "login",
+                    "member_since",
+                    "is_active",
+                    "interests"
+                ],
+                "title": "UserResponse"
+            },
+            "UserShortInfo": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "image_id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "UserShortInfo"
+            },
+            "UsersResponse": {
+                "properties": {
+                    "users": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserResponse"
+                        },
+                        "type": "array",
+                        "title": "Users"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "users"
+                ],
+                "title": "UsersResponse"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "APIKeyHeader": {
+                "type": "apiKey",
+                "description": "Bearer token",
+                "in": "header",
+                "name": "Authorization"
+            }
+        }
+    }
+}

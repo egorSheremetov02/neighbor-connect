@@ -8,7 +8,7 @@ import Login from "./Pages/Login";
 import Neighbors from "./Pages/Neighbors";
 import Profile from "./Pages/Profile";
 import Signup from "./Pages/Signup";
-import PasswordRecovery from "./Pages/PasswordRecovery";  
+import PasswordRecovery from "./Pages/PasswordRecovery";
 import { ChatProvider } from "./utilities/ChatContext";
 import ResetPassword from "./Pages/PasswordReset";
 
@@ -32,6 +32,14 @@ const App = () => {
           <Route path="/passwordrecovery" element={<PasswordRecovery />} />
           <Route path="/passwordreset" element={<ResetPassword />} />
           <Route
+            path="/chats"
+            element={
+              <Wrapper>
+                <Chat />
+              </Wrapper>
+            }
+          />
+          <Route
             path="/neighbors"
             element={
               <Wrapper>
@@ -47,14 +55,6 @@ const App = () => {
               </Wrapper>
             }
           />
-          <Route
-              path="/chats"
-              element={
-                <Wrapper>
-                  <Chat />
-                </Wrapper>
-              }
-            />
           <Route
             path="/profile/:userid"
             element={
