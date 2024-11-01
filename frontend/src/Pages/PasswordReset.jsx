@@ -34,41 +34,44 @@ const ResetPassword = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    const formData = new URLSearchParams();
-    formData.append("username", location.state?.login);
-    formData.append("password", event.target.elements.code?.value);
-  
-    if (!formData.get("username") || !formData.get("password")) {
+
+    const formData = {
+      login: location.state?.login,
+      code: event.target.elements.code?.value,
+      new_password: event.target.elements.new_password?.value,
+    };
+
+    // Check for missing fields
+    if (!formData.login || !formData.code || !formData.new_password) {
       setErrorMessage("Please fill in all fields.");
       return;
     }
-  
+
     try {
-      const response = await fetch("http://localhost:8080/auth/login_with_code", {
+      // Ensure the correct URL endpoint and JSON content type
+      const response = await fetch("http://localhost:8080/auth/change_password_with_code", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
+
       const responseData = await response.json();
-  
+
       if (response.ok) {
-        sessionStorage.setItem("TOKEN", JSON.stringify(responseData.access_token));
-        sessionStorage.setItem("myid", JSON.stringify(responseData.user_id));
-        setSuccessMessage("You have successfully logged in! Redirecting to home...");
-        setTimeout(() => navigate("/home"), 3000);
+        setSuccessMessage("Password changed successfully! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 3000);
       } else {
         setErrorMessage(
           typeof responseData.detail === "string"
             ? responseData.detail
-            : "Failed to verify the code. Please try again."
+            : "Failed to change password. Please try again."
         );
       }
     } catch (error) {
       setErrorMessage("Network error. Please try again.");
     }
   };
-  
+
   return (
     <>
       <CssBaseline enableColorScheme />
@@ -88,6 +91,20 @@ const ResetPassword = () => {
                 variant="outlined"
                 placeholder="Enter the code sent to your email"
                 inputProps={{ 'aria-labelledby': 'code-label' }}
+              />
+            </FormControl>
+
+            <FormControl fullWidth margin="normal">
+              <FormLabel htmlFor="new_password">New Password</FormLabel>
+              <TextField
+                id="new_password"
+                name="new_password"
+                type="password"
+                required
+                fullWidth
+                variant="outlined"
+                placeholder="Enter your new password"
+                inputProps={{ 'aria-labelledby': 'new-password-label' }}
               />
             </FormControl>
 
