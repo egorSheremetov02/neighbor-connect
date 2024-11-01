@@ -15,47 +15,57 @@ import ResetPassword from "./Pages/PasswordReset";
 const App = () => {
   console.log(sessionStorage.getItem("token"));
   return (
-    <Router basename="/">
-      <Routes>
-        <Route
-          path="/home"
-          exact
-          element={
-            <Wrapper>
-              <Home />
-            </Wrapper>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/passwordrecovery" element={<PasswordRecovery />} />
-        <Route path="/passwordreset" element={<ResetPassword />} />
-        <Route
-          path="/neighbors"
-          element={
-            <Wrapper>
-              <Neighbors />
-            </Wrapper>
-          }
-        />
-        <Route
-          path="/neighbors/:userid"
-          element={
-            <Wrapper>
-              <Profile />
-            </Wrapper>
-          }
-        />
-        <Route
-          path="/profile/:userid"
-          element={
-            <Wrapper>
-              <Profile />
-            </Wrapper>
-          }
-        />
-      </Routes>
-    </Router>
+    <ChatProvider>
+      <Router basename="/">
+        <Routes>
+          <Route
+            path="/home"
+            exact
+            element={
+              <Wrapper>
+                <Home />
+              </Wrapper>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/passwordrecovery" element={<PasswordRecovery />} />
+          <Route path="/passwordreset" element={<ResetPassword />} />
+          <Route
+            path="/neighbors"
+            element={
+              <Wrapper>
+                <Neighbors />
+              </Wrapper>
+            }
+          />
+          <Route
+            path="/neighbors/:userid"
+            element={
+              <Wrapper>
+                <Profile />
+              </Wrapper>
+            }
+          />
+          <Route
+              path="/chats"
+              element={
+                <Wrapper>
+                  <Chat />
+                </Wrapper>
+              }
+            />
+          <Route
+            path="/profile/:userid"
+            element={
+              <Wrapper>
+                <Profile />
+              </Wrapper>
+            }
+          />
+        </Routes>
+      </Router>
+    </ChatProvider>
   );
 };
 
