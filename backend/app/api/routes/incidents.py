@@ -41,12 +41,17 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
 
     with SessionLocal() as session:
         with session.begin():
-            author = session.query(User).filter_by(id=sender_id).first()
+            if not create_request.anonymous:
+                author_id = sender_id
+                author = session.query(User).filter_by(id=sender_id).first()
+            else:
+                author_id = None
+                author = None
 
             incident = Incident(
                 title=create_request.title,
                 description=create_request.description,
-                author_id=sender_id,
+                author_id=author_id,
                 author=author,
                 status=IncidentStatus.CONFIRMED,  # TODO: add pending status when will check admin permissions
                 created_at=create_request.created_at,

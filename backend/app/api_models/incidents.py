@@ -50,7 +50,7 @@ class Incident(BaseModel):
     id: int
     title: str
     description: str
-    author_id: int
+    author_id: int | None
     status: str
     created_at: datetime
     updated_at: datetime
@@ -119,6 +119,7 @@ class CreateIncidentRequest(BaseModel):
         updated_at (datetime | None): The timestamp when the incident was last updated, can be None.
         location (str): The location where the incident occurred.
         image_id (int | None): The ID of the associated image, can be None.
+        anonymous (bool): If true, the incident will have no author
     """
     title: str
     description: str
@@ -126,6 +127,7 @@ class CreateIncidentRequest(BaseModel):
     updated_at: datetime | None = Field(None)
     location: str
     image_id: int | None = Field(None)
+    anonymous: bool
 
 
 class CreateIncidentResponse(BaseModel):
