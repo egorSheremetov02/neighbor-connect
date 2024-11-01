@@ -32,8 +32,8 @@ async def store_image(request: Request, file: Annotated[UploadFile, File()], ima
         return StoreImageResponse(image_id=image.id)
 
 
-@image_storage_router.get("/", dependencies=[Depends(security_scheme)])
-@jwt_token_required
+@image_storage_router.get("/{image_id}", dependencies=[Depends(security_scheme)])
+#@jwt_token_required
 async def get_image(request: Request, image_id: int, user_payload=Depends(hidden_user_payload)) -> StreamingResponse:
     with SessionLocal() as session:
         with session.begin():
