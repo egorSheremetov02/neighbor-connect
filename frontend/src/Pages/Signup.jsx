@@ -10,43 +10,11 @@ import {
   Typography,
   Stack,
   Card as MuiCard,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { SitemarkIcon } from "../Components/CustomIcons";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-
-// Define validation schema with zod
-const validationSchema = z.object({
-  fullName: z.string().min(1, "Full Name is required"),
-  email: z.string().email("Invalid email address"),
-  login: z.string().min(1, "Login is required"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must include at least one uppercase letter")
-    .regex(/[a-z]/, "Password must include at least one lowercase letter")
-    .regex(/\d/, "Password must include at least one number")
-    .regex(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must include at least one special character"
-    ),
-  permanent_address: z.string().min(1, "Address is required"),
-});
-
-const passwordRequirements = [
-  { label: "At least 8 characters", test: (pw) => pw.length >= 8 },
-  { label: "At least one uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
-  { label: "At least one lowercase letter", test: (pw) => /[a-z]/.test(pw) },
-  { label: "At least one number", test: (pw) => /\d/.test(pw) },
-  {
-    label: "At least one special character",
-    test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw),
-  },
-];
+import { Visibility, VisibilityOff } from "@mui/icons-material"; // Eye icons for show/hide
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -72,46 +40,31 @@ const SingUpContainer = styled(Stack)(({ theme }) => ({
 
 const SingUp = () => {
   const [signError, setSignError] = React.useState("");
-  const [isPasswordFocused, setIsPasswordFocused] = React.useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+  const [password, setPassword] = React.useState(""); // State to hold the password
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm({
-    resolver: zodResolver(validationSchema),
-  });
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
 
-  const password = watch("password", "");
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
 
-  const passwordStatus = passwordRequirements.map((requirement) =>
-    requirement.test(password)
-  );
+  const isPasswordStrong = (pw) => {
+    return (
+      pw.length >= 8 &&
+      /[A-Z]/.test(pw) &&
+      /[a-z]/.test(pw) &&
+      /\d/.test(pw) &&
+      /[!@#$%^&*(),.?":{}|<>]/.test(pw)
+    );
+  };
 
-  const onSubmit = async (formData) => {
-    console.log(formData);
-    try {
-      const response = await fetch("http://localhost:8080/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const responseData = await response.json();
-
-      if (response.ok) {
-        // Redirect to login page after successful registration
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 3000);
-      } else {
-        // Handle validation errors
-        setSignError(responseData.detail || "Registration Failed");
-      }
-    } catch (error) {
-      setSignError("Network error");
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    // Handle form submission logic here
+    console.log("Form submitted with password:", password);
   };
 
   return (
@@ -129,7 +82,7 @@ const SingUp = () => {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit}
             noValidate
             sx={{
               display: "flex",
@@ -143,22 +96,17 @@ const SingUp = () => {
                 Full Name
               </FormLabel>
               <TextField
-                {...register("fullName")}
                 id="fullName"
                 name="fullName"
                 required
                 fullWidth
                 variant="outlined"
                 placeholder="Your Name"
-                error={!!errors.fullName}
-                helperText={errors.fullName?.message}
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
+                sx={{
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
                 }}
               />
             </FormControl>
@@ -168,7 +116,6 @@ const SingUp = () => {
                 Email
               </FormLabel>
               <TextField
-                {...register("email")}
                 id="email"
                 name="email"
                 type="email"
@@ -176,15 +123,11 @@ const SingUp = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="your@email.com"
-                error={!!errors.email}
-                helperText={errors.email?.message}
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
+                sx={{
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
                 }}
               />
             </FormControl>
@@ -194,22 +137,17 @@ const SingUp = () => {
                 Login
               </FormLabel>
               <TextField
-                {...register("login")}
                 id="login"
                 name="login"
                 required
                 fullWidth
                 variant="outlined"
                 placeholder="Login"
-                error={!!errors.login}
-                helperText={errors.login?.message}
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
+                sx={{
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
                 }}
               />
             </FormControl>
@@ -219,57 +157,57 @@ const SingUp = () => {
                 Password
               </FormLabel>
               <TextField
-                {...register("password")}
                 id="password"
                 name="password"
-                type="password"
+                type={isPasswordVisible ? "text" : "password"}
                 required
                 fullWidth
                 variant="outlined"
                 placeholder="••••••"
-                error={!!errors.password}
-                helperText={errors.password?.message}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(password !== "")}
+                onChange={handlePasswordChange}
+                error={password && !isPasswordStrong(password)} // Show error if password is not strong
                 InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      onClick={togglePasswordVisibility}
+                      edge="end"
+                      aria-label="toggle password visibility"
+                    >
+                      {isPasswordVisible ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  ),
                   sx: {
                     borderRadius: "8px",
                     backgroundColor: "#f9f9f9",
                     height: "40px",
                     fontSize: "14px",
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: password
+                          ? isPasswordStrong(password)
+                            ? "green" // Change border to green when strong
+                            : "red"   // Change border to red when weak
+                          : "default", // Default border color when empty
+                      },
+                      "&:hover fieldset": {
+                        borderColor: password
+                          ? isPasswordStrong(password)
+                            ? "green" // Keep green on hover when strong
+                            : "red"   // Keep red on hover when weak
+                          : "default",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: password
+                          ? isPasswordStrong(password)
+                            ? "green" // Keep green when focused and strong
+                            : "red"   // Keep red when focused and weak
+                          : "default",
+                      },
+                    },
                   },
                 }}
               />
             </FormControl>
-
-            {(isPasswordFocused || password) && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Password must meet the following criteria:
-                </Typography>
-                {passwordRequirements.map((req, index) => (
-                  <Box
-                    key={index}
-                    sx={{ display: "flex", alignItems: "center" }}
-                  >
-                    {passwordStatus[index] ? (
-                      <CheckIcon color="success" fontSize="small" />
-                    ) : (
-                      <CloseIcon color="error" fontSize="small" />
-                    )}
-                    <Typography
-                      variant="body2"
-                      sx={{ ml: 1 }}
-                      color={
-                        passwordStatus[index] ? "success.main" : "error.main"
-                      }
-                    >
-                      {req.label}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            )}
 
             <FormControl>
               <FormLabel
@@ -279,22 +217,17 @@ const SingUp = () => {
                 Permanent Address
               </FormLabel>
               <TextField
-                {...register("permanent_address")}
                 id="permanent_address"
                 name="permanent_address"
                 required
                 fullWidth
                 variant="outlined"
                 placeholder="Your Address"
-                error={!!errors.address}
-                helperText={errors.address?.message}
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                    height: "40px",
-                    fontSize: "14px",
-                  },
+                sx={{
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
                 }}
               />
             </FormControl>
@@ -308,6 +241,7 @@ const SingUp = () => {
               fullWidth
               variant="contained"
               sx={{ padding: "10px 0", borderRadius: "8px" }}
+              disabled={!isPasswordStrong(password)} // Disable button if password is not strong
             >
               Sign up
             </Button>
