@@ -49,6 +49,7 @@ class Offer(DBBase):
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
     tags: Mapped[List["OfferTag"]] = relationship(secondary=offer_tag_association)
 
+
 class OfferTag(DBBase):
     """
         class OfferTag(DBBase):
@@ -67,4 +68,9 @@ class OfferTag(DBBase):
     name = Column(String, primary_key=True)
 
 
+class OfferVote(DBBase):
+    __tablename__ = 'offer_votes'
 
+    offer_id = mapped_column(ForeignKey("offers.id", ondelete="CASCADE"), primary_key=True)
+    user_id = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    vote = Column(String, nullable=False)
