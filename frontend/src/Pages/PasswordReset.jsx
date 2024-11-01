@@ -12,6 +12,19 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+
+const passwordRequirements = [
+  { label: "At least 12 characters", test: (pw) => pw.length >= 12 },
+  { label: "At least one uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
+  { label: "At least one lowercase letter", test: (pw) => /[a-z]/.test(pw) },
+  { label: "At least one number", test: (pw) => /\d/.test(pw) },
+  {
+    label: "At least one special character",
+    test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw),
+  },
+];
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -29,8 +42,14 @@ const Card = styled(MuiCard)(({ theme }) => ({
 const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [password, setPassword] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+
+  const passwordStatus = passwordRequirements.map((requirement) =>
+    requirement.test(password)
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,7 +57,7 @@ const ResetPassword = () => {
     const formData = {
       login: location.state?.login,
       code: event.target.elements.code?.value,
-      new_password: event.target.elements.new_password?.value,
+      new_password: password,
     };
 
     // Check for missing fields
@@ -104,9 +123,42 @@ const ResetPassword = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter your new password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(password !== "")}
                 inputProps={{ 'aria-labelledby': 'new-password-label' }}
               />
             </FormControl>
+
+            {(isPasswordFocused || password) && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                  Password must meet the following criteria:
+                </Typography>
+                {passwordRequirements.map((req, index) => (
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    {passwordStatus[index] ? (
+                      <CheckIcon color="success" fontSize="small" />
+                    ) : (
+                      <CloseIcon color="error" fontSize="small" />
+                    )}
+                    <Typography
+                      variant="body2"
+                      sx={{ ml: 1 }}
+                      color={
+                        passwordStatus[index] ? "success.main" : "error.main"
+                      }
+                    >
+                      {req.label}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
 
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
             {successMessage && <Typography color="success.main">{successMessage}</Typography>}
