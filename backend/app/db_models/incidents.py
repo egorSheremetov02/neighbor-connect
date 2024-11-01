@@ -39,7 +39,6 @@ class Incident(DBBase):
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 
-
 class IncidentVote(DBBase):
     __tablename__ = 'incident_votes'
 

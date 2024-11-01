@@ -1,57 +1,55 @@
 # Neighbor Connect App
 
-## About Neighbourhood Connect
+## About Neighborhood Connect
 
-"Neighbor Connect" is a virtual community center for
-your neighborhood. It helps you meet and connect with
-your neighbors, find local services and businesses and
-make purchases, and also, stay informed about what's
-happening nearby. Neighbor Connect connects with you
-with babysitters, want to join a gardening group, or just
-want to chat with your neighbors, provides emergency
-services in cases like fire, burglary, generation of OTP
-for visitors coming into estate for security reasons; it's
-the place to go..
+"Neighbor Connect" is a virtual community center for your neighborhood. It helps you meet and connect with your neighbors, find local services and businesses, make purchases, and stay informed about what's happening nearby. Whether you're looking for a babysitter, want to join a gardening group, or need emergency services, Neighbor Connect is the go-to platform for connecting and building a safer, more engaged community.
 
 ## How it works
 
-Neighbors join the platform by creating a profile and connecting with others in their area. They can post requests for help, offer assistance, share resources, or organize local events. The platform provides tools for communication, updates, and alerts, ensuring everyone stays informed and engaged. It's a simple way to build stronger community connections through everyday interactions and mutual support.
+Neighbors join the platform by creating a profile and connecting with others in their area. They can post requests for help, offer assistance, share resources, or organize local events. The platform provides tools for communication, updates, and alerts, ensuring everyone stays informed and engaged. Neighbor Connect is designed to enhance community bonds through everyday interactions and mutual support.
 
 ## Why use it
 
-The Neighborhood Connect app strengthens community bonds by making it easy to share resources, get help, and stay informed. It promotes safety, collaboration, and local engagement, creating a more supportive and connected environment. Whether it’s organizing events or helping a neighbor in need, the app fosters a sense of belonging and cooperation, enhancing everyday neighborhood life.
+Neighborhood Connect strengthens community bonds by making it easy to share resources, get help, and stay informed. It promotes safety, collaboration, and local engagement, creating a more supportive environment. Whether it’s organizing events or helping a neighbor, the app fosters a sense of belonging and cooperation, enhancing everyday neighborhood life.
 
 ## Features
 
 ### 1. Login and Registration
 
-![Login and Registration](./assets/intro-images/Login%20and%20Registration.png)
+![Login and Registration](./assets/intro-images/signup.PNG)
+![Login and Registration](./assets/intro-images/signin.PNG)
 
-- Provides secure login and registration functionality to manage user access.
+- Secure login and registration functionality for managing user access.
 
 ### 2. Chat Functionality
 
-![Chat Functionality](./assets/intro-images/Chats%20Functionality.png)
+![Chat Functionality](./assets/intro-images/chats.PNG)
 
-- Real-time messaging system to facilitate communication between neighbors.
+- Real-time messaging system for neighbors to communicate.
 
 ### 3. Incident Reporting
 
-![Incident Reporting](./assets/intro-images/Incident%20Reporting.png)
+![Incident Reporting](./assets/intro-images/addincident.PNG)
 
 - Easy-to-use form for reporting incidents within the community.
 
 ### 4. Sales Offer
 
-![Sales Offer](./assets/intro-images/Sales%20Offer.png)
+![Sales Offer](./assets/intro-images/home.PNG)
 
-- Platform for neighbors to list and browse items for sale or trade.
+- A platform for neighbors to list and browse items for sale or trade.
 
-## Conclusion
+### 5. Sales Offer
 
-In conclusion, the Neighborhood Connect app fosters stronger, safer, and more engaged communities through its suite of practical features. By simplifying login and registration, neighbors can easily connect with verified local residents. The chat functionality promotes communication and collaboration, while incident reporting enhances neighborhood safety by keeping everyone informed of potential threats. Additionally, the sales offer feature supports local commerce, enabling users to buy, sell, and trade within their community. Together, these features create a more supportive, connected, and thriving neighborhood environment.
+![Neighbors](./assets/intro-images/neigbors.PNG)
 
-Neighbor Connect is a web application designed to facilitate communication and interaction among neighbors within a community. It provides features for reporting incidents, sharing offers, initiating chats, and managing user profiles.
+- A platform for neighbors to communicate.
+
+### 6. Profile
+
+![Profile](./assets/intro-images/myprofile.PNG)
+
+- Your profile to Edit.
 
 ## Technologies Used
 

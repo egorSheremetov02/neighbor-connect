@@ -23,7 +23,6 @@ class ModifyProfileRequest(BaseModel):
     fullName: str | None = Field(None)
     email: str | None = Field(None)
     login: str | None = Field(None)
-    password: str | None = Field(None)
     permanent_address: str | None = Field(None)
     current_address: str | None = Field(None)
     gender: Gender | None = Field(None)
