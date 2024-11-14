@@ -4,6 +4,7 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import AddIncidentModal from "../Components/AddIncidentModal";
 import AddOfferModal from "../Components/AddOfferModal";
 import PostCard from "../Components/PostCard";
+import Chatbot from "../Components/chatbot/Chatbot";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +30,7 @@ const Home = () => {
             "Content-Type": "application/x-www-form-urlencoded",
           },
         });
+
         if (!response.ok) {
           setError(`HTTP error! Status: ${response.status}`);
           return [];
@@ -171,6 +173,7 @@ const Home = () => {
         open={openOfferModal}
         onClose={() => setOpenOfferModal(false)}
       />
+      <Chatbot />
     </div>
   );
 };
