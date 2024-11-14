@@ -12,6 +12,7 @@ import {
   Stack,
   Menu,
   MenuItem,
+  Button,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
@@ -26,7 +27,7 @@ import DeleteModal from "./DeleteModal";
 import TagsListComponent from "./TagsListComponent.jsx";
 import { formatDate } from "../assets/functions";
 
-const PostCard = ({ props, onTagToggle }) => {
+const PostCard = ({ props, onTagToggle, is_admin }) => {
   const {
     title,
     description,
@@ -36,6 +37,7 @@ const PostCard = ({ props, onTagToggle }) => {
     location,
     tags,
     id,
+    status,
   } = props;
 
 
@@ -196,6 +198,112 @@ const PostCard = ({ props, onTagToggle }) => {
     }
   };
 
+  const handleVerifyIncident = async (incident_id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/incidents/${incident_id}/authorize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "bearer " + token.substring(1, token.length - 1),
+        },
+        body: JSON.stringify({
+          status: "confirmed",
+        }),
+      });
+      if (!response.ok) {
+        setError(`HTTP error! Status: ${response.status}`);
+        return [];
+      }
+      window.location.reload();
+    } catch (error) {
+      setError("Error marking incident as spam.");
+      console.error(error);
+      return [];
+    }
+  };
+
+  const handleSpamIncident = async (incident_id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/incidents/${incident_id}/authorize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "bearer " + token.substring(1, token.length - 1),
+        },
+        body: JSON.stringify({
+          status: "hidden",
+        }),
+      });
+      if (!response.ok) {
+        setError(`HTTP error! Status: ${response.status}`);
+        return [];
+      }
+      window.location.reload();
+    } catch (error) {
+      setError("Error marking incident as spam.");
+      console.error(error);
+      return [];
+    }
+  };
+
+  const postcardActions = () => {
+    if (is_admin && status != "confirmed") {
+      return <Stack
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+          sx={{mb: 2}}
+        >
+          <Button
+            variant="contained"
+            onClick={() => handleVerifyIncident(id)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "14px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Verify
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => handleSpamIncident(id)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "14px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Spam
+          </Button>
+        </Stack>
+    } else {
+      return <CardActions>
+        <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
+          <FavoriteIcon sx={{color: liked ? "red" : "inherit"}}/>
+        </IconButton>
+        <IconButton aria-label="share">
+          <ShareIcon/>
+        </IconButton>
+        <IconButton
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+          sx={{marginLeft: "auto"}}
+        >
+          <ExpandMoreIcon/>
+        </IconButton>
+      </CardActions>
+    }
+  };
+
   return (
     <>
       <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
@@ -259,23 +367,7 @@ const PostCard = ({ props, onTagToggle }) => {
           </Stack>
           <Typography variant="body2">{description}</Typography>
         </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
-            <FavoriteIcon sx={{ color: liked ? "red" : "inherit" }} />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          <IconButton
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-            sx={{ marginLeft: "auto" }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
+        {postcardActions()}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph>Details...</Typography>

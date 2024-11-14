@@ -15,6 +15,7 @@ const Home = () => {
   const [selectedTags, setSelectedTags] = useState([]);
 
   const token = sessionStorage.getItem("TOKEN");
+  const is_admin = sessionStorage.getItem("is_admin") === "true";
 
   if (!token) {
     return <Navigate to="/login" />;
@@ -185,7 +186,7 @@ const Home = () => {
                         lg={3}
                         key={post.title + post.date + i}
                     >
-                      <PostCard props={post} onTagToggle={toggleTag}/>
+                      <PostCard props={post} onTagToggle={toggleTag} is_admin={is_admin}/>
                     </Grid>
                 ))}
             </Grid>

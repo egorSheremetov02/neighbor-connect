@@ -96,6 +96,7 @@ const SignIn = () => {
         if (data.access_token) {
           sessionStorage.setItem("TOKEN", JSON.stringify(data.access_token));
           sessionStorage.setItem("myid", JSON.stringify(data.user_id));
+          sessionStorage.setItem("is_admin", JSON.stringify(data.is_admin));
           window.location.href = "/home";
         }
       } else {
