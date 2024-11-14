@@ -11,6 +11,7 @@ import Signup from "./Pages/Signup";
 import PasswordRecovery from "./Pages/PasswordRecovery";
 import { ChatProvider } from "./utilities/ChatContext";
 import ResetPassword from "./Pages/PasswordReset";
+import CheckInComponent from "./Pages/EmergencyCheckIn";
 
 const App = () => {
   console.log(sessionStorage.getItem("token"));
@@ -60,6 +61,14 @@ const App = () => {
             element={
               <Wrapper>
                 <Profile />
+              </Wrapper>
+            }
+          />
+          <Route
+            path="/emergencycheckin"
+            element={
+              <Wrapper>
+                <CheckInComponent />
               </Wrapper>
             }
           />
