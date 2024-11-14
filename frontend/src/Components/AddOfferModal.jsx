@@ -16,7 +16,7 @@ const modalStyle = {
 const AddOfferModal = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [product, setProduct] = useState("");
+  const [tag, setTag] = useState("");
   const [date, setDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -26,7 +26,7 @@ const AddOfferModal = ({ open, onClose }) => {
     const offerData = {
       title,
       description,
-      tags: [product],
+      tags: [tag],
       date,
     };
 
@@ -106,9 +106,9 @@ const AddOfferModal = ({ open, onClose }) => {
           }}
         />
         <TextField
-          label="Product"
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
+          label="Tag"
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
           fullWidth
           margin="normal"
           required

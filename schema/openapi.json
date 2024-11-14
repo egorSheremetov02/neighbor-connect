@@ -1587,53 +1587,6 @@
                     }
                 }
             }
-        },
-        "/chatbot/": {
-            "post": {
-                "tags": [
-                    "chatbot"
-                ],
-                "summary": "Chat Endpoint",
-                "description": "Chat endpoint that handles user messages and returns responses from the chatbot.\nRequires an API token for authorization.\n\nParameters\n----------\nrequest : Request\n    The HTTP request object.\nchat_request : ChatRequest\n    The user message for the chatbot.\ntoken : str\n    The Bearer token for authentication.\n\nReturns\n-------\nChatResponse\n    The response from the chatbot.",
-                "operationId": "chat_endpoint_chatbot__post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ChatRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ChatResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ]
-            }
         }
     },
     "components": {
@@ -1800,32 +1753,6 @@
                 "type": "object",
                 "title": "ChangePasswordWithCodeResponse",
                 "description": "Attributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
-            },
-            "ChatRequest": {
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "message"
-                ],
-                "title": "ChatRequest"
-            },
-            "ChatResponse": {
-                "properties": {
-                    "response": {
-                        "type": "string",
-                        "title": "Response"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "response"
-                ],
-                "title": "ChatResponse"
             },
             "CreateChatRequest": {
                 "properties": {
