@@ -55,11 +55,9 @@ const CheckInComponent = () => {
   const [status, setStatus] = useState(""); // Tracks the check-in status
   const [loadingSafe, setLoadingSafe] = useState(false); // Tracks loading state for "I'm Safe"
   const [loadingUnsafe, setLoadingUnsafe] = useState(false); // Tracks loading state for "I'm Not Safe"
-  const [isModalOpen, setIsModalOpen] = useState(false); // Controls modal visibility
-  const [contactName, setContactName] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
   const [neighbors, setNeighbors] = useState([]);
   const [selectedNeighbor, setSelectedNeighbor] = useState(null);
+  const [notifications, setNotifications] = useState({}); // Store notifications by neighbor ID
 
   const token = sessionStorage.getItem("TOKEN");
 
@@ -94,7 +92,14 @@ const CheckInComponent = () => {
   const alertNeighbor = () => {
     if (selectedNeighbor) {
       setStatus(`Alert sent to ${selectedNeighbor.name}`);
-      console.log(`Alert sent to ${selectedNeighbor.name}`);
+
+      // Store the alert notification for the selected neighbor
+      setNotifications((prevNotifications) => ({
+        ...prevNotifications,
+        [selectedNeighbor.name]: `Check-in alert: ${status}`,
+      }));
+
+      console.log(`Notification sent to ${selectedNeighbor.name}`);
     } else {
       setStatus("Please select a neighbor to alert.");
     }
@@ -111,14 +116,6 @@ const CheckInComponent = () => {
     setLoadingUnsafe(true);
     setStatus("DANGER");
     setLoadingUnsafe(false);
-  };
-
-  // Function to open and close the add neighbor modal
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setContactName("");
-    setContactPhone("");
   };
 
 
@@ -184,6 +181,17 @@ const CheckInComponent = () => {
             </Typography>
           </Stack>
         )}
+        {/* Notification Display */}
+        <Typography variant="h6" sx={{ mt: 4, color: "#333" }}>
+          Notifications
+        </Typography>
+        <List>
+          {Object.entries(notifications).map(([name, message]) => (
+            <ListItem key={name}>
+              <ListItemText primary={`${name}: ${message}`} />
+            </ListItem>
+          ))}
+        </List>
       </CheckInCard>
     </Box>
   );
