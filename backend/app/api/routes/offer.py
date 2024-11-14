@@ -110,6 +110,8 @@ async def create_offer(request: Request, create_offer_request: CreateOfferReques
             generated_tags = generate_tags(create_offer_request.title,
                     create_offer_request.description, create_offer_request.tags)
 
+            generated_tags = [" ".join(word.capitalize() for word in item.split()) for item in generated_tags]
+
             all_tags = validate_and_get_offers_tags(generated_tags, session)
 
             offer = Offer(title=create_offer_request.title,
