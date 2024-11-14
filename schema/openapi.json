@@ -626,6 +626,52 @@
                         }
                     }
                 }
+            },
+            "get": {
+                "tags": [
+                    "incidents"
+                ],
+                "summary": "Get Incident Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\nincident_id : int\n    The unique identifier of the incident to vote on.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeIncidentResponse\n    Response indicating the result whether the incident is liked.\n\nRaises\n------\nHTTPException\n    If the incident with the specified ID does not exist.",
+                "operationId": "get_incident_vote_incidents__incident_id__vote_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "incident_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Incident Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IncidentIsLiked"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/auth/register": {
@@ -814,6 +860,90 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/UsersResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/forget_password": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Forget Password",
+                "description": "Send a password reset code to the user's registered email.\n\n:param request: The ForgetPasswordRequest object containing the user's login information.\n:return: A ForgetPasswordResponse indicating the email was successfully sent.\n:raises HTTPException: If the user does not exist or if an error occurs while generating or sending the code.",
+                "operationId": "forget_password_auth_forget_password_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ForgetPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForgetPasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/change_password_with_code": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Change Password With Code",
+                "description": ":param request: The change password with code request object containing user login, code, sent to user's email and new password.\n:return: The response object indicating successful password change or raises an HTTPException with appropriate error messages if password change fails.",
+                "operationId": "change_password_with_code_auth_change_password_with_code_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordWithCodeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChangePasswordWithCodeResponse"
                                 }
                             }
                         }
@@ -1040,6 +1170,110 @@
                 }
             }
         },
+        "/offers/{offer_id}/vote": {
+            "put": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Offer Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\noffer : int\n    The unique identifier of the offer to vote on.\nvote_request : OfferVoteRequest\n    The request body containing the user's vote.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeOfferResponse\n    Response indicating the result of the voting action.\n\nRaises\n------\nHTTPException\n    If the incident with the specified ID does not exist.",
+                "operationId": "offer_vote_offers__offer_id__vote_put",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "offer_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Offer Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OfferVoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizeOfferResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "offers"
+                ],
+                "summary": "Get Offer Vote",
+                "description": "Parameters\n----------\nrequest : Request\n    The HTTP request object.\noffer_id : int\n    The unique identifier of the offer to vote on.\nuser_payload : dict, optional\n    The payload containing user information extracted from the JWT token (default is None).\n\nReturns\n-------\nAuthorizeOfferResponse\n    Response indicating the result whether the offer is liked.\n\nRaises\n------\nHTTPException\n    If the offer with the specified ID does not exist.",
+                "operationId": "get_offer_vote_offers__offer_id__vote_get",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "offer_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Offer Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferIsLiked"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/image_storage/": {
             "post": {
                 "tags": [
@@ -1244,6 +1478,53 @@
                 ]
             }
         },
+        "/users/change_password/": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Change Password",
+                "description": "Change the password of the authenticated user.\n\n:param request: The current request being processed.\n:param profile_request: A ChangePasswordRequest object containing the new password.\n:return: A ChangePasswordResponse indicating that the profile was updated successfully.\n:raises HTTPException: If the user does not exist or there is an error during password change.",
+                "operationId": "change_password_users_change_password__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChangePasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
         "/users/users": {
             "get": {
                 "tags": [
@@ -1333,6 +1614,53 @@
                 }
             }
         },
+        "/chatbot/": {
+            "post": {
+                "tags": [
+                    "chatbot"
+                ],
+                "summary": "Chat Endpoint",
+                "description": "Chat endpoint that handles user messages and returns responses from the chatbot.\nRequires an API token for authorization.\n\nParameters\n----------\nrequest : Request\n    The HTTP request object.\nchat_request : ChatRequest\n    The user message for the chatbot.\ntoken : str\n    The Bearer token for authentication.\n\nReturns\n-------\nChatResponse\n    The response from the chatbot.",
+                "operationId": "chat_endpoint_chatbot__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChatRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChatResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
         "/2fa/state": {
             "post": {
                 "tags": [
@@ -1374,8 +1702,7 @@
                                 "$ref": "#/components/schemas/Generate2FaRequest"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "200": {
@@ -1499,6 +1826,11 @@
                 "type": "object",
                 "title": "AuthorizeIncidentResponse"
             },
+            "AuthorizeOfferResponse": {
+                "properties": {},
+                "type": "object",
+                "title": "AuthorizeOfferResponse"
+            },
             "Body_login_auth_login_post": {
                 "properties": {
                     "grant_type": {
@@ -1573,6 +1905,97 @@
                     "image_type"
                 ],
                 "title": "Body_store_image_image_storage__post"
+            },
+            "ChangePasswordRequest": {
+                "properties": {
+                    "old_password": {
+                        "type": "string",
+                        "title": "Old Password"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "title": "New Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "old_password",
+                    "new_password"
+                ],
+                "title": "ChangePasswordRequest"
+            },
+            "ChangePasswordResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "default": "Profile updated successfully"
+                    }
+                },
+                "type": "object",
+                "title": "ChangePasswordResponse"
+            },
+            "ChangePasswordWithCodeRequest": {
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    },
+                    "code": {
+                        "type": "string",
+                        "title": "Code"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "title": "New Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "login",
+                    "code",
+                    "new_password"
+                ],
+                "title": "ChangePasswordWithCodeRequest",
+                "description": "A class representing a change password via code request.\n\nAttributes\n----------\nlogin : str\n    The username or email used for login.\ncode : str\n    The code received from the email.\nnew_password : str\n    New password"
+            },
+            "ChangePasswordWithCodeResponse": {
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "title": "Msg",
+                        "default": "Password changed successfully"
+                    }
+                },
+                "type": "object",
+                "title": "ChangePasswordWithCodeResponse",
+                "description": "Attributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
+            },
+            "ChatRequest": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "ChatRequest"
+            },
+            "ChatResponse": {
+                "properties": {
+                    "response": {
+                        "type": "string",
+                        "title": "Response"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "response"
+                ],
+                "title": "ChatResponse"
             },
             "Confirm2FaGenerationRequest": {
                 "properties": {
@@ -2003,6 +2426,30 @@
                 "type": "object",
                 "title": "EditOfferDataResponse"
             },
+            "ForgetPasswordRequest": {
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "title": "Login"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "login"
+                ],
+                "title": "ForgetPasswordRequest"
+            },
+            "ForgetPasswordResponse": {
+                "properties": {
+                    "msg": {
+                        "type": "string",
+                        "title": "Msg",
+                        "default": "Email sent successfuly"
+                    }
+                },
+                "type": "object",
+                "title": "ForgetPasswordResponse"
+            },
             "Gen2FaState": {
                 "type": "string",
                 "enum": [
@@ -2257,6 +2704,19 @@
                 "title": "Incident",
                 "description": "Incident(id: int, title: str, description: str, author_id: int, status: str, created_at: datetime,\n         updated_at: datetime, location: str | None = None, image_id: int | None = None,\n         votes: 'IncidentVotesData', user_vote: Union['IncidentVote', None] = None)\n\nA model representing an incident report in the system.\n\nAttributes\n----------\nid : int\n    The unique identifier of the incident.\n\ntitle : str\n    The title of the incident.\n\ndescription : str\n    A detailed description of the incident.\n\nauthor_id : int\n    The ID of the user who reported the incident.\n\nstatus : str\n    The current status of the incident.\n\ncreated_at : datetime\n    The timestamp when the incident was created.\n\nupdated_at : datetime\n    The timestamp when the incident was last updated.\n\nlocation : str, optional\n    The location where the incident occurred (default is None).\n\nimage_id : int, optional\n    The ID of the image associated with the incident (default is None).\n\nvotes : IncidentVotesData\n    The voting data related to the incident.\n\nuser_vote : IncidentVote, optional\n    The vote data of the current user for the incident (default is None)."
             },
+            "IncidentIsLiked": {
+                "properties": {
+                    "is_liked": {
+                        "type": "boolean",
+                        "title": "Is Liked"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "is_liked"
+                ],
+                "title": "IncidentIsLiked"
+            },
             "IncidentVote": {
                 "type": "string",
                 "enum": [
@@ -2469,17 +2929,6 @@
                         ],
                         "title": "Login"
                     },
-                    "password": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Password"
-                    },
                     "permanent_address": {
                         "anyOf": [
                             {
@@ -2638,6 +3087,44 @@
                     "tags"
                 ],
                 "title": "Offer"
+            },
+            "OfferIsLiked": {
+                "properties": {
+                    "is_liked": {
+                        "type": "boolean",
+                        "title": "Is Liked"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "is_liked"
+                ],
+                "title": "OfferIsLiked"
+            },
+            "OfferVote": {
+                "type": "string",
+                "enum": [
+                    "like",
+                    "dislike"
+                ],
+                "title": "OfferVote",
+                "description": "OfferVote(str, Enum)\n\nAn enumeration representing the possible voting options for an offer.\n\nAttributes\n----------\nLIKE : str\n    Indicates a 'like' vote for the offer.\nDISLIKE : str\n    Indicates a 'dislike' vote for the offer."
+            },
+            "OfferVoteRequest": {
+                "properties": {
+                    "vote": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVote"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "title": "OfferVoteRequest"
             },
             "RegisterRequest": {
                 "properties": {

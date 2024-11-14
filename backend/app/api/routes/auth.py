@@ -6,8 +6,7 @@ from app.api_models.auth import (
     RegisterRequest,
     RegisterResponse,
     UserResponse,
-    UsersResponse, LoginSuccessResponse, Auth2Fa, LoginRequired2FaCodeResponse
-    UsersResponse, LoginResponse,
+    UsersResponse, LoginSuccessResponse, Auth2Fa, LoginRequired2FaCodeResponse,
     ForgetPasswordRequest, ForgetPasswordResponse,
     ChangePasswordWithCodeRequest, ChangePasswordWithCodeResponse
 )

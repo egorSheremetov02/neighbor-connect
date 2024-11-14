@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Card, CardContent, Button, Typography, TextField, Modal } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
 import {
   Avatar,
@@ -9,8 +8,9 @@ import {
   Button,
   Typography,
   Stack,
+  TextField,
+  Modal
 } from "@mui/material";
-import EditProfileModal from "../Components/EditProfileModal";
 
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import EmailIcon from "@mui/icons-material/Email";
