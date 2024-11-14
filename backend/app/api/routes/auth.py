@@ -120,7 +120,7 @@ async def login(
                 send_on_login_email(user.email, user.name)
                 jwt_token = create_jwt(user.id)
                 response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-                return LoginSuccessResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
+                return LoginSuccessResponse(access_token=jwt_token, token_type="bearer", user_id=user.id, is_admin=user.is_admin)
 
 
 

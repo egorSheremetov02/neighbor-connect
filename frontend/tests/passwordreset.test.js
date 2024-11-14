@@ -51,7 +51,7 @@ describe('ResetPassword Component', () => {
   test('handles successful password reset', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ access_token: 'test_token', user_id: 1 }),
+      json: () => Promise.resolve({ access_token: 'test_token', user_id: 1, is_admin: false }),
     });
 
     render(

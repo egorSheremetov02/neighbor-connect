@@ -43,7 +43,7 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
         raise HTTPException(400, f'Incident description is missing')
 
     status = IncidentStatus.CONFIRMED if check_incident(create_request.title,
-                                                        create_request.description) else IncidentStatus.HIDDEN
+                                                        create_request.description) else IncidentStatus.PENDING
 
     with SessionLocal() as session:
         with session.begin():
@@ -155,7 +155,11 @@ async def list_incidents(request: Request, user_payload=Depends(hidden_user_payl
 
     with SessionLocal() as session:
         with session.begin():
-            incidents = session.query(Incident).filter(Incident.status != IncidentStatus.HIDDEN).all()
+            user = session.query(User).filter_by(id=sender_id).first()
+            if user.is_admin:
+                incidents = session.query(Incident).filter(Incident.status != IncidentStatus.HIDDEN).all()
+            else:
+                incidents = session.query(Incident).filter(Incident.status == IncidentStatus.CONFIRMED).all()
             votes = get_votes_for_incidents(session, incident_ids = None)
             user_votes = get_votes_for_user_incidents(session, sender_id, incident_ids = None)
 
@@ -261,11 +265,12 @@ async def authorize_incident(request: Request, incident_id: int, auth_request: A
     with SessionLocal() as session:
         with session.begin():
             incident = session.query(Incident).filter_by(id=incident_id).first()
+            user = session.query(User).filter_by(id=sender_id).first()
 
             if incident is None:
                 raise HTTPException(404, f'Incident with id {incident_id} does not exist')
 
-            if incident.author_id != sender_id and is_admin(sender_id):
+            if not user.is_admin:
                 raise HTTPException(403, f'User doesn\'t have permission to authorize this incident')
 
             incident.status = auth_request.status
