@@ -20,12 +20,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import incident_img from "../../public/images/incident.webp";
 import offer_img from "../../public/images/offer.jpg";
 import EditOfferModal from "./EditOfferModal";
+import Box from '@mui/material/Box';
 import EditIncidentModal from "./EditIncidentModal";
 import DeleteModal from "./DeleteModal";
-
+import TagsListComponent from "./TagsListComponent.jsx";
 import { formatDate } from "../assets/functions";
 
-const PostCard = ({ props }) => {
+const PostCard = ({ props, onTagToggle }) => {
   const {
     title,
     description,
@@ -36,6 +37,7 @@ const PostCard = ({ props }) => {
     tags,
     id,
   } = props;
+
 
   const dateFormatted = formatDate(date || created_at);
   const type = tags ? "offer" : "incident";
@@ -251,9 +253,7 @@ const PostCard = ({ props }) => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="body2" color="text.secondary">
-                  {tags[0]}
-                </Typography>
+                <TagsListComponent  tags={tags} onTagToggle={onTagToggle}/>
               </Stack>
             )}
           </Stack>
