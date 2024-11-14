@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
-import ResetPassword from '/Users/apple/Desktop/Updated Neighbor_Connect/neighbor-connect/frontend/src/Pages/PasswordReset.jsx';
+import ResetPassword from '../src/Pages/PasswordReset.jsx';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
