@@ -17,6 +17,9 @@ from app.core.db import SessionLocal
 from app.api.util import jwt_token_required, hidden_user_payload
 from fastapi import HTTPException
 
+from app.clients.open_ai import open_ai_client
+from pydantic import BaseModel
+
 logger = logging.getLogger(__name__)
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 incidents_router = APIRouter()
@@ -39,6 +42,9 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
     if len(create_request.description) == 0:
         raise HTTPException(400, f'Incident description is missing')
 
+    status = IncidentStatus.CONFIRMED if check_incident(create_request.title,
+                                                        create_request.description) else IncidentStatus.HIDDEN
+
     with SessionLocal() as session:
         with session.begin():
             author = session.query(User).filter_by(id=sender_id).first()
@@ -48,7 +54,7 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
                 description=create_request.description,
                 author_id=sender_id,
                 author=author,
-                status=IncidentStatus.CONFIRMED,  # TODO: add pending status when will check admin permissions
+                status=status,
                 created_at=create_request.created_at,
                 updated_at=create_request.created_at,
                 location=create_request.location,
@@ -57,6 +63,47 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
             session.add(incident)
 
         return CreateIncidentResponse(id=incident.id)
+
+
+class IncidentValidity(BaseModel):
+    is_valid: str
+
+
+def check_incident(title: str, description: str) -> bool:
+    try:
+        if not open_ai_client:
+            return True
+
+        completion = open_ai_client.with_options(max_retries=3).beta.chat.completions.parse(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are administrator of university social network. "
+                               + "You help check if the user is trying to create a valid incident report or is it just spam. "
+                },
+                {
+                    "role": "user",
+                    "content":
+                        f"""
+Please verify that the following incident seems like a valid incident and not just spam. I will provide you with incident title and
+incident description. If the incident seems like a valid incident, respond with YES, otherwise respond with NO.
+RESPOND ONLY WITH "YES" OR "NO", no addition text.
+
+Incident title:
+{title}
+
+Incident description:
+{description}
+"""[:2000]
+                }],
+            model="gpt-4o",
+            response_format=IncidentValidity
+        )
+        event: IncidentValidity = completion.choices[0].message.parsed
+
+        return "yes" in event.is_valid.lower()
+    except:
+        return True
 
 
 def get_votes_for_incidents(session: Session, incident_ids: list[int] | None = None):
