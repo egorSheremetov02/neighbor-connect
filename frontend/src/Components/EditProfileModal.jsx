@@ -12,7 +12,7 @@ import {
 const EditProfileModal = ({
   open,
   handleClose,
-  editData,
+  editData = {},
   handleInputChange,
   handleSave,
 }) => {
@@ -260,3 +260,4 @@ const EditProfileModal = ({
 };
 
 export default EditProfileModal;
+
