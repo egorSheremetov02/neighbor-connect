@@ -35,11 +35,12 @@ const PostCard = ({ props }) => {
     location,
     tags,
     id,
+    image,
   } = props;
 
   const dateFormatted = formatDate(date || created_at);
   const type = tags ? "offer" : "incident";
-  const ismypost = sessionStorage.getItem("myid") == author_id;
+  const ismypost = sessionStorage.getItem("myid") === author_id;
   const token = sessionStorage.getItem("TOKEN");
 
   const [expanded, setExpanded] = useState(false);
@@ -49,6 +50,9 @@ const PostCard = ({ props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [authorData, setAuthorData] = useState();
   const [liked, setLiked] = useState(false);
+  const [profilePic, setProfilePic] = useState(
+    localStorage.getItem("profilePic") || ""
+  );
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -95,32 +99,31 @@ const PostCard = ({ props }) => {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setAuthorData(data);
         } else {
-          setError("Error fetching profile");
+          console.error("Error fetching profile");
         }
       } catch (error) {
-        setError("Error fetching profile", error);
+        console.error("Error fetching profile", error);
       }
     };
 
     const fetchLikeStatus = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+          `http://localhost:8080/${
+            type === "offer" ? "offers" : "incidents"
+          }/${id}/vote`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: "bearer " + token.substring(1, token.length - 1),
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
             },
           }
         );
-
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setLiked(data.is_liked);
         } else {
           console.error("Error fetching like status");
@@ -132,17 +135,19 @@ const PostCard = ({ props }) => {
 
     fetchProfile();
     fetchLikeStatus();
-  }, []);
+  }, [author_id, id, token, type]);
 
   const handleLikeToggle = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+        `http://localhost:8080/${
+          type === "offer" ? "offers" : "incidents"
+        }/${id}/vote`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "bearer " + token.substring(1, token.length - 1),
+            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
           },
           body: JSON.stringify({ vote: liked ? "dislike" : "like" }),
         }
@@ -160,35 +165,28 @@ const PostCard = ({ props }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-      if (type === "offer") {
-        const response = await fetch(`http://localhost:8080/offers`, {
+      const response = await fetch(
+        `${
+          type === "offer"
+            ? "http://localhost:8080/offers"
+            : `http://localhost:8080/incidents/${id}`
+        }`,
+        {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "bearer " + token.substring(1, token.length - 1),
+            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
           },
-          body: JSON.stringify({ offer_id: id }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to delete offer");
+          body: JSON.stringify(type === "offer" ? { offer_id: id } : {}),
         }
-      } else {
-        const response = await fetch(`http://localhost:8080/incidents/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-        });
+      );
 
-        if (!response.ok) {
-          throw new Error("Failed to delete incident");
-        }
+      if (!response.ok) {
+        throw new Error(`Failed to delete ${type}`);
       }
 
       setDeleteModalOpen(false);
       handleEditSuccess();
-      // Logic to refresh or update the state after deletion
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -202,10 +200,15 @@ const PostCard = ({ props }) => {
             <Avatar
               sx={{ bgcolor: "#000", cursor: "pointer" }}
               onClick={() => {
-                window.location.href = `neighbors/${author_id}`;
+                window.location.href = `/neighbors/${author_id}`;
               }}
+              src={profilePic || undefined}
             >
-              {authorData?.fullName?.[0]}
+              {!authorData?.profilePicture && (
+                <Typography sx={{ color: "#fff" }}>
+                  {authorData?.fullName[0]}
+                </Typography>
+              )}
             </Avatar>
           }
           action={
@@ -224,12 +227,20 @@ const PostCard = ({ props }) => {
             </Typography>
           }
         />
-        <CardMedia
+        {/* <CardMedia
           component="img"
           height="194"
           image={tags ? offer_img : incident_img}
           alt="post image"
+        /> */}
+
+        <CardMedia
+          component="img"
+          height="140"
+          image={props.image || (type === "offer" ? offer_img : incident_img)} // Use the uploaded image if available
+          alt={title}
         />
+
         <CardContent>
           <Stack
             direction={"row"}
