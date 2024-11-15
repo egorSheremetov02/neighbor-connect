@@ -107,7 +107,11 @@ def test_login(client):
     }
     response = create_and_login_user(client, create_request)
     assert response.status_code == 200
+<<<<<<< HEAD
     assert list(response.json().keys()) == ["access_token", "token_type", "user_id"]
+=======
+    assert list(response.json().keys()) == ["access_token", "token_type", "user_id", "is_admin"]
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
     assert response.json()["token_type"] == "bearer"
 
 

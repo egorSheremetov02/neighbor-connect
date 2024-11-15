@@ -21,6 +21,7 @@ def init_db():
             birthday="2021-01-01",
             permanent_address="CUB Bremen",
             image_id=None,
+            is_admin=True,
         )
         session.merge(test_user)
         session.flush()

@@ -1,7 +1,8 @@
 frontend/node_modules/
-
+frontend/.idea/*
 frontend/yarn.lock
-
+backend/.idea/*
+schema/openapi.json
 **/**/.vscode/
 
 **/**/.DS_Store

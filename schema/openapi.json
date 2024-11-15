@@ -722,17 +722,35 @@
                     "auth"
                 ],
                 "summary": "Login",
-                "description": ":param form_data: The form data containing the username and password of the user trying to log in.\n:type form_data: OAuth2PasswordRequestForm\n\n:param response: The response object used to set the HTTP cookie for the access token.\n:type response: Response\n\n:return: A dictionary containing the access token and the token type.\n:rtype: dict\n\n:raises HTTPException: If the user does not exist or the password is incorrect.",
+                "description": ":param form_data: OAuth2 password request form containing the username and password.\n:param response: Optional response object for setting cookies.\n:return: LoginResponse object containing the access token, token type, and user ID.",
                 "operationId": "login_auth_login_post",
+                "parameters": [
+                    {
+                        "name": "auth_2fa_code",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Auth 2Fa Code"
+                        }
+                    }
+                ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "$ref": "#/components/schemas/Body_login_auth_login_post"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "200": {
@@ -740,7 +758,15 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/LoginResponse"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/LoginSuccessResponse"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/LoginRequired2FaCodeResponse"
+                                        }
+                                    ],
+                                    "title": "Response Login Auth Login Post"
                                 }
                             }
                         }
@@ -1587,6 +1613,197 @@
                     }
                 }
             }
+        },
+        "/chatbot/": {
+            "post": {
+                "tags": [
+                    "chatbot"
+                ],
+                "summary": "Chat Endpoint",
+                "description": "Chat endpoint that handles user messages and returns responses from the chatbot.\nRequires an API token for authorization.\n\nParameters\n----------\nrequest : Request\n    The HTTP request object.\nchat_request : ChatRequest\n    The user message for the chatbot.\ntoken : str\n    The Bearer token for authentication.\n\nReturns\n-------\nChatResponse\n    The response from the chatbot.",
+                "operationId": "chat_endpoint_chatbot__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChatRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChatResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/2fa/state": {
+            "post": {
+                "tags": [
+                    "2fa"
+                ],
+                "summary": "Get State 2Fa",
+                "operationId": "get_state_2fa_2fa_state_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Get2FaStateResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/2fa/generate": {
+            "post": {
+                "tags": [
+                    "2fa"
+                ],
+                "summary": "Generate 2-Factor Authentication Code",
+                "description": ":param request: The current HTTP request object.\n:param generate_2fa_request: Request containing information required to generate a 2FA code, validated from the incoming request body.\n:param user_payload: Dependency injected information about the authenticated user.\n:return: A response object containing the provisioning URI for setting up 2FA.",
+                "operationId": "generate_2fa_code_2fa_generate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Generate2FaRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Generate2FaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/2fa/confirm_2fa_generation": {
+            "post": {
+                "tags": [
+                    "2fa"
+                ],
+                "summary": "Confirm 2Fa Gen",
+                "description": ":param request: The request object containing HTTP request information.\n:param confirm_2fa_generation_request: Instance of Confirm2FaGenerationRequest containing the 2FA confirmation code.\n:param user_payload: Dictionary containing user's payload data. This is injected via dependency.\n:return: Instance of Confirm2FaGenerationResponse indicating the status of the 2FA confirmation process.",
+                "operationId": "confirm_2fa_gen_2fa_confirm_2fa_generation_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Confirm2FaGenerationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Confirm2FaGenerationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/2fa/": {
+            "delete": {
+                "tags": [
+                    "2fa"
+                ],
+                "summary": "Delete 2Fa Auth",
+                "description": ":param request: The HTTP request object.\n:param user_payload: The payload retrieved from the JWT token, containing user-specific information.\n:return: None",
+                "operationId": "delete_2fa_auth_2fa__delete",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1753,6 +1970,57 @@
                 "type": "object",
                 "title": "ChangePasswordWithCodeResponse",
                 "description": "Attributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
+            },
+            "ChatRequest": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "ChatRequest"
+            },
+            "ChatResponse": {
+                "properties": {
+                    "response": {
+                        "type": "string",
+                        "title": "Response"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "response"
+                ],
+                "title": "ChatResponse"
+            },
+            "Confirm2FaGenerationRequest": {
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "title": "Code"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "code"
+                ],
+                "title": "Confirm2FaGenerationRequest"
+            },
+            "Confirm2FaGenerationResponse": {
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/Gen2FaStatus"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "status"
+                ],
+                "title": "Confirm2FaGenerationResponse"
             },
             "CreateChatRequest": {
                 "properties": {
@@ -2182,6 +2450,22 @@
                 "type": "object",
                 "title": "ForgetPasswordResponse"
             },
+            "Gen2FaState": {
+                "type": "string",
+                "enum": [
+                    "empty",
+                    "created"
+                ],
+                "title": "Gen2FaState"
+            },
+            "Gen2FaStatus": {
+                "type": "string",
+                "enum": [
+                    "success",
+                    "outdated"
+                ],
+                "title": "Gen2FaStatus"
+            },
             "Gender": {
                 "type": "string",
                 "enum": [
@@ -2190,6 +2474,36 @@
                     "other"
                 ],
                 "title": "Gender"
+            },
+            "Generate2FaRequest": {
+                "properties": {},
+                "type": "object",
+                "title": "Generate2FaRequest"
+            },
+            "Generate2FaResponse": {
+                "properties": {
+                    "provisioning_uri": {
+                        "type": "string",
+                        "title": "Provisioning Uri"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "provisioning_uri"
+                ],
+                "title": "Generate2FaResponse"
+            },
+            "Get2FaStateResponse": {
+                "properties": {
+                    "state": {
+                        "$ref": "#/components/schemas/Gen2FaState"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "state"
+                ],
+                "title": "Get2FaStateResponse"
             },
             "GetChatDataResponse": {
                 "properties": {
@@ -2505,7 +2819,18 @@
                 ],
                 "title": "ListOffersResponse"
             },
-            "LoginResponse": {
+            "LoginRequired2FaCodeResponse": {
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "title": "State",
+                        "default": "2fa"
+                    }
+                },
+                "type": "object",
+                "title": "LoginRequired2FaCodeResponse"
+            },
+            "LoginSuccessResponse": {
                 "properties": {
                     "access_token": {
                         "type": "string",
@@ -2518,16 +2843,21 @@
                     "user_id": {
                         "type": "integer",
                         "title": "User Id"
+                    },
+                    "is_admin": {
+                        "type": "boolean",
+                        "title": "Is Admin"
                     }
                 },
                 "type": "object",
                 "required": [
                     "access_token",
                     "token_type",
-                    "user_id"
+                    "user_id",
+                    "is_admin"
                 ],
-                "title": "LoginResponse",
-                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user."
+                "title": "LoginSuccessResponse",
+                "description": "class LoginResponse(BaseModel):\n    access_token: str\n    token_type: str\n    user_id: int\n\nAttributes\n----------\naccess_token : str\n    The token provided to the user for authentication purposes.\ntoken_type : str\n    The type of token issued, e.g., Bearer.\nuser_id : int\n    The unique identifier of the user.\nis_admin : bool\n    Does the person have admin role."
             },
             "Message": {
                 "properties": {

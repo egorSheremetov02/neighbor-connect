@@ -40,6 +40,11 @@ class User(DBBase):
     email_code = Column(String, nullable=True, default=None)
     email_code_expiry = Column(DateTime, nullable=True, default=None)
 
+<<<<<<< HEAD
+=======
+    is_admin = Column(Boolean, default=False)
+
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
     image_id: Mapped[int | None] = mapped_column(ForeignKey("images.id"))
 
 

@@ -3,11 +3,21 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import asc, or_
 from typing import List, Optional
 
+
+from app.clients.open_ai import open_ai_client
+
+
 from app.api_models.offer import (Offer as API_Offer, ListOffersResponse,
                                   CreateOfferRequest, CreateOfferResponse,
                                   DeleteOfferRequest, DeleteOfferResponse,
                                   EditOfferDataRequest, EditOfferDataResponse, OfferVoteRequest, AuthorizeOfferResponse,
                                   OfferIsLiked)
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
 
 import logging, sqlalchemy
 from sqlalchemy import select
@@ -21,6 +31,53 @@ from fastapi.security import APIKeyHeader
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 offers_router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+from pydantic import BaseModel
+
+
+class TagsList(BaseModel):
+    tags: list[str]
+
+def generate_tags(title: str, description: str, existing_tags: list[str]) -> list[str]:
+    try:
+        if not open_ai_client:
+            return existing_tags
+
+        completion = open_ai_client.with_options(max_retries=3).beta.chat.completions.parse(
+
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are administrator of university social network, and help to extract tags from user offers. "
+                },
+                {
+                    "role": "user",
+                    "content":
+f"""
+Please stretch the tags for the offer in student social network.
+Additionaly, please, correct and return already typed tags by user (If it makes sense): {existing_tags}
+
+Examples of tags: 'furniture,' 'sell,' 'buy,' 'event,' 'party,' 'clubs,' etc. 
+Please keep tags concise, ideally with a maximum of 2 words per tag.
+Maximum amount of tags 4, all tags MUST be from different topics. 
+
+Offer title:
+{title}
+
+Offer Text:
+{description}
+"""[:2000]
+}],
+            model="gpt-4o",
+            response_format=TagsList
+        )
+        event: TagsList = completion.choices[0].message.parsed
+
+        return event.tags
+    except:
+        return existing_tags
+
 
 
 @offers_router.post("/", dependencies=[Depends(security_scheme)])
@@ -41,6 +98,7 @@ async def create_offer(request: Request, create_offer_request: CreateOfferReques
     CreateOfferResponse
         The response containing the ID of the newly created offer.
     """
+
     sender_id = user_payload['user_id']
 
     if len(create_offer_request.title) == 0:
@@ -51,7 +109,13 @@ async def create_offer(request: Request, create_offer_request: CreateOfferReques
     with SessionLocal() as session:
         with session.begin():
             # TODO: Maybe throw exception on empty tag
-            all_tags = validate_and_get_offers_tags(create_offer_request.tags, session)
+
+            generated_tags = generate_tags(create_offer_request.title,
+                    create_offer_request.description, create_offer_request.tags)
+
+            generated_tags = [" ".join(word.capitalize() for word in item.split()) for item in generated_tags]
+
+            all_tags = validate_and_get_offers_tags(generated_tags, session)
 
             offer = Offer(title=create_offer_request.title,
                           description=create_offer_request.description,
@@ -138,6 +202,7 @@ def validate_and_get_offers_tags(tags: list[str], session: Session) -> list[Offe
     session.add_all(new_tags)
 
     all_tags = existing_tags + new_tags
+
     return all_tags
 
 

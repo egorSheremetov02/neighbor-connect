@@ -1,4 +1,11 @@
+from dotenv import load_dotenv
+
+path_to_env_file = './.env'
+load_dotenv(path_to_env_file)
+
 import uvicorn
+
+# from app.clients.open_ai import open_ai_client
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.main import api_router
@@ -7,6 +14,10 @@ from app.core.db import DBBase, engine
 from app.init_db import init_db
 import json
 import os
+<<<<<<< HEAD
+=======
+
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
 
 DBBase.metadata.create_all(engine)
 init_db()

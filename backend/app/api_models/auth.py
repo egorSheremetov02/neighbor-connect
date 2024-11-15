@@ -25,23 +25,15 @@ class RegisterResponse(BaseModel):
     user_id: int
 
 
-class LoginRequest(BaseModel):
-    """
-    A class representing a login request.
-
-    Attributes
-    ----------
-    login : str
-        The username or email used for login.
-    password : str
-        The password associated with the login.
-    """
-
-    login: str
-    password: str
+class Auth2Fa(BaseModel):
+    code: str
 
 
-class LoginResponse(BaseModel):
+class LoginRequired2FaCodeResponse(BaseModel):
+    state: str = "2fa"
+
+
+class LoginSuccessResponse(BaseModel):
     """
         class LoginResponse(BaseModel):
             access_token: str
@@ -56,10 +48,19 @@ class LoginResponse(BaseModel):
             The type of token issued, e.g., Bearer.
         user_id : int
             The unique identifier of the user.
+<<<<<<< HEAD
+=======
+        is_admin : bool
+            Does the person have admin role.
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
     """
     access_token: str
     token_type: str
     user_id: int
+<<<<<<< HEAD
+=======
+    is_admin: bool
+>>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
 
 class UserResponse(BaseModel):
     id: int
