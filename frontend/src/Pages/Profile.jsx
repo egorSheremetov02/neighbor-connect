@@ -29,6 +29,9 @@ const Profile = () => {
   const [editData, setEditData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState();
+  const [profilePic, setProfilePic] = useState(
+    localStorage.getItem("profilePic")
+  );
 
   const currentUserId = sessionStorage.getItem("myid");
   const token = sessionStorage.getItem("TOKEN");
@@ -154,13 +157,25 @@ const Profile = () => {
         }}
       >
         <CardContent className="flex flex-col items-center">
-          <Avatar
+          {/* <Avatar
             sx={{ bgcolor: "#e2e2e2", width: 100, height: 100 }}
             className="mb-4"
           >
             <Typography sx={{ color: "#000", fontSize: "32px" }}>
               {profile?.fullName[0]}
             </Typography>
+          </Avatar> */}
+
+          <Avatar
+            src={profilePic || undefined}
+            sx={{ bgcolor: "#e2e2e2", width: 100, height: 100 }}
+            className="mb-4"
+          >
+            {!profilePic && (
+              <Typography sx={{ color: "#000", fontSize: "32px" }}>
+                {profile?.fullName[0]}
+              </Typography>
+            )}
           </Avatar>
           <Typography variant="h4" className="mb-2 font-bold text-center">
             {profile?.fullName}
