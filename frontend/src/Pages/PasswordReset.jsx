@@ -68,16 +68,21 @@ const ResetPassword = () => {
 
     try {
       // Ensure the correct URL endpoint and JSON content type
-      const response = await fetch("http://localhost:8080/auth/change_password_with_code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL_PROD}/auth/change_password_with_code`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const responseData = await response.json();
 
       if (response.ok) {
-        setSuccessMessage("Password changed successfully! Redirecting to login...");
+        setSuccessMessage(
+          "Password changed successfully! Redirecting to login..."
+        );
         setTimeout(() => navigate("/login"), 3000);
       } else {
         setErrorMessage(
@@ -94,12 +99,22 @@ const ResetPassword = () => {
   return (
     <>
       <CssBaseline enableColorScheme />
-      <Stack minHeight="100vh" alignItems="center" justifyContent="center" padding={2}>
+      <Stack
+        minHeight="100vh"
+        alignItems="center"
+        justifyContent="center"
+        padding={2}
+      >
         <Card variant="outlined">
           <Typography component="h1" variant="h4" fontWeight="600">
             Reset Password
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ width: "100%" }}
+          >
             <FormControl fullWidth margin="normal">
               <FormLabel htmlFor="code">Verification Code</FormLabel>
               <TextField
@@ -109,7 +124,7 @@ const ResetPassword = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter the code sent to your email"
-                inputProps={{ 'aria-labelledby': 'code-label' }}
+                inputProps={{ "aria-labelledby": "code-label" }}
               />
             </FormControl>
 
@@ -127,7 +142,7 @@ const ResetPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setIsPasswordFocused(true)}
                 onBlur={() => setIsPasswordFocused(password !== "")}
-                inputProps={{ 'aria-labelledby': 'new-password-label' }}
+                inputProps={{ "aria-labelledby": "new-password-label" }}
               />
             </FormControl>
 
@@ -160,8 +175,12 @@ const ResetPassword = () => {
               </Box>
             )}
 
-            {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-            {successMessage && <Typography color="success.main">{successMessage}</Typography>}
+            {errorMessage && (
+              <Typography color="error">{errorMessage}</Typography>
+            )}
+            {successMessage && (
+              <Typography color="success.main">{successMessage}</Typography>
+            )}
 
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
               Verify Code

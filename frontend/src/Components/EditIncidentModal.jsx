@@ -21,7 +21,7 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
   const handleSubmit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/incidents/${incident.id}`,
+        `${import.meta.env.VITE_BASE_URL_PROD}/incidents/${incident.id}`,
         {
           method: "PUT",
           headers: {

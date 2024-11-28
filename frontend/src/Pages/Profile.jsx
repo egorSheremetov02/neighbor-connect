@@ -9,7 +9,7 @@ import {
   Typography,
   Stack,
   TextField,
-  Modal
+  Modal,
 } from "@mui/material";
 
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -43,13 +43,16 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/users/${userid}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${userid}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setProfile(data);
@@ -70,16 +73,18 @@ const Profile = () => {
         }
 
         // Check 2FA status
-        const response2FA = await fetch("http://localhost:8080/2fa/state", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-          },
-        });
+        const response2FA = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/2fa/state`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
         const data2FA = await response2FA.json();
         setTwoFAState(data2FA.state);
-
       } catch (error) {
         setError("Error fetching profile and 2FA state");
       } finally {
@@ -109,13 +114,14 @@ const Profile = () => {
     console.log(editData);
     const dataToSubmit = {
       ...editData,
-      interests: editData.interests
-        .split(",")
-        .map((interest) => interest.trim()), // split and trim interests
+      interests: Array.isArray(editData?.interests)
+        ? editData.interests.map((interest) => interest.trim()) // If already an array, just trim each item
+        : editData?.interests?.split(",").map((interest) => interest.trim()), // If a string, split and trim
     };
+    console.log(dataToSubmit);
     try {
       const response = await fetch(
-        "http://localhost:8080/users/modify_my_profile/",
+        `${import.meta.env.VITE_BASE_URL_PROD}/users/modify_my_profile/`,
         {
           method: "POST",
           headers: {
@@ -129,7 +135,7 @@ const Profile = () => {
       if (response.ok) {
         setProfile(editData);
         setIsEditing(false);
-        console.log("Profile updated successfully");
+        // console.log("Profile updated successfully");
         window.location.reload();
       } else {
         console.error("Error updating profile");
@@ -140,27 +146,33 @@ const Profile = () => {
   };
 
   const handleGenerate2FA = async () => {
-    const response = await fetch("http://localhost:8080/2fa/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+        },
+      }
+    );
     const data = await response.json();
     setQrCode(data.provisioning_uri);
     setIsConfirming(true);
   };
 
   const handleConfirm2FA = async () => {
-    const response = await fetch("http://localhost:8080/2fa/confirm_2fa_generation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-      },
-      body: JSON.stringify({ code: twoFACode }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/confirm_2fa_generation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+        },
+        body: JSON.stringify({ code: twoFACode }),
+      }
+    );
     const data = await response.json();
     if (data.status === "success") {
       setIsConfirming(false);
@@ -171,7 +183,7 @@ const Profile = () => {
   };
 
   const handleDelete2FA = async () => {
-    await fetch("http://localhost:8080/2fa", {
+    await fetch(`${import.meta.env.VITE_BASE_URL_PROD}/2fa`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -203,9 +215,18 @@ const Profile = () => {
 
   return (
     <div className="flex justify-center py-10">
-      <Card className="w-full max-w-2xl" sx={{ boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)", borderRadius: "16px" }}>
+      <Card
+        className="w-full max-w-2xl"
+        sx={{
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+          borderRadius: "16px",
+        }}
+      >
         <CardContent className="flex flex-col items-center">
-          <Avatar sx={{ bgcolor: "#e2e2e2", width: 100, height: 100 }} className="mb-4">
+          <Avatar
+            sx={{ bgcolor: "#e2e2e2", width: 100, height: 100 }}
+            className="mb-4"
+          >
             <Typography sx={{ color: "#000", fontSize: "32px" }}>
               {profile?.fullName[0]}
             </Typography>
@@ -213,29 +234,85 @@ const Profile = () => {
           <Typography variant="h4" className="mb-2 font-bold text-center">
             {profile?.fullName}
           </Typography>
-          <Typography variant="body1" className="text-gray-700 mb-4 text-center">
+          <Typography
+            variant="body1"
+            className="text-gray-700 mb-4 text-center"
+          >
             {profile?.bio_header}
           </Typography>
           <div className="w-full mb-4">
-            <ProfileDetail icon={<EmailIcon />} label="Email" value={profile?.email} />
-            <ProfileDetail icon={<HomeIcon />} label="Permanent Address" value={profile?.permanent_address} />
-            <ProfileDetail icon={<HomeIcon />} label="Current Address" value={profile?.current_address} />
-            <ProfileDetail icon={<PhoneIcon />} label="Phone Number" value={profile?.phone_number} />
-            <ProfileDetail icon={<PersonIcon />} label="Gender" value={profile?.gender} />
-            <ProfileDetail icon={<CalendarTodayIcon />} label="Birthday" value={new Date(profile?.birthday).toLocaleDateString()} />
-            <ProfileDetail icon={<CalendarTodayIcon />} label="Member Since" value={new Date(profile?.member_since).toLocaleDateString()} />
-            <ProfileDetail icon={<InfoIcon />} label="Bio Description" value={profile?.bio_description} />
-            <ProfileDetail icon={<InfoIcon />} label="Interests" value={profile?.interests.join(", ")} />
+            <ProfileDetail
+              icon={<EmailIcon />}
+              label="Email"
+              value={profile?.email}
+            />
+            <ProfileDetail
+              icon={<HomeIcon />}
+              label="Permanent Address"
+              value={profile?.permanent_address}
+            />
+            <ProfileDetail
+              icon={<HomeIcon />}
+              label="Current Address"
+              value={profile?.current_address}
+            />
+            <ProfileDetail
+              icon={<PhoneIcon />}
+              label="Phone Number"
+              value={profile?.phone_number}
+            />
+            <ProfileDetail
+              icon={<PersonIcon />}
+              label="Gender"
+              value={profile?.gender}
+            />
+            <ProfileDetail
+              icon={<CalendarTodayIcon />}
+              label="Birthday"
+              value={new Date(profile?.birthday).toLocaleDateString()}
+            />
+            <ProfileDetail
+              icon={<CalendarTodayIcon />}
+              label="Member Since"
+              value={new Date(profile?.member_since).toLocaleDateString()}
+            />
+            <ProfileDetail
+              icon={<InfoIcon />}
+              label="Bio Description"
+              value={profile?.bio_description}
+            />
+            <ProfileDetail
+              icon={<InfoIcon />}
+              label="Interests"
+              value={profile?.interests.join(", ")}
+            />
           </div>
 
           {isMyProfile && (
             <>
               {twoFAState === "created" ? (
-                <Button variant="contained" color="secondary" onClick={handleDelete2FA}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleDelete2FA}
+                >
                   Delete 2FA
                 </Button>
               ) : (
-                <Button variant="contained" color="primary" onClick={handleGenerate2FA}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    marginBottom: "10px",
+                    color: "black",
+                    background: "#e2e2e2",
+                    fontSize: "10px",
+                    "&:hover": {
+                      background: "#e2e2e2",
+                    },
+                  }}
+                  onClick={handleGenerate2FA}
+                >
                   Enable 2FA
                 </Button>
               )}
@@ -300,18 +377,56 @@ const Profile = () => {
       />
 
       {/* Confirm 2FA Modal */}
-      <Modal open={isConfirming} onClose={() => setIsConfirming(false)} className="flex justify-center items-center">
+      <Modal
+        open={isConfirming}
+        onClose={() => setIsConfirming(false)}
+        className="flex justify-center items-center"
+      >
         <div className="p-4 bg-white rounded shadow-lg">
           <QRCodeSVG value={qrCode} />
-          <TextField
-            label="Enter 2FA Code"
-            value={twoFACode}
-            onChange={(e) => setTwoFACode(e.target.value)}
-            className="mt-4"
-          />
-          <Button onClick={handleConfirm2FA} variant="contained" color="primary" className="mt-4">
-            Confirm
-          </Button>
+          <Stack
+            spacing={2}
+            direction="row"
+            justifyContent="center"
+            sx={{ mt: 2 }}
+          >
+            <TextField
+              label="Enter 2FA Code"
+              value={twoFACode}
+              onChange={(e) => setTwoFACode(e.target.value)}
+              className="mt-4"
+              InputProps={{
+                sx: {
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  fontSize: "14px",
+                },
+              }}
+            />
+            <Button
+              onClick={handleConfirm2FA}
+              variant="contained"
+              color="primary"
+              className="mt-8"
+              sx={{
+                marginBottom: "10px",
+                color: "black",
+                background: "#e2e2e2",
+                fontSize: "10px",
+                "&:hover": {
+                  background: "#e2e2e2",
+                },
+              }}
+            >
+              Confirm
+            </Button>
+          </Stack>
         </div>
       </Modal>
       <ChangePasswordModal

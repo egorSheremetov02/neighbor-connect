@@ -57,6 +57,12 @@ const Sidebar = () => {
           alt="Company Logo"
           className="w-full h-14 object-contain"
         />
+        <p
+          id="webappname"
+          className="text-2xl font-extrabold text-gray-800 mt-6 text-center tracking-wide shadow-md"
+        >
+          CampusConnect
+        </p>
         <NavLinks />
       </div>
 
@@ -86,6 +92,12 @@ const Sidebar = () => {
           alt="Company Logo"
           className="w-full h-14 object-contain"
         />
+        <p
+          id="webappname"
+          className="text-2xl font-extrabold text-gray-800 mt-6 text-center tracking-wide shadow-md"
+        >
+          CampusConnect
+        </p>
         <NavLinks onLinkClick={handleMobileMenuToggle} />
       </div>
     </>

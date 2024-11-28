@@ -31,7 +31,7 @@ const AddIncidentModal = ({ open, onClose }) => {
       created_at: new Date().toISOString(),
     };
 
-    fetch("http://localhost:8080/incidents/", {
+    fetch(`${import.meta.env.VITE_BASE_URL_PROD}/incidents/`, {
       method: "POST",
       headers: {
         Authorization: "bearer " + token.substring(1, token.length - 1),

@@ -3,7 +3,7 @@ import {
   HiOutlineHome,
   HiOutlinePhotograph,
   HiOutlineUserGroup,
-  HiOutlineChat, 
+  HiOutlineChat,
   HiOutlineBell,
 } from "react-icons/hi";
 
@@ -17,15 +17,15 @@ export const links = [
     icon: HiOutlineUserGroup,
   },
   { name: "Profile", to: `/profile/${userid}`, icon: HiOutlinePhotograph },
-  {
-    name: "Chats",
-    to: "/chats",
-    icon: HiOutlineChat
-  },
-  {
-    name: "Emergency Check-In",
-    to: "/emergencycheckin",
-    icon: HiOutlineBell
-  },
+  // {
+  //   name: "Chats",
+  //   to: "/chats",
+  //   icon: HiOutlineChat,
+  // },
+  // {
+  //   name: "Emergency Check-In",
+  //   to: "/emergencycheckin",
+  //   icon: HiOutlineBell
+  // },
   { name: "Logout", to: "/logout", icon: HiOutlineHashtag },
 ];

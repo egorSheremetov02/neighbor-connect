@@ -30,9 +30,9 @@ const AddOfferModal = ({ open, onClose }) => {
       date,
     };
 
-    console.log(offerData);
+    // console.log(offerData);
 
-    fetch("http://localhost:8080/offers/", {
+    fetch(`${import.meta.env.VITE_BASE_URL_PROD}/offers/`, {
       method: "POST",
       headers: {
         Authorization: "bearer " + token.substring(1, token.length - 1),

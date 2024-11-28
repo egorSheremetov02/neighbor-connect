@@ -24,16 +24,17 @@ const Searchbar = () => {
         Search for content
       </label>
       <div className="flex items-center">
-        <FiSearch aria-hidden="true" className="w-5 h-5 ml-4" />
+        {/* <FiSearch aria-hidden="true" className="w-5 h-5 ml-4" /> */}
         <input
           type="search"
           id="search-field"
           name="search"
           className="flex-1 bg-transparent border-none placeholder-gray-500 outline-none text-base text-white p-4"
-          placeholder="Search"
+          // placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          aria-label="Search for content"
+          // aria-label="Search for content"
+          disabled
         />
       </div>
     </form>

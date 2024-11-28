@@ -7,7 +7,9 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
 
   const token = sessionStorage.getItem("TOKEN");
-  const API_KEY = "sk-proj-XXX-uyKyqkSQoqQA";
+  const API_KEY = import.meta.env.VITE_CHATBOT_KEY;
+
+  console.log(API_KEY);
 
   if (!token) {
     return <Navigate to="/login" />;
@@ -37,9 +39,9 @@ const Chatbot = () => {
       }),
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     const dataContent = data?.choices[0]?.message?.content;
-    console.log(dataContent);
+    // console.log(dataContent);
     const botMessage = { text: dataContent, sender: "bot" };
     setMessages([...messages, userMessage, botMessage]);
 
