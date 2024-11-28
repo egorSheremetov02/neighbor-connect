@@ -6,3 +6,4 @@ schema/openapi.json
 **/**/.vscode/
 
 **/**/.DS_Store
+frontend/.env
