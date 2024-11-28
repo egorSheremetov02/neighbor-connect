@@ -98,7 +98,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setAuthorData(data);
         } else {
           setError("Error fetching profile");
@@ -125,7 +125,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setLiked(data.is_liked);
         } else {
           console.error("Error fetching like status");

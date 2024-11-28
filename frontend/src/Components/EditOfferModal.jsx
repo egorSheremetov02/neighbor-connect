@@ -41,7 +41,7 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
       image_id: formData.image_id || null,
     };
 
-    console.log(dataToSubmit, `Bearer ${authToken}`);
+    // console.log(dataToSubmit, `Bearer ${authToken}`);
 
     try {
       const response = await fetch("http://localhost:8080/offers/", {

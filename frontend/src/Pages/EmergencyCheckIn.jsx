@@ -99,7 +99,7 @@ const CheckInComponent = () => {
         [selectedNeighbor.name]: `Check-in alert: ${status}`,
       }));
 
-      console.log(`Notification sent to ${selectedNeighbor.name}`);
+      // console.log(`Notification sent to ${selectedNeighbor.name}`);
     } else {
       setStatus("Please select a neighbor to alert.");
     }
@@ -118,14 +118,26 @@ const CheckInComponent = () => {
     setLoadingUnsafe(false);
   };
 
-
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 4 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        mt: 4,
+      }}
+    >
       <CheckInCard>
-        <Typography variant="h3" sx={{ fontWeight: "bold", color: "#333", mb: 2 }}>
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: "bold", color: "#333", mb: 2 }}
+        >
           Emergency
         </Typography>
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333", mb: 2 }}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: "bold", color: "#333", mb: 2 }}
+        >
           Check-In
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
@@ -133,16 +145,31 @@ const CheckInComponent = () => {
         </Typography>
 
         <Stack spacing={2} sx={{ width: "100%" }}>
-          <StyledButton onClick={handleSafeCheckIn} disabled={loadingSafe || loadingUnsafe} variant="contained">
-            {loadingSafe ? <CircularProgress size={24} color="inherit" /> : "I'm Safe"}
+          <StyledButton
+            onClick={handleSafeCheckIn}
+            disabled={loadingSafe || loadingUnsafe}
+            variant="contained"
+          >
+            {loadingSafe ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "I'm Safe"
+            )}
           </StyledButton>
           <StyledButton
             onClick={handleUnsafeCheckIn}
             disabled={loadingSafe || loadingUnsafe}
             variant="contained"
-            sx={{ backgroundColor: "#d32f2f", "&:hover": { backgroundColor: "#c62828" } }}
+            sx={{
+              backgroundColor: "#d32f2f",
+              "&:hover": { backgroundColor: "#c62828" },
+            }}
           >
-            {loadingUnsafe ? <CircularProgress size={24} color="inherit" /> : "I'm Not Safe"}
+            {loadingUnsafe ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "I'm Not Safe"
+            )}
           </StyledButton>
         </Stack>
 
@@ -166,17 +193,32 @@ const CheckInComponent = () => {
             </ListItem>
           ))}
         </List>
-        
+
         {/* Alert Button */}
-        <Button variant="outlined" color="primary" onClick={alertNeighbor} sx={{ mt: 2 }}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={alertNeighbor}
+          sx={{ mt: 2 }}
+        >
           Alert Selected Neighbor
         </Button>
 
-       
         {/* Status Feedback */}
         {status && (
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3, justifyContent: "center" }}>
-            <Typography variant="body1" sx={{ fontWeight: "bold", color: status === "safe" ? "#4caf50" : "#d32f2f" }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ mt: 3, justifyContent: "center" }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: "bold",
+                color: status === "safe" ? "#4caf50" : "#d32f2f",
+              }}
+            >
               {status}
             </Typography>
           </Stack>

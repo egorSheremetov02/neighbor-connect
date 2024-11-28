@@ -37,9 +37,9 @@ const Chatbot = () => {
       }),
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     const dataContent = data?.choices[0]?.message?.content;
-    console.log(dataContent);
+    // console.log(dataContent);
     const botMessage = { text: dataContent, sender: "bot" };
     setMessages([...messages, userMessage, botMessage]);
 

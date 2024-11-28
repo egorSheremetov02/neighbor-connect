@@ -30,7 +30,7 @@ const AddOfferModal = ({ open, onClose }) => {
       date,
     };
 
-    console.log(offerData);
+    // console.log(offerData);
 
     fetch("http://localhost:8080/offers/", {
       method: "POST",

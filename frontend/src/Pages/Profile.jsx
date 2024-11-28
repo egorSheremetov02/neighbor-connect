@@ -108,7 +108,7 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    console.log(editData);
+    // console.log(editData);
     const dataToSubmit = {
       ...editData,
       interests: editData.interests
@@ -131,7 +131,7 @@ const Profile = () => {
       if (response.ok) {
         setProfile(editData);
         setIsEditing(false);
-        console.log("Profile updated successfully");
+        // console.log("Profile updated successfully");
         window.location.reload();
       } else {
         console.error("Error updating profile");

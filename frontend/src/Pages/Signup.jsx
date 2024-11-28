@@ -90,7 +90,7 @@ const SingUp = () => {
   );
 
   const onSubmit = async (formData) => {
-    console.log(formData);
+    // console.log(formData);
     try {
       const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",

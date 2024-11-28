@@ -21,7 +21,7 @@ const Home = () => {
     return <Navigate to="/login" />;
   }
 
-  console.log(token, token.substring(1, token.length - 1));
+  // console.log(token, token.substring(1, token.length - 1));
 
   const toggleTag = (tag) => {
     setSelectedTags(
