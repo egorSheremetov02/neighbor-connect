@@ -40,14 +40,14 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/passwordrecovery" element={<PasswordRecovery />} />
           <Route path="/passwordreset" element={<ResetPassword />} />
-          <Route
+          {/* <Route
             path="/chats"
             element={
               <Wrapper>
                 <Chat />
               </Wrapper>
             }
-          />
+          /> */}
           <Route
             path="/neighbors"
             element={

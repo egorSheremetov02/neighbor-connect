@@ -1,260 +1,207 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ChatContext } from "../utilities/ChatContext";
-import { fabClasses } from "@mui/material";
-import ChatMessages from "../Components/ChatMessages";
-import ChatContact from "../Components/ChatContact";
+// import { ChatContext } from "../utilities/ChatContext";
+import {
+  fetchNeighbors,
+  fetchChats,
+  fetchMessages,
+  sendMessage,
+  createGroupChat,
+} from "../assets/APIs";
 
-const Chat = ({ chatId }) => {
-  const [message, setMessages] = useState([]);
+const Chat = () => {
+  const [chats, setChats] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [chatData, setChatData] = useState(null);
-  const { addMessage, getMessages } = useContext(ChatContext);
-  const [chatInfo, setChatInfo] = useState([]
-  );
-  const [chatContact, setChatContact] = useState("Anonymous");
-  const [loading, setLoading] = useState(true);
-  const [messageLoading, setMessageLoading] = useState(false);
+  const [neighbors, setNeighbors] = useState([]);
+  const [showNeighbors, setShowNeighbors] = useState(false);
   const [error, setError] = useState(null);
 
-  const contacts = [ "Jerry", "Jones", "Bertha" ];
+  // const {
+  //   sendMessage,
+  //   fetchChats,
+  //   fetchMessages,
+  //   fetchNeighbors,
+  //   createGroupChat,
+  // } = useContext(ChatContext);
 
+  // Fetch user's chats
   useEffect(() => {
-    if (chatId) {
-      setLoading(true);
-      setError(null);
+    const loadChats = async () => {
+      try {
+        const data = await fetchChats();
+        setChats(data);
+      } catch (err) {
+        setError("Failed to fetch chats");
+      }
+    };
+    loadChats();
+  }, []);
 
-      const fetchChatData = async () => {
+  // Fetch chat messages when a chat is selected
+  useEffect(() => {
+    if (currentChat) {
+      const loadMessages = async () => {
         try {
-          const response = await fetch(
-            `http://localhost:8080/chats/${chatId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${sessionStorage
-                  .getItem("TOKEN")
-                  .substring(1, sessionStorage.getItem("TOKEN").length - 1)}`,
-              },
-            }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch chat data");
-          }
-          const data = await response.json();
-          setChatData(data);
-        } catch (error) {
-          console.error("Error fetching chat data:", error);
-          setError("Failed to fetch chat data");
+          const data = await fetchMessages(currentChat.id);
+          setMessages(data);
+        } catch (err) {
+          setError("Failed to load messages");
         }
       };
-
-      const fetchMessages = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:8080/chats/${chatId}/messages`,
-            {
-              headers: {
-                Authorization: `Bearer ${sessionStorage
-                  .getItem("TOKEN")
-                  .substring(1, sessionStorage.getItem("TOKEN").length - 1)}`,
-              },
-            }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch messages");
-          }
-          const data = await response.json();
-          setMessages(data.messages || []);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-          setError("Failed to fetch messages");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchChatData();
-      fetchMessages();
-    } else {
-      setLoading(false);
+      loadMessages();
     }
-    setChatInfo(getMessages)
-  }, [chatId]);
+  }, [currentChat]);
 
-  const selectChatContact = (contact) => {
-    setChatContact(contact);
-  }
-
-  // const sendMessage = async (e) => {
-  //   e.preventDefault();
-  //   if (!chatId || !newMessage.trim()) return;
-
-  //   try {
-  //     const response = await fetch(`http://localhost:8080/chats/${chatId}/messages`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': `Bearer ${sessionStorage.getItem('TOKEN').substring(1, sessionStorage.getItem('TOKEN').length - 1)}`
-  //       },
-  //       body: JSON.stringify({ content: newMessage })
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error('Failed to send message');
-  //     }
-  //     setNewMessage('');
-
-  //     // Refresh messages
-  //     const updatedResponse = await fetch(`http://localhost:8080/chats/${chatId}/messages`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${sessionStorage.getItem('TOKEN').substring(1, sessionStorage.getItem('TOKEN').length - 1)}`
-  //       }
-  //     });
-  //     const data = await updatedResponse.json();
-  //     setMessages(data.messages || []);
-  //   } catch (error) {
-  //     console.error('Error sending message:', error);
-  //     setError('Failed to send message');
-  //   }
-  // };
-
-  // On Submit Action
-  const handleSubmit = async (e) => {
-    setMessageLoading(true)
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-    addMessage({ sender: "me", receiver: chatContact, content: newMessage });
-    setNewMessage('')
-    setMessageLoading(false);
+  // Fetch neighbors
+  const loadNeighbors = async () => {
+    try {
+      const data = await fetchNeighbors();
+      // console.log(data);
+      setNeighbors(data.users_info);
+      setShowNeighbors(true);
+    } catch (err) {
+      setError("Failed to fetch neighbors");
+    }
   };
 
-  if (loading) {
-    return <div style={styles.loading}>Loading chat data...</div>;
-  }
+  // Handle sending a message
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !currentChat) return;
+    try {
+      await sendMessage(currentChat.id, newMessage);
+      setMessages((prev) => [...prev, { content: newMessage, sender: "You" }]);
+      setNewMessage("");
+    } catch (err) {
+      setError("Failed to send message");
+    }
+  };
 
-  if (error) {
-    return <div style={styles.error}>{error}</div>;
-  }
+  // Handle creating a group chat
+  const handleCreateChat = async (neighborId) => {
+    try {
+      const newChat = await createGroupChat(neighborId);
+      setChats((prev) => [...prev, newChat]);
+      setShowNeighbors(false);
+    } catch (err) {
+      setError("Failed to create chat");
+    }
+  };
 
   return (
-    <div style={styles.chatContainer}>
-      {/* Chat Header */}
-      <header style={styles.chatHeader}>
-        <h2 style={styles.chatTitle}>
-          {chatData
-            ? chatData.users_infos.length === 2
-              ? `Chat with ${
-                  chatData.users_infos.find(
-                    (user) =>
-                      user.id !== parseInt(localStorage.getItem("userId"))
-                  ).name
-                }`
-              : chatData.name
-            : "Select a chat"}
-        </h2>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h2>My Chats</h2>
+        {chats.length === 0 && (
+          <p style={styles.noChats}>You don't have any group chats.</p>
+        )}
       </header>
 
-      {/* Chat Contacts and Messages */}
-      <div className=" xl:flex ">
-        <ChatContact contacts={contacts} selectedChatContact={chatContact} selectChatContact={selectChatContact} />
-        <ChatMessages chatContact={chatContact} />
+      <div style={styles.content}>
+        <div style={styles.chatList}>
+          {chats.map((chat) => (
+            <div
+              key={chat.id}
+              style={styles.chatItem}
+              onClick={() => setCurrentChat(chat)}
+            >
+              {chat.name}
+            </div>
+          ))}
+          <button style={styles.button} onClick={loadNeighbors}>
+            Create Group Chat
+          </button>
+        </div>
+
+        <div style={styles.chatWindow}>
+          {currentChat ? (
+            <>
+              <header style={styles.chatHeader}>{currentChat.name}</header>
+              <div style={styles.messages}>
+                {messages.map((msg, idx) => (
+                  <div key={idx} style={styles.message}>
+                    <strong>{msg.sender}: </strong>
+                    {msg.content}
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={handleSendMessage} style={styles.form}>
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  style={styles.input}
+                />
+                <button type="submit" style={styles.sendButton}>
+                  Send
+                </button>
+              </form>
+            </>
+          ) : (
+            <p style={styles.noSelection}>Select a chat to view messages</p>
+          )}
+        </div>
       </div>
 
-      {/* Chat Form */}
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          style={styles.input}
-        />
-        <button disabled={messageLoading} type="submit" style={styles.sendButton}>
-          {messageLoading ? "Sending" : "Send"}
-        </button>
-      </form>
+      {showNeighbors && (
+        <div style={styles.neighbors}>
+          <h3>Select a Neighbor</h3>
+          {neighbors?.map((neighbor) => (
+            <div
+              key={neighbor.id}
+              style={styles.neighborItem}
+              onClick={() => handleCreateChat(neighbor.id)}
+            >
+              {neighbor.name}
+            </div>
+          ))}
+          <button onClick={() => setShowNeighbors(false)} style={styles.button}>
+            Close
+          </button>
+        </div>
+      )}
+
+      {error && <p style={styles.error}>{error}</p>}
     </div>
   );
 };
 
-// Keep the existing styles and add:
 const styles = {
-  chatContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  chatHeader: {
-    padding: "15px",
-    borderBottom: "1px solid #ddd",
-    backgroundColor: "#fff",
-    borderRadius: "8px 8px 0 0",
-  },
-  chatTitle: {
-    margin: 0,
-    fontSize: "22px",
-    color: "#333",
-  },
-  messageContainer: {
-    flexGrow: 1,
-    padding: "15px",
-    overflowY: "auto",
-    backgroundColor: "#fff",
-  },
-  message: {
-    marginBottom: "10px",
+  container: { padding: "20px", fontFamily: "Arial, sans-serif" },
+  header: { marginBottom: "10px" },
+  content: { display: "flex", gap: "20px" },
+  chatList: { width: "30%", borderRight: "1px solid #ccc", padding: "10px" },
+  chatWindow: { flex: 1, display: "flex", flexDirection: "column" },
+  chatItem: {
     padding: "10px",
-    backgroundColor: "#f1f1f1",
-    borderRadius: "8px",
-    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-  },
-  messageAuthor: {
-    fontWeight: "bold",
-    marginRight: "5px",
-    color: "#007bff",
-  },
-  form: {
-    display: "flex",
-    padding: "10px 15px",
-    backgroundColor: "#f9f9f9",
-    borderTop: "1px solid #ddd",
-    borderRadius: "0 0 8px 8px",
-  },
-  input: {
-    flexGrow: 1,
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    outline: "none",
-    marginRight: "10px",
-    fontSize: "16px",
-  },
-  sendButton: {
-    padding: "10px 15px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
     cursor: "pointer",
-    fontSize: "16px",
+    borderBottom: "1px solid #ccc",
   },
-  loading: {
-    textAlign: "center",
-    padding: "50px",
-    fontSize: "18px",
-    color: "#333",
-  },
-  error: {
-    textAlign: "center",
-    padding: "50px",
-    fontSize: "18px",
-    color: "red",
-  },
-  noMessages: {
-    textAlign: "center",
+  chatHeader: { fontWeight: "bold", marginBottom: "10px" },
+  messages: { flex: 1, overflowY: "auto", marginBottom: "10px" },
+  message: { marginBottom: "5px" },
+  form: { display: "flex", gap: "10px" },
+  input: { flex: 1, padding: "10px" },
+  sendButton: { padding: "10px" },
+  button: { marginTop: "10px", padding: "10px" },
+  noChats: { color: "#777" },
+  noSelection: { color: "#777", marginTop: "20px" },
+  neighbors: {
+    position: "absolute",
+    top: "50px",
+    right: "50px",
+    background: "#fff",
     padding: "20px",
-    color: "#666",
+    border: "1px solid #ccc",
   },
+  neighborItem: {
+    padding: "10px",
+    cursor: "pointer",
+    borderBottom: "1px solid #ccc",
+  },
+  error: { color: "red", marginTop: "10px" },
 };
 
 export default Chat;
