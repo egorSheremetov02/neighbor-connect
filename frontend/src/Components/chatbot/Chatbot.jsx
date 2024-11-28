@@ -9,7 +9,7 @@ const Chatbot = () => {
   const token = sessionStorage.getItem("TOKEN");
   const API_KEY = import.meta.env.VITE_CHATBOT_KEY;
 
-  // console.log(import.meta.env.VITE_BASE_URL);
+  console.log(API_KEY);
 
   if (!token) {
     return <Navigate to="/login" />;
