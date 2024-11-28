@@ -24,22 +24,23 @@ const Home = () => {
   console.log(token, token.substring(1, token.length - 1));
 
   const toggleTag = (tag) => {
-                     setSelectedTags((prevTags) =>
-                      prevTags.includes(tag)
-                        ? prevTags.filter((t) => t !== tag) // Remove if exists
-                        : [...prevTags, tag]                // Add if not exists
-                    );
-                  }
-
+    setSelectedTags(
+      (prevTags) =>
+        prevTags.includes(tag)
+          ? prevTags.filter((t) => t !== tag) // Remove if exists
+          : [...prevTags, tag] // Add if not exists
+    );
+  };
 
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-
         const offersUrl = new URL("http://localhost:8080/offers/");
 
         if (selectedTags && selectedTags.length > 0) {
-          selectedTags.forEach(tag => offersUrl.searchParams.append("tag", tag)); // `tag` is used as an alias for `tags`
+          selectedTags.forEach((tag) =>
+            offersUrl.searchParams.append("tag", tag)
+          ); // `tag` is used as an alias for `tags`
         }
 
         const response = await fetch(offersUrl, {
@@ -90,7 +91,7 @@ const Home = () => {
       setIsLoading(false);
     };
 
-    loadData()
+    loadData();
   }, [token, selectedTags]);
 
   if (isLoading)
@@ -156,42 +157,48 @@ const Home = () => {
         <Typography>Loading...</Typography>
       ) : (
         <div>
-     { selectedTags.map((selectedTag) => (
-         <button
-             key={selectedTag}
-             onClick={() => toggleTag(selectedTag)}
-             style={{
-               margin: '2px', // Smaller margin
-               padding: '4px 6px', // Smaller padding
-               backgroundColor: selectedTags.includes(selectedTag) ? '#f44336' : '#e0e0e0', // Red when selected
-               color: 'white',
-               border: 'none',
-               borderRadius: '4px',
-               cursor: 'pointer',
-               fontSize: '0.75rem', // Smaller font size
-             }}
-         >
-           {selectedTag}
-         </button>
-     ))}
+          {selectedTags.map((selectedTag) => (
+            <button
+              key={selectedTag}
+              onClick={() => toggleTag(selectedTag)}
+              style={{
+                margin: "2px",
+                padding: "4px 6px",
+                backgroundColor: selectedTags.includes(selectedTag)
+                  ? "#f44336"
+                  : "#e0e0e0",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "0.75rem",
+              }}
+            >
+              {selectedTag}
+            </button>
+          ))}
 
           {posts.length > 0 ? (
-              <Grid container spacing={2}>
-                {posts.map((post, i) => (
-                    <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={4}
-                        lg={3}
-                        key={post.title + post.date + i}
-                    >
-                      <PostCard props={post} onTagToggle={toggleTag} is_admin={is_admin}/>
-                    </Grid>
-                ))}
+            <Grid container spacing={2}>
+              {posts.map((post, i) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={post.title + post.date + i}
+                >
+                  <PostCard
+                    props={post}
+                    onTagToggle={toggleTag}
+                    is_admin={is_admin}
+                  />
+                </Grid>
+              ))}
             </Grid>
           ) : (
-            <Typography className="text-white">No posts available.</Typography>
+            <Typography className="text-black">No posts available.</Typography>
           )}
         </div>
       )}
