@@ -19,7 +19,7 @@ import ResetPassword from "./Pages/PasswordReset";
 // import CheckInComponent from "./Pages/EmergencyCheckIn";
 
 const App = () => {
-  console.log(sessionStorage.getItem("token"));
+  // console.log(sessionStorage.getItem("token"));
   return (
     <ChatProvider>
       <Router basename="/">
