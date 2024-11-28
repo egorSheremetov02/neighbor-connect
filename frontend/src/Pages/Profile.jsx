@@ -111,13 +111,14 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    // console.log(editData);
+    console.log(editData);
     const dataToSubmit = {
       ...editData,
-      interests: editData.interests
-        .split(",")
-        .map((interest) => interest.trim()), // split and trim interests
+      interests: Array.isArray(editData?.interests)
+        ? editData.interests.map((interest) => interest.trim()) // If already an array, just trim each item
+        : editData?.interests?.split(",").map((interest) => interest.trim()), // If a string, split and trim
     };
+    console.log(dataToSubmit);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL_PROD}/users/modify_my_profile/`,
