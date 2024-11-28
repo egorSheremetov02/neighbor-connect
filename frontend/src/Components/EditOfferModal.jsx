@@ -44,14 +44,17 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
     // console.log(dataToSubmit, `Bearer ${authToken}`);
 
     try {
-      const response = await fetch("http://localhost:8080/offers/", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify(dataToSubmit),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL_PROD}/offers/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(dataToSubmit),
+        }
+      );
 
       if (!response.ok) {
         const errorMessage = await response.text();

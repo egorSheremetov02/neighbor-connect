@@ -35,11 +35,14 @@ const RequestResetCode = () => {
     const login = event.target.elements.login.value;
 
     try {
-      const response = await fetch("http://localhost:8080/auth/forget_password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL_PROD}/auth/forget_password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ login }),
+        }
+      );
       const responseData = await response.json();
 
       if (response.ok) {
@@ -55,12 +58,22 @@ const RequestResetCode = () => {
   return (
     <>
       <CssBaseline enableColorScheme />
-      <Stack minHeight="100vh" alignItems="center" justifyContent="center" padding={2}>
+      <Stack
+        minHeight="100vh"
+        alignItems="center"
+        justifyContent="center"
+        padding={2}
+      >
         <Card variant="outlined">
           <Typography component="h2" variant="h4" fontWeight="600">
             Request Code
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ width: "100%" }}
+          >
             <FormControl fullWidth margin="normal">
               <FormLabel htmlFor="login">Login (Username or Email)</FormLabel>
               <TextField
@@ -70,11 +83,13 @@ const RequestResetCode = () => {
                 fullWidth
                 variant="outlined"
                 placeholder="Enter your login or email"
-                inputProps={{ 'aria-labelledby': 'login-label' }}
+                inputProps={{ "aria-labelledby": "login-label" }}
               />
             </FormControl>
 
-            {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+            {errorMessage && (
+              <Typography color="error">{errorMessage}</Typography>
+            )}
 
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
               Send Reset Code

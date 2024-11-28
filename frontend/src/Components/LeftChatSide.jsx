@@ -29,13 +29,16 @@ const Neighbors = () => {
   useEffect(() => {
     const fetchNeighbors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users/users", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token.substring(1, token.length - 1)}`, // Correct token formatting
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token.substring(1, token.length - 1)}`, // Correct token formatting
+            },
+          }
+        );
         console.error("Users found");
 
         if (!response.ok) {
@@ -76,7 +79,7 @@ const Neighbors = () => {
 
   // Function to create chat and navigate to chat page
   const handleNavigate = async (neighborId) => {
-    const apiBaseUrl = "http://localhost:8080"; // Use your backend URL here
+    const apiBaseUrl = `${import.meta.env.VITE_BASE_URL_PROD}`; // Use your backend URL here
 
     // Check if the current user ID is valid
     if (isNaN(currentUserId)) {

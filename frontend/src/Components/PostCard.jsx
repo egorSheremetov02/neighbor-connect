@@ -87,7 +87,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/users/${author_id}`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${author_id}`,
           {
             method: "GET",
             headers: {
@@ -111,7 +111,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
     const fetchLikeStatus = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/${
+          `${import.meta.env.VITE_BASE_URL_PROD}/${
             type === "offer" ? "offers" : "incidents"
           }/${id}/vote`,
           {
@@ -142,7 +142,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleLikeToggle = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/${
+        `${import.meta.env.VITE_BASE_URL_PROD}/${
           type === "offer" ? "offers" : "incidents"
         }/${id}/vote`,
         {
@@ -168,25 +168,31 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleDeleteConfirm = async () => {
     try {
       if (type === "offer") {
-        const response = await fetch(`http://localhost:8080/offers`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-          body: JSON.stringify({ offer_id: id }),
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/offers`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+            body: JSON.stringify({ offer_id: id }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete offer");
         }
       } else {
-        const response = await fetch(`http://localhost:8080/incidents/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/incidents/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete incident");
@@ -204,7 +210,9 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleVerifyIncident = async (incident_id) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/incidents/${incident_id}/authorize`,
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
         {
           method: "POST",
           headers: {
@@ -231,7 +239,9 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleSpamIncident = async (incident_id) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/incidents/${incident_id}/authorize`,
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
         {
           method: "POST",
           headers: {

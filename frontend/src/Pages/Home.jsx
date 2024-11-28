@@ -35,7 +35,9 @@ const Home = () => {
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const offersUrl = new URL("http://localhost:8080/offers/");
+        const offersUrl = new URL(
+          `${import.meta.env.VITE_BASE_URL_PROD}/offers/`
+        );
 
         if (selectedTags && selectedTags.length > 0) {
           selectedTags.forEach((tag) =>
@@ -65,12 +67,15 @@ const Home = () => {
 
     const fetchIncidents = async () => {
       try {
-        const response = await fetch("http://localhost:8080/incidents/", {
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/incidents/`,
+          {
+            headers: {
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
         if (!response.ok) {
           setError(`HTTP error! Status: ${response.status}`);
           return [];

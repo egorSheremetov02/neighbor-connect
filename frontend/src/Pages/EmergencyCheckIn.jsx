@@ -65,13 +65,16 @@ const CheckInComponent = () => {
     // Fetch neighbors from the API
     const fetchNeighbors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users/users", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token.substring(1, token.length - 1)}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch neighbors");

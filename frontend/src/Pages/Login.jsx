@@ -80,8 +80,10 @@ const SignIn = () => {
 
     try {
       const loginUrl = twoFARequired
-        ? `http://localhost:8080/auth/login?auth_2fa_code=${twoFACode}`
-        : "http://localhost:8080/auth/login";
+        ? `${
+            import.meta.env.VITE_BASE_URL_PROD
+          }/auth/login?auth_2fa_code=${twoFACode}`
+        : `${import.meta.env.VITE_BASE_URL_PROD}/auth/login`;
 
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -102,7 +104,9 @@ const SignIn = () => {
       } else {
         if (data.state === "2fa") {
           setTwoFARequired(true);
-          setSignError("Two-factor authentication required. Please enter the 2FA code.");
+          setSignError(
+            "Two-factor authentication required. Please enter the 2FA code."
+          );
         } else {
           setSignError(data.detail || "Login failed");
         }
@@ -193,7 +197,8 @@ const SignIn = () => {
             </FormControl>
 
             <FormControl>
-              {twoFARequired && (<TextField
+              {twoFARequired && (
+                <TextField
                   label="Enter 2FA code"
                   value={twoFACode}
                   onChange={(e) => setTwoFACode(e.target.value)}
@@ -206,9 +211,8 @@ const SignIn = () => {
                     height: "40px",
                     fontSize: "14px",
                   }}
-                />)
-              }
-
+                />
+              )}
             </FormControl>
 
             {signError && <Typography color="error">{signError}</Typography>}

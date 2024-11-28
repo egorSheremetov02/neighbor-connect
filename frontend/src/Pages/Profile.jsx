@@ -44,7 +44,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/users/${userid}`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${userid}`,
           {
             method: "GET",
             headers: {
@@ -73,13 +73,16 @@ const Profile = () => {
         }
 
         // Check 2FA status
-        const response2FA = await fetch("http://localhost:8080/2fa/state", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-          },
-        });
+        const response2FA = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/2fa/state`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
         const data2FA = await response2FA.json();
         setTwoFAState(data2FA.state);
       } catch (error) {
@@ -117,7 +120,7 @@ const Profile = () => {
     };
     try {
       const response = await fetch(
-        "http://localhost:8080/users/modify_my_profile/",
+        `${import.meta.env.VITE_BASE_URL_PROD}/users/modify_my_profile/`,
         {
           method: "POST",
           headers: {
@@ -142,13 +145,16 @@ const Profile = () => {
   };
 
   const handleGenerate2FA = async () => {
-    const response = await fetch("http://localhost:8080/2fa/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+        },
+      }
+    );
     const data = await response.json();
     setQrCode(data.provisioning_uri);
     setIsConfirming(true);
@@ -156,7 +162,7 @@ const Profile = () => {
 
   const handleConfirm2FA = async () => {
     const response = await fetch(
-      "http://localhost:8080/2fa/confirm_2fa_generation",
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/confirm_2fa_generation`,
       {
         method: "POST",
         headers: {
@@ -176,7 +182,7 @@ const Profile = () => {
   };
 
   const handleDelete2FA = async () => {
-    await fetch("http://localhost:8080/2fa", {
+    await fetch(`${import.meta.env.VITE_BASE_URL_PROD}/2fa`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

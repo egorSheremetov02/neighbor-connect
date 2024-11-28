@@ -27,7 +27,7 @@ const ChangePasswordModal = ({ open, handleClose }) => {
         new_password: newPassword,
       };
       const response = await fetch(
-        "http://localhost:8080/users/change_password/",
+        `${import.meta.env.VITE_BASE_URL_PROD}/users/change_password/`,
         {
           method: "POST",
           headers: {
