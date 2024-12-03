@@ -1804,6 +1804,46 @@
                     }
                 ]
             }
+        },
+        "/emergency_check_in/": {
+            "post": {
+                "tags": [
+                    "emergency_check_in"
+                ],
+                "summary": "Emergency Check In",
+                "description": "Endpoint to send an emergency status update to specified users.",
+                "operationId": "emergency_check_in_emergency_check_in__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmergencyStatusUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -2425,6 +2465,27 @@
                 "properties": {},
                 "type": "object",
                 "title": "EditOfferDataResponse"
+            },
+            "EmergencyStatusUpdate": {
+                "properties": {
+                    "receivers_ids": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Receivers Ids"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "receivers_ids",
+                    "status"
+                ],
+                "title": "EmergencyStatusUpdate"
             },
             "ForgetPasswordRequest": {
                 "properties": {
