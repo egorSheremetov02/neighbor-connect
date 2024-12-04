@@ -15,13 +15,13 @@ import {
   Button,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+// import ShareIcon from "@mui/icons-material/Share";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import incident_img from "../../public/images/incident.webp";
 import offer_img from "../../public/images/offer.jpg";
 import EditOfferModal from "./EditOfferModal";
-import Box from '@mui/material/Box';
+import Box from "@mui/material/Box";
 import EditIncidentModal from "./EditIncidentModal";
 import DeleteModal from "./DeleteModal";
 import TagsListComponent from "./TagsListComponent.jsx";
@@ -39,7 +39,6 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
     id,
     status,
   } = props;
-
 
   const dateFormatted = formatDate(date || created_at);
   const type = tags ? "offer" : "incident";
@@ -88,7 +87,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/users/${author_id}`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${author_id}`,
           {
             method: "GET",
             headers: {
@@ -99,7 +98,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setAuthorData(data);
         } else {
           setError("Error fetching profile");
@@ -112,7 +111,9 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
     const fetchLikeStatus = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/${
+            type === "offer" ? "offers" : "incidents"
+          }/${id}/vote`,
           {
             method: "GET",
             headers: {
@@ -124,7 +125,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setLiked(data.is_liked);
         } else {
           console.error("Error fetching like status");
@@ -141,7 +142,9 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleLikeToggle = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/${type === "offer" ? "offers" : "incidents"}/${id}/vote`,
+        `${import.meta.env.VITE_BASE_URL_PROD}/${
+          type === "offer" ? "offers" : "incidents"
+        }/${id}/vote`,
         {
           method: "PUT",
           headers: {
@@ -165,25 +168,31 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
   const handleDeleteConfirm = async () => {
     try {
       if (type === "offer") {
-        const response = await fetch(`http://localhost:8080/offers`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-          body: JSON.stringify({ offer_id: id }),
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/offers`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+            body: JSON.stringify({ offer_id: id }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete offer");
         }
       } else {
-        const response = await fetch(`http://localhost:8080/incidents/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/incidents/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete incident");
@@ -200,16 +209,21 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
   const handleVerifyIncident = async (incident_id) => {
     try {
-      const response = await fetch(`http://localhost:8080/incidents/${incident_id}/authorize`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "bearer " + token.substring(1, token.length - 1),
-        },
-        body: JSON.stringify({
-          status: "confirmed",
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token.substring(1, token.length - 1),
+          },
+          body: JSON.stringify({
+            status: "confirmed",
+          }),
+        }
+      );
       if (!response.ok) {
         setError(`HTTP error! Status: ${response.status}`);
         return [];
@@ -224,16 +238,21 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
   const handleSpamIncident = async (incident_id) => {
     try {
-      const response = await fetch(`http://localhost:8080/incidents/${incident_id}/authorize`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "bearer " + token.substring(1, token.length - 1),
-        },
-        body: JSON.stringify({
-          status: "hidden",
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token.substring(1, token.length - 1),
+          },
+          body: JSON.stringify({
+            status: "hidden",
+          }),
+        }
+      );
       if (!response.ok) {
         setError(`HTTP error! Status: ${response.status}`);
         return [];
@@ -248,11 +267,12 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
   const postcardActions = () => {
     if (is_admin && status != "confirmed") {
-      return <Stack
+      return (
+        <Stack
           spacing={2}
           direction="row"
           justifyContent="center"
-          sx={{mb: 2}}
+          sx={{ mb: 2 }}
         >
           <Button
             variant="contained"
@@ -283,24 +303,27 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
             Spam
           </Button>
         </Stack>
+      );
     } else {
-      return <CardActions>
-        <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
-          <FavoriteIcon sx={{color: liked ? "red" : "inherit"}}/>
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon/>
-        </IconButton>
-        <IconButton
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-          sx={{marginLeft: "auto"}}
-        >
-          <ExpandMoreIcon/>
-        </IconButton>
-      </CardActions>
+      return (
+        <CardActions>
+          <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
+            <FavoriteIcon sx={{ color: liked ? "red" : "inherit" }} />
+          </IconButton>
+          {/* <IconButton aria-label="share">
+            <ShareIcon />
+          </IconButton> */}
+          {/* <IconButton
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+            sx={{ marginLeft: "auto" }}
+          >
+            <ExpandMoreIcon />
+          </IconButton> */}
+        </CardActions>
+      );
     }
   };
 
@@ -361,18 +384,18 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
                   alignItems: "center",
                 }}
               >
-                <TagsListComponent  tags={tags} onTagToggle={onTagToggle}/>
+                <TagsListComponent tags={tags} />
               </Stack>
             )}
           </Stack>
           <Typography variant="body2">{description}</Typography>
         </CardContent>
         {postcardActions()}
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {/* <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph>Details...</Typography>
           </CardContent>
-        </Collapse>
+        </Collapse> */}
       </Card>
 
       <Menu
