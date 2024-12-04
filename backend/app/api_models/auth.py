@@ -48,19 +48,13 @@ class LoginSuccessResponse(BaseModel):
             The type of token issued, e.g., Bearer.
         user_id : int
             The unique identifier of the user.
-<<<<<<< HEAD
-=======
         is_admin : bool
             Does the person have admin role.
->>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
     """
     access_token: str
     token_type: str
     user_id: int
-<<<<<<< HEAD
-=======
     is_admin: bool
->>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
 
 class UserResponse(BaseModel):
     id: int

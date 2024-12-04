@@ -172,9 +172,6 @@ def jwt_token_required(f):
 def generate_email_code(length=8):
     characters = string.ascii_letters + string.digits
     email_code = ''.join(secrets.choice(characters) for i in range(length))
-<<<<<<< HEAD
-    return email_code
-=======
     return email_code
 
 def get_2fa_totp(secret_key: str) -> pyotp.totp.TOTP:
@@ -195,4 +192,3 @@ def verify_2fa_auth_code(user_id: int, session, code: str | None = None) -> bool
 
         totp = get_2fa_totp(auth_2fa_secret.secret_key)
         return totp.verify(code)
->>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f

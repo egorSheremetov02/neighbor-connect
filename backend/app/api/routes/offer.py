@@ -12,12 +12,9 @@ from app.api_models.offer import (Offer as API_Offer, ListOffersResponse,
                                   DeleteOfferRequest, DeleteOfferResponse,
                                   EditOfferDataRequest, EditOfferDataResponse, OfferVoteRequest, AuthorizeOfferResponse,
                                   OfferIsLiked)
-<<<<<<< HEAD
-=======
 
 
 
->>>>>>> 704ecf847dfdf1db5ea2bca258fd81379080e50f
 
 import logging, sqlalchemy
 from sqlalchemy import select
