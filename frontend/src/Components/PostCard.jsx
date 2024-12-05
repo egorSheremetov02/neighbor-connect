@@ -13,6 +13,7 @@ import {
   Menu,
   MenuItem,
   Button,
+  Tooltip,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
@@ -329,7 +330,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
   return (
     <>
-      <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
+      <Card sx={{ maxWidth: 360, backgroundColor: "#efeffb", height: "100%" }}>
         <CardHeader
           avatar={
             <Avatar
@@ -347,9 +348,22 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
             </IconButton>
           }
           title={
-            <Typography variant="h6" fontWeight="bold">
-              {title}
-            </Typography>
+            <Tooltip title={title} placement="top" arrow>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  maxWidth: "150px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "block",
+                  cursor: "pointer",
+                }}
+              >
+                {title}
+              </Typography>
+            </Tooltip>
           }
           subheader={
             <Typography variant="body1" fontSize={"12px"}>
