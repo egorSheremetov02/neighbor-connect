@@ -398,7 +398,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
                   alignItems: "center",
                 }}
               >
-                <TagsListComponent tags={tags} />
+                <TagsListComponent tags={tags} onTagToggle={onTagToggle}/>
               </Stack>
             )}
           </Stack>
