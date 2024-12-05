@@ -127,11 +127,12 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
         <Button
           onClick={onClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -140,11 +141,12 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
         <Button
           onClick={handleSubmit}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >

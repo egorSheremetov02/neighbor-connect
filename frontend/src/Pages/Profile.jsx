@@ -220,6 +220,7 @@ const Profile = () => {
         sx={{
           boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           borderRadius: "16px",
+          background: "#efeffb",
         }}
       >
         <CardContent className="flex flex-col items-center">
@@ -295,6 +296,10 @@ const Profile = () => {
                   variant="contained"
                   color="secondary"
                   onClick={handleDelete2FA}
+                  sx={{
+                    color: "white",
+                    background: "#6363ab",
+                  }}
                 >
                   Delete 2FA
                 </Button>
@@ -304,11 +309,12 @@ const Profile = () => {
                   color="primary"
                   sx={{
                     marginBottom: "10px",
-                    color: "black",
-                    background: "#e2e2e2",
+                    color: "white",
+                    background: "#6363ab",
                     fontSize: "10px",
                     "&:hover": {
-                      background: "#e2e2e2",
+                      color: "white",
+                      background: "#6363ab",
                     },
                   }}
                   onClick={handleGenerate2FA}
@@ -336,11 +342,12 @@ const Profile = () => {
                 startIcon={<EditIcon />}
                 onClick={handleEditClick}
                 sx={{
-                  color: "black",
-                  background: "#e2e2e2",
+                  color: "white",
+                  background: "#6363ab",
                   fontSize: "10px",
                   "&:hover": {
-                    background: "#e2e2e2",
+                    color: "white",
+                    background: "#6363ab",
                   },
                 }}
               >
@@ -353,11 +360,12 @@ const Profile = () => {
                 startIcon={<LockOpenIcon />}
                 onClick={handlePasswordChangeClick}
                 sx={{
-                  color: "black",
-                  background: "#e2e2e2",
+                  color: "white",
+                  background: "#6363ab",
                   fontSize: "10px",
                   "&:hover": {
-                    background: "#e2e2e2",
+                    color: "white",
+                    background: "#6363ab",
                   },
                 }}
               >
@@ -416,11 +424,12 @@ const Profile = () => {
               className="mt-8"
               sx={{
                 marginBottom: "10px",
-                color: "black",
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
                 fontSize: "10px",
                 "&:hover": {
-                  background: "#e2e2e2",
+                  color: "white",
+                  background: "#6363ab",
                 },
               }}
             >

@@ -42,8 +42,9 @@ def validate_chat_request(request):
             400, f"Name length of chat should be in range [1 .. {MAX_CHAT_NAME_LENGTH}]"
         )
     if (
-        len(request.description) == 0
-        or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH
+        request.description and
+        (len(request.description) == 0
+        or len(request.description) > MAX_CHAT_DESCRIPTION_LENGTH)
     ):
         raise HTTPException(
             400,

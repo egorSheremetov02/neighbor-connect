@@ -131,11 +131,12 @@ const Home = () => {
             variant="contained"
             onClick={() => setOpenIncidentModal(true)}
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >
@@ -145,11 +146,12 @@ const Home = () => {
             variant="contained"
             onClick={() => setOpenOfferModal(true)}
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >
@@ -169,10 +171,8 @@ const Home = () => {
               style={{
                 margin: "2px",
                 padding: "4px 6px",
-                backgroundColor: selectedTags.includes(selectedTag)
-                  ? "#f44336"
-                  : "#e0e0e0",
-                color: "white",
+                backgroundColor: "#c6bfec",
+                color: "black",
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",

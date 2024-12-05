@@ -156,11 +156,12 @@ const AddIncidentModal = ({ open, onClose }) => {
             onClick={handleAddIncident}
             variant="contained"
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >

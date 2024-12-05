@@ -150,11 +150,12 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
         <Button
           onClick={onClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -163,11 +164,12 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
         <Button
           onClick={handleSubmit}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >

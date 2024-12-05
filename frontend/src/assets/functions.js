@@ -4,7 +4,7 @@ export function formatDate(isoDateString) {
   // Use toLocaleString for customizable output
   const options = {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
     hour: "numeric",
     hour12: true,

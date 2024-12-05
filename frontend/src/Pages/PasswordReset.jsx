@@ -182,7 +182,12 @@ const ResetPassword = () => {
               <Typography color="success.main">{successMessage}</Typography>
             )}
 
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2, color: "white", background: "#6363ab" }}
+            >
               Verify Code
             </Button>
           </Box>

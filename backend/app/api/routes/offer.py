@@ -72,7 +72,8 @@ Offer Text:
         event: TagsList = completion.choices[0].message.parsed
 
         return event.tags
-    except:
+    except Exception as e:
+        print(e)
         return existing_tags
 
 
