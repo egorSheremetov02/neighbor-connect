@@ -34,15 +34,15 @@ const TagsListComponent = ({ tags, onTagToggle }) => {
           sx={{
             display: "inline-block",
             padding: "4px 8px",
-            backgroundColor: "gray", // Green if selected, blue otherwise
+            backgroundColor: "#c8c2f1",
             borderRadius: "4px",
-            cursor: "pointer", // Adds pointer cursor on hover
+            cursor: "pointer",
           }}
         >
           <Typography
             variant="caption"
-            color="white"
-            sx={{ fontSize: "0.8rem", fontStyle: "normal" }} // Ensure normal font style
+            color="black"
+            sx={{ fontSize: "0.8rem", fontStyle: "normal" }}
           >
             {tag.name}
           </Typography>

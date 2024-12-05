@@ -219,11 +219,12 @@ const ChangePasswordModal = ({ open, handleClose }) => {
         <Button
           onClick={handleClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#d0d0d0",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -233,11 +234,12 @@ const ChangePasswordModal = ({ open, handleClose }) => {
           onClick={handlePasswordChange}
           disabled={loading}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#d0d0d0",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
