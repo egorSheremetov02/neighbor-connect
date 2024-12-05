@@ -313,6 +313,8 @@ const Chat = () => {
     }
   };
 
+  console.log(chats);
+
   return (
     <div className="p-4 bg-[#efeffb] min-h-screen flex flex-col">
       <header className="mb-4 text-2xl font-semibold text-gray-800">My Chats</header>
@@ -330,7 +332,7 @@ const Chat = () => {
                   chat.chat_id === currentChat ? " bg-[#d5d5f5]" : ""}`}
                 onClick={() => setCurrentChat(chat.chat_id)}
               >
-                {chat.name}
+                {chat.users_infos.filter((user) => user.id != userid).map((user) => user.name).join(', ')}
               </div>
             ))}
           </div>
