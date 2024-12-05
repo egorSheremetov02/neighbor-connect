@@ -25,23 +25,15 @@ class RegisterResponse(BaseModel):
     user_id: int
 
 
-class LoginRequest(BaseModel):
-    """
-    A class representing a login request.
-
-    Attributes
-    ----------
-    login : str
-        The username or email used for login.
-    password : str
-        The password associated with the login.
-    """
-
-    login: str
-    password: str
+class Auth2Fa(BaseModel):
+    code: str
 
 
-class LoginResponse(BaseModel):
+class LoginRequired2FaCodeResponse(BaseModel):
+    state: str = "2fa"
+
+
+class LoginSuccessResponse(BaseModel):
     """
         class LoginResponse(BaseModel):
             access_token: str
@@ -56,10 +48,13 @@ class LoginResponse(BaseModel):
             The type of token issued, e.g., Bearer.
         user_id : int
             The unique identifier of the user.
+        is_admin : bool
+            Does the person have admin role.
     """
     access_token: str
     token_type: str
     user_id: int
+    is_admin: bool
 
 class UserResponse(BaseModel):
     id: int
@@ -89,9 +84,9 @@ class ForgetPasswordRequest(BaseModel):
 class ForgetPasswordResponse(BaseModel):
     msg: str = "Email sent successfuly"
 
-class LoginWithCodeRequest(BaseModel):
+class ChangePasswordWithCodeRequest(BaseModel):
     """
-    A class representing a login via code request.
+    A class representing a change password via code request.
 
     Attributes
     ----------
@@ -99,27 +94,23 @@ class LoginWithCodeRequest(BaseModel):
         The username or email used for login.
     code : str
         The code received from the email.
+    new_password : str
+        New password
     """
 
     login: str
     code: str
+    new_password: str
 
-class LoginWithCodeResponse(BaseModel):
+class ChangePasswordWithCodeResponse(BaseModel):
     """
-        class LoginResponse(BaseModel):
-            access_token: str
-            token_type: str
-            user_id: int
-
-        Attributes
-        ----------
-        access_token : str
-            The token provided to the user for authentication purposes.
-        token_type : str
-            The type of token issued, e.g., Bearer.
-        user_id : int
-            The unique identifier of the user.
+    Attributes
+    ----------
+    access_token : str
+        The token provided to the user for authentication purposes.
+    token_type : str
+        The type of token issued, e.g., Bearer.
+    user_id : int
+        The unique identifier of the user.
     """
-    access_token: str
-    token_type: str
-    user_id: int
+    msg: str = "Password changed successfully"

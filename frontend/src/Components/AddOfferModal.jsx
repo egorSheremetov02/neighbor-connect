@@ -16,7 +16,7 @@ const modalStyle = {
 const AddOfferModal = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [product, setProduct] = useState("");
+  const [tag, setTag] = useState("");
   const [date, setDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -26,13 +26,13 @@ const AddOfferModal = ({ open, onClose }) => {
     const offerData = {
       title,
       description,
-      tags: [product],
+      tags: [tag],
       date,
     };
 
-    console.log(offerData);
+    // console.log(offerData);
 
-    fetch("http://localhost:8080/offers/", {
+    fetch(`${import.meta.env.VITE_BASE_URL_PROD}/offers/`, {
       method: "POST",
       headers: {
         Authorization: "bearer " + token.substring(1, token.length - 1),
@@ -106,9 +106,9 @@ const AddOfferModal = ({ open, onClose }) => {
           }}
         />
         <TextField
-          label="Product"
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
+          label="Tag"
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
           fullWidth
           margin="normal"
           required
@@ -157,11 +157,12 @@ const AddOfferModal = ({ open, onClose }) => {
             onClick={handleAddOffer}
             variant="contained"
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >

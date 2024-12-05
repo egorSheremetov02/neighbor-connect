@@ -12,20 +12,23 @@ import {
   Stack,
   Menu,
   MenuItem,
+  Button,
+  Tooltip,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+// import ShareIcon from "@mui/icons-material/Share";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import incident_img from "../../public/images/incident.webp";
 import offer_img from "../../public/images/offer.jpg";
 import EditOfferModal from "./EditOfferModal";
+import Box from "@mui/material/Box";
 import EditIncidentModal from "./EditIncidentModal";
 import DeleteModal from "./DeleteModal";
-
+import TagsListComponent from "./TagsListComponent.jsx";
 import { formatDate } from "../assets/functions";
 
-const PostCard = ({ props }) => {
+const PostCard = ({ props, onTagToggle, is_admin }) => {
   const {
     title,
     description,
@@ -35,6 +38,7 @@ const PostCard = ({ props }) => {
     location,
     tags,
     id,
+    status,
   } = props;
 
   const dateFormatted = formatDate(date || created_at);
@@ -48,6 +52,7 @@ const PostCard = ({ props }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [authorData, setAuthorData] = useState();
+  const [liked, setLiked] = useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -83,7 +88,7 @@ const PostCard = ({ props }) => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/users/${author_id}`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${author_id}`,
           {
             method: "GET",
             headers: {
@@ -94,7 +99,7 @@ const PostCard = ({ props }) => {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setAuthorData(data);
         } else {
           setError("Error fetching profile");
@@ -104,31 +109,91 @@ const PostCard = ({ props }) => {
       }
     };
 
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/${
+            type === "offer" ? "offers" : "incidents"
+          }/${id}/vote`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          // console.log(data);
+          setLiked(data.is_liked);
+        } else {
+          console.error("Error fetching like status");
+        }
+      } catch (error) {
+        console.error("Error fetching like status", error);
+      }
+    };
+
     fetchProfile();
+    fetchLikeStatus();
   }, []);
 
-  const handleDeleteConfirm = async () => {
+  const handleLikeToggle = async () => {
     try {
-      if (type === "offer") {
-        const response = await fetch(`http://localhost:8080/offers`, {
-          method: "DELETE",
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL_PROD}/${
+          type === "offer" ? "offers" : "incidents"
+        }/${id}/vote`,
+        {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: "bearer " + token.substring(1, token.length - 1),
           },
-          body: JSON.stringify({ offer_id: id }),
-        });
+          body: JSON.stringify({ vote: liked ? "dislike" : "like" }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle like");
+      }
+
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      if (type === "offer") {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/offers`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+            body: JSON.stringify({ offer_id: id }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete offer");
         }
       } else {
-        const response = await fetch(`http://localhost:8080/incidents/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/incidents/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete incident");
@@ -143,9 +208,129 @@ const PostCard = ({ props }) => {
     }
   };
 
+  const handleVerifyIncident = async (incident_id) => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token.substring(1, token.length - 1),
+          },
+          body: JSON.stringify({
+            status: "confirmed",
+          }),
+        }
+      );
+      if (!response.ok) {
+        setError(`HTTP error! Status: ${response.status}`);
+        return [];
+      }
+      window.location.reload();
+    } catch (error) {
+      setError("Error marking incident as spam.");
+      console.error(error);
+      return [];
+    }
+  };
+
+  const handleSpamIncident = async (incident_id) => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BASE_URL_PROD
+        }/incidents/${incident_id}/authorize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token.substring(1, token.length - 1),
+          },
+          body: JSON.stringify({
+            status: "hidden",
+          }),
+        }
+      );
+      if (!response.ok) {
+        setError(`HTTP error! Status: ${response.status}`);
+        return [];
+      }
+      window.location.reload();
+    } catch (error) {
+      setError("Error marking incident as spam.");
+      console.error(error);
+      return [];
+    }
+  };
+
+  const postcardActions = () => {
+    if (is_admin && status != "confirmed") {
+      return (
+        <Stack
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+          sx={{ mb: 2 }}
+        >
+          <Button
+            variant="contained"
+            onClick={() => handleVerifyIncident(id)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "14px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Verify
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => handleSpamIncident(id)}
+            sx={{
+              color: "black",
+              background: "#e2e2e2",
+              fontSize: "14px",
+              "&:hover": {
+                background: "#e2e2e2",
+              },
+            }}
+          >
+            Spam
+          </Button>
+        </Stack>
+      );
+    } else {
+      return (
+        <CardActions>
+          <IconButton aria-label="add to favorites" onClick={handleLikeToggle}>
+            <FavoriteIcon sx={{ color: liked ? "red" : "inherit" }} />
+          </IconButton>
+          {/* <IconButton aria-label="share">
+            <ShareIcon />
+          </IconButton> */}
+          {/* <IconButton
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+            sx={{ marginLeft: "auto" }}
+          >
+            <ExpandMoreIcon />
+          </IconButton> */}
+        </CardActions>
+      );
+    }
+  };
+
   return (
     <>
-      <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
+      <Card sx={{ maxWidth: 360, backgroundColor: "#efeffb", height: "100%" }}>
         <CardHeader
           avatar={
             <Avatar
@@ -163,9 +348,22 @@ const PostCard = ({ props }) => {
             </IconButton>
           }
           title={
-            <Typography variant="h6" fontWeight="bold">
-              {title}
-            </Typography>
+            <Tooltip title={title} placement="top" arrow>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  maxWidth: "150px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "block",
+                  cursor: "pointer",
+                }}
+              >
+                {title}
+              </Typography>
+            </Tooltip>
           }
           subheader={
             <Typography variant="body1" fontSize={"12px"}>
@@ -200,36 +398,18 @@ const PostCard = ({ props }) => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="body2" color="text.secondary">
-                  {tags[0]}
-                </Typography>
+                <TagsListComponent tags={tags} onTagToggle={onTagToggle}/>
               </Stack>
             )}
           </Stack>
           <Typography variant="body2">{description}</Typography>
         </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          <IconButton
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-            sx={{ marginLeft: "auto" }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {postcardActions()}
+        {/* <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph>Details...</Typography>
           </CardContent>
-        </Collapse>
+        </Collapse> */}
       </Card>
 
       <Menu

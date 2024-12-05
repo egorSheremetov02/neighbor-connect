@@ -30,31 +30,41 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
   };
 
   const handleSubmit = async () => {
+    const authToken = token.replace(/^"|"$/g, "");
+
     const dataToSubmit = {
-      ...formData,
-      tags: formData.tags.split(",").map((tag) => tag.trim()), // split and trim tags
+      offer_id: formData.offer_id,
+      title: formData.title,
+      description: formData.description,
+      tags: formData.tags.split(",").map((tag) => tag.trim()),
+      date: new Date().toISOString(),
+      image_id: formData.image_id || null,
     };
 
-    console.log(dataToSubmit);
+    // console.log(dataToSubmit, `Bearer ${authToken}`);
 
     try {
-      const response = await fetch("http://localhost:8080/offers/", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token.substring(1, token.length - 1),
-        },
-        body: JSON.stringify(dataToSubmit),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL_PROD}/offers/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(dataToSubmit),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to update offer");
+        const errorMessage = await response.text();
+        throw new Error(`Failed to update offer: ${errorMessage}`);
       }
 
       onEditSuccess();
       onClose();
     } catch (error) {
-      console.error("Error editing offer:", error);
+      console.error("Error editing offer:", error.message);
     }
   };
 
@@ -140,11 +150,12 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
         <Button
           onClick={onClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -153,11 +164,12 @@ const EditOfferModal = ({ open, onClose, offer, onEditSuccess }) => {
         <Button
           onClick={handleSubmit}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >

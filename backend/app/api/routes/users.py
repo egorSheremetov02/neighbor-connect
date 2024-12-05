@@ -5,7 +5,7 @@ from app.api_models.auth import UserResponse
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime
-from app.api.util import jwt_token_required, hidden_user_payload, get_password_hash
+from app.api.util import jwt_token_required, hidden_user_payload, get_password_hash, verify_password
 from app.api_models.users import (GetUsersResponse, UserShortInfo)
 import logging
 
@@ -13,6 +13,8 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 from sqlalchemy import or_
+
+from app.services.email_service import send_on_sensitive_data_changed
 
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
 users_router = APIRouter()
@@ -86,6 +88,7 @@ async def modify_profile(
         with session.begin():
 
             user = session.query(User).filter_by(id=sender_id).first()
+            sensetive_data_changed = False
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
 
@@ -96,6 +99,7 @@ async def modify_profile(
                 if existing_user:
                     raise HTTPException(status_code=409, detail="Email already in use")
 
+                sensetive_data_changed |= True
                 user.email = profile_request.email
 
             if profile_request.login and profile_request.login != user.login:
@@ -104,6 +108,8 @@ async def modify_profile(
                 )
                 if existing_user:
                     raise HTTPException(status_code=409, detail="Login already in use")
+                
+                sensetive_data_changed |= True
                 user.login = profile_request.login
 
 
@@ -120,6 +126,8 @@ async def modify_profile(
                     raise HTTPException(
                         status_code=409, detail="Phone number already in use"
                     )
+                
+                sensetive_data_changed |= True
                 user.phone_number = profile_request.phone_number
 
             user.name = profile_request.fullName or user.name
@@ -139,6 +147,9 @@ async def modify_profile(
                 profile_request.bio_description or user.bio_description
             )
             user.interests = profile_request.interests or user.interests
+
+        if sensetive_data_changed:
+            send_on_sensitive_data_changed(user.email, user.name)
 
         return ModifyProfileResponse()
 
@@ -164,7 +175,8 @@ async def change_password(
             user = session.query(User).filter_by(id=sender_id).first()
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
-
+            if not verify_password(user.password_hashed, profile_request.old_password):
+                raise HTTPException(status_code=400, detail="Incorrect password")
             user.password_hashed = get_password_hash(profile_request.new_password)
 
         return ChangePasswordResponse()

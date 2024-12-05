@@ -31,7 +31,7 @@ const AddIncidentModal = ({ open, onClose }) => {
       created_at: new Date().toISOString(),
     };
 
-    fetch("http://localhost:8080/incidents/", {
+    fetch(`${import.meta.env.VITE_BASE_URL_PROD}/incidents/`, {
       method: "POST",
       headers: {
         Authorization: "bearer " + token.substring(1, token.length - 1),
@@ -156,11 +156,12 @@ const AddIncidentModal = ({ open, onClose }) => {
             onClick={handleAddIncident}
             variant="contained"
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >

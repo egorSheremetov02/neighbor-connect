@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Card, CardContent, Button, Typography } from "@mui/material";
-import EditProfileModal from "../Components/EditProfileModal";
+import { QRCodeSVG } from "qrcode.react";
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  Stack,
+  TextField,
+  Modal,
+} from "@mui/material";
 
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -10,14 +20,22 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import InfoIcon from "@mui/icons-material/Info";
 import EditIcon from "@mui/icons-material/Edit";
+import EditProfileModal from "../Components/EditProfileModal";
+import ChangePasswordModal from "../Components/EditPasswordModal";
 
 const Profile = () => {
   const { userid } = useParams();
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
   const [editData, setEditData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState();
+  const [twoFAState, setTwoFAState] = useState("empty");
+  const [qrCode, setQrCode] = useState(null);
+  const [twoFACode, setTwoFACode] = useState("");
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const currentUserId = sessionStorage.getItem("myid");
   const token = sessionStorage.getItem("TOKEN");
@@ -26,7 +44,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/users/${userid}`,
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users/${userid}`,
           {
             method: "GET",
             headers: {
@@ -37,7 +55,6 @@ const Profile = () => {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setProfile(data);
           setEditData((prev) => ({
             ...prev,
@@ -54,13 +71,27 @@ const Profile = () => {
         } else {
           setError("Error fetching profile");
         }
+
+        // Check 2FA status
+        const response2FA = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/2fa/state`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
+        const data2FA = await response2FA.json();
+        setTwoFAState(data2FA.state);
       } catch (error) {
-        setError("Error fetching profile", error);
+        setError("Error fetching profile and 2FA state");
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchProfile();
-    setIsLoading(false);
   }, []);
 
   const handleEditClick = () => {
@@ -71,6 +102,9 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  const handlePasswordChangeClick = () => setIsPasswordModalOpen(true);
+  const handleClosePasswordModal = () => setIsPasswordModalOpen(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
@@ -80,13 +114,14 @@ const Profile = () => {
     console.log(editData);
     const dataToSubmit = {
       ...editData,
-      interests: editData.interests
-        .split(",")
-        .map((interest) => interest.trim()), // split and trim interests
+      interests: Array.isArray(editData?.interests)
+        ? editData.interests.map((interest) => interest.trim()) // If already an array, just trim each item
+        : editData?.interests?.split(",").map((interest) => interest.trim()), // If a string, split and trim
     };
+    console.log(dataToSubmit);
     try {
       const response = await fetch(
-        "http://localhost:8080/users/modify_my_profile/",
+        `${import.meta.env.VITE_BASE_URL_PROD}/users/modify_my_profile/`,
         {
           method: "POST",
           headers: {
@@ -100,7 +135,7 @@ const Profile = () => {
       if (response.ok) {
         setProfile(editData);
         setIsEditing(false);
-        console.log("Profile updated successfully");
+        // console.log("Profile updated successfully");
         window.location.reload();
       } else {
         console.error("Error updating profile");
@@ -108,6 +143,54 @@ const Profile = () => {
     } catch (error) {
       console.error("Error updating profile", error);
     }
+  };
+
+  const handleGenerate2FA = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+        },
+      }
+    );
+    const data = await response.json();
+    setQrCode(data.provisioning_uri);
+    setIsConfirming(true);
+  };
+
+  const handleConfirm2FA = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL_PROD}/2fa/confirm_2fa_generation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+        },
+        body: JSON.stringify({ code: twoFACode }),
+      }
+    );
+    const data = await response.json();
+    if (data.status === "success") {
+      setIsConfirming(false);
+      setTwoFAState("created");
+    } else {
+      alert("Incorrect code, please try again.");
+    }
+  };
+
+  const handleDelete2FA = async () => {
+    await fetch(`${import.meta.env.VITE_BASE_URL_PROD}/2fa`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+      },
+    });
+    setTwoFAState("empty");
   };
 
   const isMyProfile = profile && profile.id === parseInt(currentUserId);
@@ -137,6 +220,7 @@ const Profile = () => {
         sx={{
           boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           borderRadius: "16px",
+          background: "#efeffb",
         }}
       >
         <CardContent className="flex flex-col items-center">
@@ -206,34 +290,157 @@ const Profile = () => {
           </div>
 
           {isMyProfile && (
-            <Button
-              variant="contained"
-              color="primary"
-              className="mt-4"
-              startIcon={<EditIcon />}
-              onClick={handleEditClick}
+            <>
+              {twoFAState === "created" ? (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleDelete2FA}
+                  sx={{
+                    color: "white",
+                    background: "#6363ab",
+                  }}
+                >
+                  Delete 2FA
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    marginBottom: "10px",
+                    color: "white",
+                    background: "#6363ab",
+                    fontSize: "10px",
+                    "&:hover": {
+                      color: "white",
+                      background: "#6363ab",
+                    },
+                  }}
+                  onClick={handleGenerate2FA}
+                >
+                  Enable 2FA
+                </Button>
+              )}
+            </>
+          )}
+
+          {isMyProfile && (
+            <Stack
+              direction={"row"}
               sx={{
-                color: "black",
-                background: "#e2e2e2",
-                fontSize: "10px",
-                "&:hover": {
-                  background: "#e2e2e2",
-                },
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "30px",
+                gap: "20px",
               }}
             >
-              Edit Profile
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className="mt-4"
+                startIcon={<EditIcon />}
+                onClick={handleEditClick}
+                sx={{
+                  color: "white",
+                  background: "#6363ab",
+                  fontSize: "10px",
+                  "&:hover": {
+                    color: "white",
+                    background: "#6363ab",
+                  },
+                }}
+              >
+                Edit Profile
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className="mt-4"
+                startIcon={<LockOpenIcon />}
+                onClick={handlePasswordChangeClick}
+                sx={{
+                  color: "white",
+                  background: "#6363ab",
+                  fontSize: "10px",
+                  "&:hover": {
+                    color: "white",
+                    background: "#6363ab",
+                  },
+                }}
+              >
+                Change Password
+              </Button>
+            </Stack>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit Profile Modal */}
       <EditProfileModal
         open={isEditing}
         handleClose={handleClose}
         editData={editData}
         handleInputChange={handleInputChange}
         handleSave={handleSave}
+      />
+
+      {/* Confirm 2FA Modal */}
+      <Modal
+        open={isConfirming}
+        onClose={() => setIsConfirming(false)}
+        className="flex justify-center items-center"
+      >
+        <div className="p-4 bg-white rounded shadow-lg">
+          <QRCodeSVG value={qrCode} />
+          <Stack
+            spacing={2}
+            direction="row"
+            justifyContent="center"
+            sx={{ mt: 2 }}
+          >
+            <TextField
+              label="Enter 2FA Code"
+              value={twoFACode}
+              onChange={(e) => setTwoFACode(e.target.value)}
+              className="mt-4"
+              InputProps={{
+                sx: {
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                  height: "40px",
+                  fontSize: "14px",
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  fontSize: "14px",
+                },
+              }}
+            />
+            <Button
+              onClick={handleConfirm2FA}
+              variant="contained"
+              color="primary"
+              className="mt-8"
+              sx={{
+                marginBottom: "10px",
+                color: "white",
+                background: "#6363ab",
+                fontSize: "10px",
+                "&:hover": {
+                  color: "white",
+                  background: "#6363ab",
+                },
+              }}
+            >
+              Confirm
+            </Button>
+          </Stack>
+        </div>
+      </Modal>
+      <ChangePasswordModal
+        open={isPasswordModalOpen}
+        handleClose={handleClosePasswordModal}
       />
     </div>
   );

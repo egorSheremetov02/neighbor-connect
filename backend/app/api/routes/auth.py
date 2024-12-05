@@ -1,12 +1,14 @@
+from dataclasses import Field
+
 from fastapi import Query, Request
 
 from app.api_models.auth import (
     RegisterRequest,
     RegisterResponse,
     UserResponse,
-    UsersResponse, LoginResponse,
+    UsersResponse, LoginSuccessResponse, Auth2Fa, LoginRequired2FaCodeResponse,
     ForgetPasswordRequest, ForgetPasswordResponse,
-    LoginWithCodeRequest, LoginWithCodeResponse
+    ChangePasswordWithCodeRequest, ChangePasswordWithCodeResponse
 )
 from fastapi import APIRouter, Response, Depends
 
@@ -26,13 +28,14 @@ from app.db_models.chats import User
 from app.core.db import SessionLocal
 from fastapi import HTTPException
 
-from app.services.email_service import send_reset_code_to_email
+from app.services.email_service import send_on_login_email, send_on_registration_email, send_reset_code_to_email
 from app.api.util import (
     get_password_hash,
     verify_password,
     create_jwt,
     jwt_token_required,
-    hidden_user_payload
+    hidden_user_payload,
+    verify_2fa_auth_code
 )
 from sqlalchemy import select
 
@@ -82,37 +85,43 @@ async def register(request: RegisterRequest) -> RegisterResponse:
             )
             session.add(user)
 
+        send_on_registration_email(user.email, user.name)
+
         return RegisterResponse(user_id=user.id)
 
 
 @auth_router.post("/login")
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
-) -> LoginResponse:
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    auth_2fa_code: str | None = Query(None),
+    response: Response = None
+) -> LoginSuccessResponse | LoginRequired2FaCodeResponse:
     """
-    :param form_data: The form data containing the username and password of the user trying to log in.
-    :type form_data: OAuth2PasswordRequestForm
-
-    :param response: The response object used to set the HTTP cookie for the access token.
-    :type response: Response
-
-    :return: A dictionary containing the access token and the token type.
-    :rtype: dict
-
-    :raises HTTPException: If the user does not exist or the password is incorrect.
+    :param form_data: OAuth2 password request form containing the username and password.
+    :param response: Optional response object for setting cookies.
+    :return: LoginResponse object containing the access token, token type, and user ID.
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=form_data.username).first()
+            user = session.query(User).filter_by(email=form_data.username).first()
             if not user:
                 raise HTTPException(404, "User with credentials does not exist")
 
             if not verify_password(user.password_hashed, form_data.password):
                 raise HTTPException(400, "Incorrect password")
 
-            jwt_token = create_jwt(user.id)
-            response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-            return LoginResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
+
+            code = auth_2fa_code
+            result = verify_2fa_auth_code(user.id, session, code)
+
+            if result is False:  # need valid code
+                return LoginRequired2FaCodeResponse()
+            elif result is True or result is None: # success
+                send_on_login_email(user.email, user.name)
+                jwt_token = create_jwt(user.id)
+                response.set_cookie(key="access_token", value=jwt_token, httponly=True)
+                return LoginSuccessResponse(access_token=jwt_token, token_type="bearer", user_id=user.id, is_admin=user.is_admin)
+
 
 
 @auth_router.get("/users/{user_id}")
@@ -198,28 +207,25 @@ async def forget_password(request: ForgetPasswordRequest) -> ForgetPasswordRespo
 
         return ForgetPasswordResponse()
 
-@auth_router.post("/login_with_code")
-async def login_with_code(
-    form_data: OAuth2PasswordRequestForm = Depends(), response: Response = None
-) -> LoginWithCodeResponse:
-    """
-    Log in a user using a previously generated email code.
 
-    :param form_data: The form data containing the username (login) and the code sent to the user's email.
-    :raises HTTPException: If the user does not exist, the code is incorrect, or the code has expired.
+@auth_router.post("/change_password_with_code")
+async def change_password_with_code(request: ChangePasswordWithCodeRequest) -> ChangePasswordWithCodeResponse:
+    """
+    :param request: The change password with code request object containing user login, code, sent to user's email and new password.
+    :return: The response object indicating successful password change or raises an HTTPException with appropriate error messages if password change fails.
     """
     with SessionLocal() as session:
         with session.begin():
-            user = session.query(User).filter_by(login=form_data.username).first()
+            user = session.query(User).filter_by(login=request.login).first()
             if not user:
                 raise HTTPException(404, "User with credentials does not exist")
 
-            if not user.email_code == form_data.password:
+            if not user.email_code == request.code:
                 raise HTTPException(400, "Incorrect code")
-            
+
             if user.email_code_expiry < datetime.datetime.now():
                 raise HTTPException(400, "Code is expired")
 
-            jwt_token = create_jwt(user.id)
-            response.set_cookie(key="access_token", value=jwt_token, httponly=True)
-            return LoginWithCodeResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
+            user.password_hashed = get_password_hash(request.new_password)
+
+        return ChangePasswordWithCodeResponse()

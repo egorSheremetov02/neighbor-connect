@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from app.api_models.incidents import (Incident as APIIncident, ListIncidentsResponse,
                                       CreateIncidentRequest, CreateIncidentResponse,
-                                      DeleteIncidentRequest, DeleteIncidentResponse,
-                                      EditIncidentDataRequest, EditIncidentDataResponse,
-                                      AuthorizeIncidentRequest, AuthorizeIncidentResponse,
-                                      IncidentStatus, IncidentVote, IncidentVoteRequest, IncidentVotesData)
+                                      DeleteIncidentResponse, EditIncidentDataRequest,
+                                      EditIncidentDataResponse, AuthorizeIncidentRequest,
+                                      AuthorizeIncidentResponse, IncidentStatus, IncidentVote,
+                                      IncidentVoteRequest, IncidentVotesData, IncidentIsLiked)
 from fastapi.security import APIKeyHeader
-import logging, sqlalchemy
-from sqlalchemy import func, and_
+import logging
+import sqlalchemy
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.db_models.chats import User
@@ -15,6 +16,9 @@ from app.db_models.incidents import Incident, IncidentVote as IncidentVoteDB
 from app.core.db import SessionLocal
 from app.api.util import jwt_token_required, hidden_user_payload
 from fastapi import HTTPException
+
+from app.clients.open_ai import open_ai_client
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 security_scheme = APIKeyHeader(name="Authorization", description="Bearer token")
@@ -38,6 +42,9 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
     if len(create_request.description) == 0:
         raise HTTPException(400, f'Incident description is missing')
 
+    status = IncidentStatus.CONFIRMED if check_incident(create_request.title,
+                                                        create_request.description) else IncidentStatus.PENDING
+
     with SessionLocal() as session:
         with session.begin():
             author = session.query(User).filter_by(id=sender_id).first()
@@ -47,7 +54,7 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
                 description=create_request.description,
                 author_id=sender_id,
                 author=author,
-                status=IncidentStatus.CONFIRMED,  # TODO: add pending status when will check admin permissions
+                status=status,
                 created_at=create_request.created_at,
                 updated_at=create_request.created_at,
                 location=create_request.location,
@@ -56,6 +63,47 @@ async def create_incident(request: Request, create_request: CreateIncidentReques
             session.add(incident)
 
         return CreateIncidentResponse(id=incident.id)
+
+
+class IncidentValidity(BaseModel):
+    is_valid: str
+
+
+def check_incident(title: str, description: str) -> bool:
+    try:
+        if not open_ai_client:
+            return True
+
+        completion = open_ai_client.with_options(max_retries=3).beta.chat.completions.parse(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are administrator of university social network. "
+                               + "You help check if the user is trying to create a valid incident report or is it just spam. "
+                },
+                {
+                    "role": "user",
+                    "content":
+                        f"""
+Please verify that the following incident seems like a valid incident and not just spam. I will provide you with incident title and
+incident description. If the incident seems like a valid incident, respond with YES, otherwise respond with NO.
+RESPOND ONLY WITH "YES" OR "NO", no addition text.
+
+Incident title:
+{title}
+
+Incident description:
+{description}
+"""[:2000]
+                }],
+            model="gpt-4o",
+            response_format=IncidentValidity
+        )
+        event: IncidentValidity = completion.choices[0].message.parsed
+
+        return "yes" in event.is_valid.lower()
+    except:
+        return True
 
 
 def get_votes_for_incidents(session: Session, incident_ids: list[int] | None = None):
@@ -107,7 +155,11 @@ async def list_incidents(request: Request, user_payload=Depends(hidden_user_payl
 
     with SessionLocal() as session:
         with session.begin():
-            incidents = session.query(Incident).filter(Incident.status != IncidentStatus.HIDDEN).all()
+            user = session.query(User).filter_by(id=sender_id).first()
+            if user.is_admin:
+                incidents = session.query(Incident).filter(Incident.status != IncidentStatus.HIDDEN).all()
+            else:
+                incidents = session.query(Incident).filter(Incident.status == IncidentStatus.CONFIRMED).all()
             votes = get_votes_for_incidents(session, incident_ids = None)
             user_votes = get_votes_for_user_incidents(session, sender_id, incident_ids = None)
 
@@ -213,11 +265,12 @@ async def authorize_incident(request: Request, incident_id: int, auth_request: A
     with SessionLocal() as session:
         with session.begin():
             incident = session.query(Incident).filter_by(id=incident_id).first()
+            user = session.query(User).filter_by(id=sender_id).first()
 
             if incident is None:
                 raise HTTPException(404, f'Incident with id {incident_id} does not exist')
 
-            if incident.author_id != sender_id and is_admin(sender_id):
+            if not user.is_admin:
                 raise HTTPException(403, f'User doesn\'t have permission to authorize this incident')
 
             incident.status = auth_request.status
@@ -228,7 +281,7 @@ async def authorize_incident(request: Request, incident_id: int, auth_request: A
 @incidents_router.put("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def incident_vote(request: Request, incident_id: int, vote_request: IncidentVoteRequest,
-                       user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
+                        user_payload=Depends(hidden_user_payload)) -> AuthorizeIncidentResponse:
     """
     Parameters
     ----------
@@ -260,7 +313,7 @@ async def incident_vote(request: Request, incident_id: int, vote_request: Incide
             if incident is None:
                 raise HTTPException(404, f'Incident with id {incident_id} does not exist')
 
-            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id = sender_id).first()
+            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id=sender_id).first()
 
             if user_vote is None:
                 if vote_request.vote:
@@ -274,3 +327,43 @@ async def incident_vote(request: Request, incident_id: int, vote_request: Incide
 
         return AuthorizeIncidentResponse()
 
+
+@incidents_router.get("/{incident_id}/vote", dependencies=[Depends(security_scheme)])
+@jwt_token_required
+async def get_incident_vote(request: Request, incident_id: int, user_payload=Depends(hidden_user_payload)
+                            ) -> IncidentIsLiked:
+    """
+    Parameters
+    ----------
+    request : Request
+        The HTTP request object.
+    incident_id : int
+        The unique identifier of the incident to vote on.
+    user_payload : dict, optional
+        The payload containing user information extracted from the JWT token (default is None).
+
+    Returns
+    -------
+    AuthorizeIncidentResponse
+        Response indicating the result whether the incident is liked.
+
+    Raises
+    ------
+    HTTPException
+        If the incident with the specified ID does not exist.
+    """
+    sender_id = user_payload['user_id']
+
+    with SessionLocal() as session:
+        with session.begin():
+            incident = session.query(Incident).filter_by(id=incident_id).first()
+
+            if incident is None:
+                raise HTTPException(404, f'Incident with id {incident_id} does not exist')
+
+            user_vote = session.query(IncidentVoteDB).filter_by(incident_id=incident_id, user_id=sender_id).first()
+
+            if user_vote is None:
+                IncidentIsLiked(is_liked=False)
+
+            return IncidentIsLiked(is_liked=user_vote.vote == 'like')

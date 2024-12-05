@@ -12,7 +12,7 @@ import {
 const EditProfileModal = ({
   open,
   handleClose,
-  editData,
+  editData = {},
   handleInputChange,
   handleSave,
 }) => {
@@ -231,11 +231,12 @@ const EditProfileModal = ({
         <Button
           onClick={handleClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#d0d0d0",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -244,11 +245,12 @@ const EditProfileModal = ({
         <Button
           onClick={handleSave}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#d0d0d0",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >

@@ -22,15 +22,19 @@ const Neighbors = () => {
   useEffect(() => {
     const fetchNeighbors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users/users", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `bearer ${token.substring(1, token.length - 1)}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/users/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `bearer ${token.substring(1, token.length - 1)}`,
+            },
+          }
+        );
 
         if (!response.ok) {
+          console.log(response);
           setError("Failed to fetch neighbors");
         }
 

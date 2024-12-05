@@ -317,7 +317,7 @@ async def list_messages(
         return ListMessagesResponse(messages=messages, next_page_id=next_page_id)
 
 
-@chats_router.get("/own", dependencies=[Depends(security_scheme)])
+@chats_router.get("/", dependencies=[Depends(security_scheme)])
 @jwt_token_required
 async def get_own_chats(request: Request, user_payload=Depends(hidden_user_payload)) -> GetOwnChatsResponse:
     """Get all chats the sender is a member of."""

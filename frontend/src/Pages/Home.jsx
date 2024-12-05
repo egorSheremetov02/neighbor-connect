@@ -4,6 +4,7 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import AddIncidentModal from "../Components/AddIncidentModal";
 import AddOfferModal from "../Components/AddOfferModal";
 import PostCard from "../Components/PostCard";
+import Chatbot from "../Components/chatbot/Chatbot";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,24 +12,46 @@ const Home = () => {
   const [error, setError] = useState("");
   const [openIncidentModal, setOpenIncidentModal] = useState(false);
   const [openOfferModal, setOpenOfferModal] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const token = sessionStorage.getItem("TOKEN");
+  const is_admin = sessionStorage.getItem("is_admin") === "true";
 
   if (!token) {
     return <Navigate to="/login" />;
   }
 
-  console.log(token, token.substring(1, token.length - 1));
+  // console.log(token, token.substring(1, token.length - 1));
+
+  const toggleTag = (tag) => {
+    setSelectedTags(
+      (prevTags) =>
+        prevTags.includes(tag)
+          ? prevTags.filter((t) => t !== tag) // Remove if exists
+          : [...prevTags, tag] // Add if not exists
+    );
+  };
 
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/offers/", {
+        const offersUrl = new URL(
+          `${import.meta.env.VITE_BASE_URL_PROD}/offers/`
+        );
+
+        if (selectedTags && selectedTags.length > 0) {
+          selectedTags.forEach((tag) =>
+            offersUrl.searchParams.append("tag", tag)
+          ); // `tag` is used as an alias for `tags`
+        }
+
+        const response = await fetch(offersUrl, {
           headers: {
             Authorization: "bearer " + token.substring(1, token.length - 1),
             "Content-Type": "application/x-www-form-urlencoded",
           },
         });
+
         if (!response.ok) {
           setError(`HTTP error! Status: ${response.status}`);
           return [];
@@ -44,12 +67,15 @@ const Home = () => {
 
     const fetchIncidents = async () => {
       try {
-        const response = await fetch("http://localhost:8080/incidents/", {
-          headers: {
-            Authorization: "bearer " + token.substring(1, token.length - 1),
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL_PROD}/incidents/`,
+          {
+            headers: {
+              Authorization: "bearer " + token.substring(1, token.length - 1),
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
         if (!response.ok) {
           setError(`HTTP error! Status: ${response.status}`);
           return [];
@@ -71,7 +97,7 @@ const Home = () => {
     };
 
     loadData();
-  }, [token]);
+  }, [token, selectedTags]);
 
   if (isLoading)
     return <Typography sx={{ color: "#fff" }}>Loading...</Typography>;
@@ -105,11 +131,12 @@ const Home = () => {
             variant="contained"
             onClick={() => setOpenIncidentModal(true)}
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >
@@ -119,11 +146,12 @@ const Home = () => {
             variant="contained"
             onClick={() => setOpenOfferModal(true)}
             sx={{
-              color: "black",
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
               fontSize: "10px",
               "&:hover": {
-                background: "#e2e2e2",
+                color: "white",
+                background: "#6363ab",
               },
             }}
           >
@@ -136,6 +164,25 @@ const Home = () => {
         <Typography>Loading...</Typography>
       ) : (
         <div>
+          {selectedTags.map((selectedTag) => (
+            <button
+              key={selectedTag}
+              onClick={() => toggleTag(selectedTag)}
+              style={{
+                margin: "2px",
+                padding: "4px 6px",
+                backgroundColor: "#c6bfec",
+                color: "black",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "0.75rem",
+              }}
+            >
+              {selectedTag}
+            </button>
+          ))}
+
           {posts.length > 0 ? (
             <Grid container spacing={2}>
               {posts.map((post, i) => (
@@ -147,12 +194,16 @@ const Home = () => {
                   lg={3}
                   key={post.title + post.date + i}
                 >
-                  <PostCard props={post} />
+                  <PostCard
+                    props={post}
+                    onTagToggle={toggleTag}
+                    is_admin={is_admin}
+                  />
                 </Grid>
               ))}
             </Grid>
           ) : (
-            <Typography className="text-white">No posts available.</Typography>
+            <Typography className="text-black">No posts available.</Typography>
           )}
         </div>
       )}
@@ -171,6 +222,7 @@ const Home = () => {
         open={openOfferModal}
         onClose={() => setOpenOfferModal(false)}
       />
+      <Chatbot />
     </div>
   );
 };

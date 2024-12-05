@@ -21,7 +21,7 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
   const handleSubmit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/incidents/${incident.id}`,
+        `${import.meta.env.VITE_BASE_URL_PROD}/incidents/${incident.id}`,
         {
           method: "PUT",
           headers: {
@@ -127,11 +127,12 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
         <Button
           onClick={onClose}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >
@@ -140,11 +141,12 @@ const EditIncidentModal = ({ open, onClose, incident, onEditSuccess }) => {
         <Button
           onClick={handleSubmit}
           sx={{
-            color: "black",
-            background: "#e2e2e2",
+            color: "white",
+            background: "#6363ab",
             fontSize: "10px",
             "&:hover": {
-              background: "#e2e2e2",
+              color: "white",
+              background: "#6363ab",
             },
           }}
         >

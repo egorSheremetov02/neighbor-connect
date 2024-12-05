@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -38,35 +38,54 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 const SignIn = () => {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [signError, setSignError] = React.useState("");
-
-  console.log(sessionStorage.getItem("TOKEN"));
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [signError, setSignError] = useState("");
+  const [twoFARequired, setTwoFARequired] = useState(false);
+  const [twoFACode, setTwoFACode] = useState("");
 
   if (sessionStorage.getItem("TOKEN")) {
     return <Navigate to="/home" />;
   }
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (emailError || passwordError) {
+    const email = event.target.elements.email.value;
+    const password = event.target.elements.password.value;
+
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true);
+      setEmailErrorMessage("Please enter a valid email address.");
       return;
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage("");
+    }
+
+    if (!password || password.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage("Password must be at least 6 characters long.");
+      return;
+    } else {
+      setPasswordError(false);
+      setPasswordErrorMessage("");
     }
 
     const formData = new URLSearchParams();
-    formData.append("username", event.target.elements.email.value);
-    formData.append("password", event.target.elements.password.value);
-    formData.append("grant_type", ""); // Required field, can be empty
-    formData.append("client_id", ""); // Required field, can be empty
-    formData.append("client_secret", ""); // Required field, can be empty
+    formData.append("username", email);
+    formData.append("password", password);
 
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const loginUrl = twoFARequired
+        ? `${
+            import.meta.env.VITE_BASE_URL_PROD
+          }/auth/login?auth_2fa_code=${twoFACode}`
+        : `${import.meta.env.VITE_BASE_URL_PROD}/auth/login`;
+
+      const response = await fetch(loginUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -74,50 +93,27 @@ const SignIn = () => {
         body: formData.toString(),
       });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log(responseData.access_token);
-        sessionStorage.setItem(
-          "TOKEN",
-          JSON.stringify(responseData.access_token)
-        );
-        sessionStorage.setItem("myid", JSON.stringify(responseData.user_id));
-        window.location.href = "/home";
+      const data = await response.json();
+      if (response.ok && data.state !== "2fa") {
+        if (data.access_token) {
+          sessionStorage.setItem("TOKEN", JSON.stringify(data.access_token));
+          sessionStorage.setItem("myid", JSON.stringify(data.user_id));
+          sessionStorage.setItem("is_admin", JSON.stringify(data.is_admin));
+          window.location.href = "/home";
+        }
       } else {
-        const responseData = await response.json();
-        setSignError(responseData.detail || "Login failed");
+        if (data.state === "2fa") {
+          setTwoFARequired(true);
+          setSignError(
+            "Two-factor authentication required. Please enter the 2FA code."
+          );
+        } else {
+          setSignError(data.detail || "Login failed");
+        }
       }
     } catch (error) {
       setSignError("Network error");
     }
-  };
-
-  // Input validation function
-  const validateInputs = () => {
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
-    }
-
-    return isValid;
   };
 
   return (
@@ -199,12 +195,32 @@ const SignIn = () => {
                 }}
               />
             </FormControl>
-            {signError && <p>{signError}</p>}
+
+            <FormControl>
+              {twoFARequired && (
+                <TextField
+                  label="Enter 2FA code"
+                  value={twoFACode}
+                  onChange={(e) => setTwoFACode(e.target.value)}
+                  required
+                  variant="outlined"
+                  color="primary"
+                  sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "#f9f9f9",
+                    height: "40px",
+                    fontSize: "14px",
+                  }}
+                />
+              )}
+            </FormControl>
+
+            {signError && <Typography color="error">{signError}</Typography>}
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
               sx={{ padding: "10px 0", borderRadius: "8px" }}
             >
               Sign in
@@ -213,6 +229,10 @@ const SignIn = () => {
               Don&apos;t have an account?{" "}
               <Link href="/signup" variant="body2">
                 Sign up
+              </Link>
+              <br></br>
+              <Link href="/passwordrecovery" variant="body2">
+                Recover password
               </Link>
             </Typography>
           </Box>
