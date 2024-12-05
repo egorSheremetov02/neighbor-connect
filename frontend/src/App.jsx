@@ -16,7 +16,7 @@ import Signup from "./Pages/Signup";
 import PasswordRecovery from "./Pages/PasswordRecovery";
 import { ChatProvider } from "./utilities/ChatContext";
 import ResetPassword from "./Pages/PasswordReset";
-// import CheckInComponent from "./Pages/EmergencyCheckIn";
+import CheckInComponent from "./Pages/EmergencyCheckIn";
 
 const App = () => {
   // console.log(sessionStorage.getItem("token"));
@@ -72,14 +72,14 @@ const App = () => {
               </Wrapper>
             }
           />
-          {/* <Route
+          <Route
             path="/emergencycheckin"
             element={
               <Wrapper>
                 <CheckInComponent />
               </Wrapper>
             }
-          /> */}
+          />
         </Routes>
       </Router>
     </ChatProvider>

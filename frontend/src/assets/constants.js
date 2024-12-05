@@ -22,10 +22,10 @@ export const links = [
   //   to: "/chats",
   //   icon: HiOutlineChat,
   // },
-  // {
-  //   name: "Emergency Check-In",
-  //   to: "/emergencycheckin",
-  //   icon: HiOutlineBell
-  // },
+  {
+    name: "Emergency Check-In",
+    to: "/emergencycheckin",
+    icon: HiOutlineBell
+  },
   { name: "Logout", to: "/logout", icon: HiOutlineHashtag },
 ];

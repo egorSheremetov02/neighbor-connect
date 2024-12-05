@@ -19,10 +19,9 @@ import {
   ListItemAvatar,
   Avatar,
 } from "@mui/material";
-import { CheckCircle, ErrorOutline, AddCircle } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 
-// Custom styled button with bold color and better padding
+// Custom styled button
 const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#007bff",
   color: "#fff",
@@ -37,7 +36,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-// Custom card for sleek container with shadow
+// Custom card
 const CheckInCard = styled(Card)(({ theme }) => ({
   padding: "32px",
   borderRadius: "16px",
@@ -53,8 +52,8 @@ const CheckInCard = styled(Card)(({ theme }) => ({
 
 const CheckInComponent = () => {
   const [status, setStatus] = useState(""); // Tracks the check-in status
-  const [loadingSafe, setLoadingSafe] = useState(false); // Tracks loading state for "I'm Safe"
-  const [loadingUnsafe, setLoadingUnsafe] = useState(false); // Tracks loading state for "I'm Not Safe"
+  const [loadingSafe, setLoadingSafe] = useState(false);
+  const [loadingUnsafe, setLoadingUnsafe] = useState(false);
   const [neighbors, setNeighbors] = useState([]);
   const [selectedNeighbor, setSelectedNeighbor] = useState(null);
   const [notifications, setNotifications] = useState({}); // Store notifications by neighbor ID
@@ -81,7 +80,7 @@ const CheckInComponent = () => {
         }
 
         const data = await response.json();
-        setNeighbors(data.users_info); // Assuming users_info contains the neighbor data
+        setNeighbors(data.users_info);
       } catch (error) {
         console.error("Error fetching neighbors:", error);
         setStatus("Failed to load neighbors.");
@@ -91,24 +90,41 @@ const CheckInComponent = () => {
     fetchNeighbors();
   }, [token]);
 
-  // Function to simulate sending an alert to a selected neighbor
-  const alertNeighbor = () => {
+  // Function to send an alert to a selected neighbor
+  const alertNeighbor = async () => {
     if (selectedNeighbor) {
-      setStatus(`Alert sent to ${selectedNeighbor.name}`);
+      try {
+        setStatus("Sending alert...");
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL_PROD}/emergency_check_in`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.substring(1, token.length - 1)}`,
+          },
+          body: JSON.stringify({
+            receivers_ids: [selectedNeighbor.id],
+            status: status,
+          }),
+        });
 
-      // Store the alert notification for the selected neighbor
-      setNotifications((prevNotifications) => ({
-        ...prevNotifications,
-        [selectedNeighbor.name]: `Check-in alert: ${status}`,
-      }));
+        if (!response.ok) {
+          throw new Error("Failed to send alert.");
+        }
 
-      // console.log(`Notification sent to ${selectedNeighbor.name}`);
+        setStatus(`Alert sent to ${selectedNeighbor.name}`);
+        setNotifications((prevNotifications) => ({
+          ...prevNotifications,
+          [selectedNeighbor.name]: `Check-in alert: ${status}`,
+        }));
+      } catch (error) {
+        console.error("Error sending alert:", error);
+        setStatus("Failed to send alert.");
+      }
     } else {
       setStatus("Please select a neighbor to alert.");
     }
   };
 
-  // Separate functions for "I'm Safe" and "I'm Not Safe" check-ins
   const handleSafeCheckIn = () => {
     setLoadingSafe(true);
     setStatus("SAFE");
@@ -122,25 +138,12 @@ const CheckInComponent = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        mt: 4,
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 4 }}>
       <CheckInCard>
-        <Typography
-          variant="h3"
-          sx={{ fontWeight: "bold", color: "#333", mb: 2 }}
-        >
+        <Typography variant="h3" sx={{ fontWeight: "bold", color: "#333", mb: 2 }}>
           Emergency
         </Typography>
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: "bold", color: "#333", mb: 2 }}
-        >
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333", mb: 2 }}>
           Check-In
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
@@ -153,11 +156,7 @@ const CheckInComponent = () => {
             disabled={loadingSafe || loadingUnsafe}
             variant="contained"
           >
-            {loadingSafe ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "I'm Safe"
-            )}
+            {loadingSafe ? <CircularProgress size={24} color="inherit" /> : "I'm Safe"}
           </StyledButton>
           <StyledButton
             onClick={handleUnsafeCheckIn}
@@ -168,15 +167,10 @@ const CheckInComponent = () => {
               "&:hover": { backgroundColor: "#c62828" },
             }}
           >
-            {loadingUnsafe ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "I'm Not Safe"
-            )}
+            {loadingUnsafe ? <CircularProgress size={24} color="inherit" /> : "I'm Not Safe"}
           </StyledButton>
         </Stack>
 
-        {/* Neighbors List */}
         <Typography variant="h6" sx={{ mt: 3, color: "#333" }}>
           Select a Neighbor to Alert
         </Typography>
@@ -197,36 +191,24 @@ const CheckInComponent = () => {
           ))}
         </List>
 
-        {/* Alert Button */}
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={alertNeighbor}
-          sx={{ mt: 2 }}
-        >
+        <Button variant="outlined" color="primary" onClick={alertNeighbor} sx={{ mt: 2 }}>
           Alert Selected Neighbor
         </Button>
 
-        {/* Status Feedback */}
         {status && (
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            sx={{ mt: 3, justifyContent: "center" }}
-          >
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3, justifyContent: "center" }}>
             <Typography
               variant="body1"
               sx={{
                 fontWeight: "bold",
-                color: status === "safe" ? "#4caf50" : "#d32f2f",
+                color: status === "SAFE" ? "#4caf50" : "#d32f2f",
               }}
             >
               {status}
             </Typography>
           </Stack>
         )}
-        {/* Notification Display */}
+
         <Typography variant="h6" sx={{ mt: 4, color: "#333" }}>
           Notifications
         </Typography>
