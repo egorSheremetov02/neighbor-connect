@@ -3,6 +3,7 @@ const token = sessionStorage.getItem("TOKEN");
 
 // Helper function for making fetch requests
 const fetchRequest = async (url, method = "GET", body = null) => {
+  console.log(token);
   const options = {
     method,
     headers: {
@@ -23,7 +24,7 @@ const fetchRequest = async (url, method = "GET", body = null) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Fetch request failed:", error);
+    console.error("Fetch request failed:", error.toString());
     throw error;
   }
 };
@@ -34,13 +35,28 @@ export const fetchNeighbors = (params) => {
   return fetchRequest(`${API_BASE_URL}/users/users?${query}`);
 };
 
-export const fetchChats = () => fetchRequest(`${API_BASE_URL}/chats/own`);
+export const fetchChatsIds = () => fetchRequest(`${API_BASE_URL}/chats`);
+
+export const fetchChats = (id) => fetchRequest(`${API_BASE_URL}/chats/${id}`);
 
 export const fetchMessages = (chatId) =>
-  fetchRequest(`${API_BASE_URL}/chats/${chatId}`);
+  fetchRequest(`${API_BASE_URL}/chats/${chatId}/messages`);
 
-export const sendMessage = (chatId, data) =>
-  fetchRequest(`${API_BASE_URL}/chats/${chatId}/messages`, "POST", data);
+export const sendMessage = (chatId, data) => {
+  const payload = {
+    "content": data,
+  }
+  fetchRequest(`${API_BASE_URL}/chats/${chatId}/messages`, "POST", payload);
+};
 
-export const createGroupChat = (data) =>
-  fetchRequest(`${API_BASE_URL}/chats/`, "POST", data);
+export const createGroupChat = ({ id, name }) => {
+  const userid = sessionStorage.getItem("myid");
+  console.log(userid);
+  const payload = {
+    name: name,
+    description: "new chat",
+    tags: ["string"],
+    users: [id, userid],
+  };
+  fetchRequest(`${API_BASE_URL}/chats/`, "POST", payload);
+};

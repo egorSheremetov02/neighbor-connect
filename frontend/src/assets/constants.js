@@ -17,11 +17,11 @@ export const links = [
     icon: HiOutlineUserGroup,
   },
   { name: "Profile", to: `/profile/${userid}`, icon: HiOutlinePhotograph },
-  // {
-  //   name: "Chats",
-  //   to: "/chats",
-  //   icon: HiOutlineChat,
-  // },
+  {
+    name: "Chats",
+    to: "/chats",
+    icon: HiOutlineChat,
+  },
   // {
   //   name: "Emergency Check-In",
   //   to: "/emergencycheckin",
