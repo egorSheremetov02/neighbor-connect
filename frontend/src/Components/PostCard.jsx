@@ -13,6 +13,7 @@ import {
   Menu,
   MenuItem,
   Button,
+  Tooltip,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
@@ -347,9 +348,22 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
             </IconButton>
           }
           title={
-            <Typography variant="h6" fontWeight="bold">
-              {title}
-            </Typography>
+            <Tooltip title={title} placement="top" arrow>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  maxWidth: "200px", // Set your desired maximum width
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "inline-block", // Ensures ellipsis works correctly
+                  cursor: "pointer", // Indicates hoverable tooltip
+                }}
+              >
+                {title}
+              </Typography>
+            </Tooltip>
           }
           subheader={
             <Typography variant="body1" fontSize={"12px"}>
