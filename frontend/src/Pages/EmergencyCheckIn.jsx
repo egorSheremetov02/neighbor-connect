@@ -24,8 +24,8 @@ import { styled } from "@mui/material/styles";
 
 // Custom styled button with bold color and better padding
 const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#007bff",
-  color: "#fff",
+  color: "white",
+  background: "#6363ab",
   padding: "12px 28px",
   fontSize: "18px",
   fontWeight: "bold",
@@ -202,7 +202,7 @@ const CheckInComponent = () => {
           variant="outlined"
           color="primary"
           onClick={alertNeighbor}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, color: "white", background: "#6363ab" }}
         >
           Alert Selected Neighbor
         </Button>

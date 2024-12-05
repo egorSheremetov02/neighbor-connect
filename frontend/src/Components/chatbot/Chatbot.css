@@ -7,7 +7,7 @@
 }
 
 .chatbot-icon {
-  background-color: gray;
+  background-color: #6363ab;
   color: #fff;
   border-radius: 50%;
   padding: 15px;
@@ -37,7 +37,7 @@
 }
 
 .chatbot-header {
-  background-color: gray;
+  background-color: #6363ab;
   color: #ffffff;
   padding: 10px;
   display: flex;
@@ -72,14 +72,14 @@
 }
 
 .message.user {
-  background-color: #c3bfbf;
-  color: #ffffff;
+  background-color: #efeffb;
+  color: black;
   align-self: flex-end;
 }
 
 .message.bot {
-  background-color: #f1f1f1;
-  color: #333;
+  background-color: #6363ab;
+  color: white;
   align-self: flex-start;
 }
 

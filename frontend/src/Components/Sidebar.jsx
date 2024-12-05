@@ -51,7 +51,7 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="md:flex hidden flex-col w-[240px] py-10 px-4 bg-[#e2e2e2]">
+      <div className="md:flex hidden flex-col w-[240px] py-10 px-4 bg-[#efeffb]">
         <img
           src={logo}
           alt="Company Logo"
@@ -83,7 +83,7 @@ const Sidebar = () => {
 
       {/* Mobile sidebar menu */}
       <div
-        className={`absolute top-0 h-screen w-2/3 bg-gradient-to-tl from-white/10 to-[#e2e2e2] backdrop-blur-lg z-10 p-6 md:hidden transition-transform duration-300 ${
+        className={`absolute top-0 h-screen w-2/3 bg-gradient-to-tl from-[#8989cb] via-white/10 to-[#e2e2e2] backdrop-blur-lg z-10 p-6 md:hidden transition-transform duration-300 ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

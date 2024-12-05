@@ -330,7 +330,7 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
 
   return (
     <>
-      <Card sx={{ maxWidth: 360, backgroundColor: "#e2e2e2", height: "100%" }}>
+      <Card sx={{ maxWidth: 360, backgroundColor: "#efeffb", height: "100%" }}>
         <CardHeader
           avatar={
             <Avatar
@@ -353,12 +353,12 @@ const PostCard = ({ props, onTagToggle, is_admin }) => {
                 variant="h6"
                 fontWeight="bold"
                 sx={{
-                  maxWidth: "200px", // Set your desired maximum width
+                  maxWidth: "150px",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
-                  display: "inline-block", // Ensures ellipsis works correctly
-                  cursor: "pointer", // Indicates hoverable tooltip
+                  display: "block",
+                  cursor: "pointer",
                 }}
               >
                 {title}

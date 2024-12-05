@@ -91,7 +91,12 @@ const RequestResetCode = () => {
               <Typography color="error">{errorMessage}</Typography>
             )}
 
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2, color: "white", background: "#6363ab" }}
+            >
               Send Reset Code
             </Button>
           </Box>
