@@ -314,7 +314,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen flex flex-col">
+    <div className="p-4 bg-[#efeffb] min-h-screen flex flex-col">
       <header className="mb-4 text-2xl font-semibold text-gray-800">My Chats</header>
       {chats && chats.length === 0 && (
         <p className="text-sm text-gray-500">You don't have any group chats.</p>
@@ -326,8 +326,8 @@ const Chat = () => {
             {chats.map((chat) => (
               <div
                 key={chat.chat_id}
-                className={`p-2 border rounded cursor-pointer hover:bg-gray-100 ${
-                  chat.chat_id === currentChat ? "bg-gray-200" : ""}`}
+                className={`p-2 border rounded cursor-pointer hover:bg-[#efeffb] ${
+                  chat.chat_id === currentChat ? " bg-[#d5d5f5]" : ""}`}
                 onClick={() => setCurrentChat(chat.chat_id)}
               >
                 {chat.name}
@@ -335,7 +335,7 @@ const Chat = () => {
             ))}
           </div>
           <button
-            className="mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            className="mt-4 w-full bg-[#6363ab] text-white px-4 py-2 rounded hover:bg-[#5656ab]"
             onClick={loadNeighbors}
           >
             Create Group Chat
@@ -350,7 +350,7 @@ const Chat = () => {
               <header className="font-bold text-lg mb-4">{currentChat.name}</header>
               <div className="flex-1 overflow-y-auto">
                 {messages.map((msg, idx) => (
-                  <div key={idx} className="mb-2 p-2 border rounded-md bg-slate-200">
+                  <div key={idx} className="mb-2 p-2 border rounded-md bg-[#d5d5f5]">
                     <strong className="text-sm text-gray-600">{msg.author_name}:</strong> {msg.content}
                   </div>
                 ))}
@@ -365,7 +365,7 @@ const Chat = () => {
                 />
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="bg-[#6363ab] text-white px-4 py-2 rounded hover:bg-[#5656ab]"
                 >
                   Send
                 </button>
