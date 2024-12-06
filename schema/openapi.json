@@ -6,6 +6,31 @@
     },
     "paths": {
         "/chats/": {
+            "get": {
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get Own Chats",
+                "description": "Get all chats the sender is a member of.",
+                "operationId": "get_own_chats_chats__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetOwnChatsResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "chats"
@@ -308,33 +333,6 @@
                         }
                     }
                 }
-            }
-        },
-        "/chats/own": {
-            "get": {
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Get Own Chats",
-                "description": "Get all chats the sender is a member of.",
-                "operationId": "get_own_chats_chats_own_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetOwnChatsResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "APIKeyHeader": []
-                    }
-                ]
             }
         },
         "/incidents/": {
