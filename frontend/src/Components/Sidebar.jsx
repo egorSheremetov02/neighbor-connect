@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { HiOutlineMenu } from "react-icons/hi";
 import { RiCloseLine } from "react-icons/ri";
-
+import ImageUploader from "./ImageUploader";
 import logo from "../assets/logo.png";
 import { links } from "../assets/constants";
 
@@ -52,11 +52,7 @@ const Sidebar = () => {
   return (
     <>
       <div className="md:flex hidden flex-col w-[240px] py-10 px-4 bg-[#efeffb]">
-        <img
-          src={logo}
-          alt="Company Logo"
-          className="w-full h-14 object-contain"
-        />
+       <ImageUploader/>
         <p
           id="webappname"
           className="text-2xl font-extrabold text-gray-800 mt-6 text-center tracking-wide shadow-md"
@@ -87,11 +83,7 @@ const Sidebar = () => {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <img
-          src={logo}
-          alt="Company Logo"
-          className="w-full h-14 object-contain"
-        />
+        <ImageUploader/>
         <p
           id="webappname"
           className="text-2xl font-extrabold text-gray-800 mt-6 text-center tracking-wide shadow-md"

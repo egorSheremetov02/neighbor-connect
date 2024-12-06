@@ -92,6 +92,16 @@ const Profile = () => {
       }
     };
     fetchProfile();
+    const handleStorageChange = () => {
+      // Trigger a re-render by updating a dummy state
+      setProfile((prev) => ({ ...prev }));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const handleEditClick = () => {
@@ -227,10 +237,17 @@ const Profile = () => {
           <Avatar
             sx={{ bgcolor: "#e2e2e2", width: 100, height: 100 }}
             className="mb-4"
+            src={
+              localStorage.getItem("userImage")
+                ? JSON.parse(localStorage.getItem("userImage"))
+                : null
+            }
           >
-            <Typography sx={{ color: "#000", fontSize: "32px" }}>
-              {profile?.fullName[0]}
-            </Typography>
+            {!localStorage.getItem("userImage") && (
+              <Typography sx={{ color: "#000", fontSize: "32px" }}>
+                {profile?.fullName[0]}
+              </Typography>
+            )}
           </Avatar>
           <Typography variant="h4" className="mb-2 font-bold text-center">
             {profile?.fullName}

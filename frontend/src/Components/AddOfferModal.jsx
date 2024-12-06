@@ -19,7 +19,7 @@ const AddOfferModal = ({ open, onClose }) => {
   const [tag, setTag] = useState("");
   const [date, setDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [image, setImage] = useState(null);
   const token = sessionStorage.getItem("TOKEN");
 
   const handleAddOffer = () => {
@@ -28,6 +28,7 @@ const AddOfferModal = ({ open, onClose }) => {
       description,
       tags: [tag],
       date,
+      image,
     };
 
     // console.log(offerData);
@@ -53,6 +54,17 @@ const AddOfferModal = ({ open, onClose }) => {
       .catch((error) => {
         setErrorMessage("Error: " + error.message);
       });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -126,7 +138,7 @@ const AddOfferModal = ({ open, onClose }) => {
             },
           }}
         />
-        <TextField
+        {/* <TextField
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -146,7 +158,22 @@ const AddOfferModal = ({ open, onClose }) => {
               fontSize: "14px",
             },
           }}
+        /> */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ marginTop: "16px", display: "block" }}
         />
+        {image && (
+          <Box sx={{ marginTop: "8px" }}>
+            <img
+              src={image}
+              alt="Offer preview"
+              style={{ width: "100%", borderRadius: "8px", maxHeight: "200px", objectFit: "cover" }}
+            />
+          </Box>
+        )}
         {errorMessage && (
           <Typography color="error" variant="body2">
             {errorMessage}
